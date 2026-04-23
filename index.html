@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light only" />
+  <meta name="theme-color" content="#f6efe0" />
+  <meta name="supported-color-schemes" content="light" />
   <title>Prontuários GSG Psicologia</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -51,7 +54,23 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
+    html, body {
+      height: 100%;
+      color-scheme: light only;
+      -webkit-color-scheme: light only;
+      forced-color-adjust: none;
+    }
+
+    /* Força modo claro em qualquer situação — ignora preferência do sistema */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: light only !important;
+      }
+      html, body {
+        background: #f6efe0 !important;
+        color: #2c2a26 !important;
+      }
+    }
 
     body {
       font-family: var(--font-body);
