@@ -13,42 +13,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
   <style>
-    /* ============================================================
-       DESIGN TOKENS — identidade Gabrielly Guandalino
-       ============================================================ */
     :root {
       --cream: #f6efe0;
       --cream-soft: #fbf6ea;
       --cream-deep: #ede3ce;
-
       --ink: #2c2a26;
       --ink-soft: #5a544a;
       --ink-faint: #958d7d;
-
       --border: #e4d9c1;
       --border-soft: #ede3d0;
-
       --gold: #b8944a;
       --gold-soft: #d4b47a;
       --gold-deep: #8e6f34;
       --gold-wash: #e8d6ac;
-
       --sage: #9fb08a;
       --sage-soft: #c4d0b3;
       --sage-deep: #6d7f5c;
       --sage-wash: #d9e0cc;
-
       --danger: #a64e3d;
       --danger-soft: #e8d0ca;
-
       --shadow-sm: 0 1px 2px rgba(60, 48, 30, 0.04);
       --shadow-md: 0 4px 16px rgba(60, 48, 30, 0.06), 0 1px 3px rgba(60, 48, 30, 0.04);
       --shadow-lg: 0 20px 50px rgba(60, 48, 30, 0.12);
-
       --radius-sm: 4px;
       --radius-md: 10px;
       --radius-lg: 16px;
-
       --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
       --font-body: 'Jost', system-ui, sans-serif;
     }
@@ -60,16 +49,9 @@
       -webkit-color-scheme: light only;
       forced-color-adjust: none;
     }
-
-    /* Força modo claro em qualquer situação — ignora preferência do sistema */
     @media (prefers-color-scheme: dark) {
-      :root {
-        color-scheme: light only !important;
-      }
-      html, body {
-        background: #f6efe0 !important;
-        color: #2c2a26 !important;
-      }
+      :root { color-scheme: light only !important; }
+      html, body { background: #f6efe0 !important; color: #2c2a26 !important; }
     }
 
     body {
@@ -84,868 +66,279 @@
       font-weight: 400;
     }
 
-    .watercolor-bg {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-    .wc-blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-    }
+    .watercolor-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .wc-blob { position: absolute; border-radius: 50%; filter: blur(80px); }
     .wc-blob.sage-1 { width: 600px; height: 600px; top: -200px; right: -150px; background: var(--sage-wash); opacity: 0.5; }
     .wc-blob.sage-2 { width: 500px; height: 500px; bottom: -150px; left: -100px; background: var(--sage-wash); opacity: 0.4; }
     .wc-blob.gold-1 { width: 400px; height: 400px; top: 30%; left: 20%; background: var(--gold-wash); opacity: 0.25; }
 
-    h1, h2, h3, h4 {
-      font-family: var(--font-display);
-      font-weight: 400;
-      line-height: 1.15;
-      color: var(--ink);
-      letter-spacing: 0.005em;
-    }
-
+    h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 400; line-height: 1.15; color: var(--ink); letter-spacing: 0.005em; }
     button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
     input, textarea, select { font-family: inherit; font-size: inherit; color: inherit; }
     a { color: var(--gold-deep); text-decoration: none; }
 
-    /* ============================================================
-       LOGIN
-       ============================================================ */
-    .login-screen {
-      position: relative;
-      z-index: 1;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem 2rem;
-    }
-
-    .login-card {
-      position: relative;
-      max-width: 520px;
-      width: 100%;
-      text-align: center;
-      padding: 4rem 3rem;
-    }
-
-    .login-monogram {
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: 14rem;
-      font-weight: 300;
-      color: var(--gold-soft);
-      opacity: 0.15;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -55%);
-      line-height: 1;
-      pointer-events: none;
-      z-index: 0;
-    }
-
+    /* LOGIN */
+    .login-screen { position: relative; z-index: 1; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .login-card { position: relative; max-width: 520px; width: 100%; text-align: center; padding: 4rem 3rem; }
+    .login-monogram { font-family: var(--font-display); font-style: italic; font-size: 14rem; font-weight: 300; color: var(--gold-soft); opacity: 0.15; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -55%); line-height: 1; pointer-events: none; z-index: 0; }
     .login-content { position: relative; z-index: 1; }
-
-    .login-crest {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.4rem 1rem;
-      border: 1px solid var(--gold);
-      border-radius: 50px;
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: 0.85rem;
-      color: var(--gold-deep);
-      margin-bottom: 2.5rem;
-      letter-spacing: 0.03em;
-    }
-
-    .login-name {
-      font-family: var(--font-display);
-      font-size: clamp(2.8rem, 6vw, 4rem);
-      font-weight: 400;
-      letter-spacing: 0.02em;
-      line-height: 1;
-      margin-bottom: 0.3rem;
-      text-transform: uppercase;
-    }
-    .login-name-first { display: block; }
-    .login-name-last { display: block; }
-
-    .login-title-rule {
-      width: 60px;
-      height: 1px;
-      background: var(--gold);
-      margin: 1.8rem auto;
-    }
-
-    .login-role {
-      font-family: var(--font-body);
-      font-size: 0.8rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-      font-weight: 500;
-    }
-
-    .login-crp {
-      font-family: var(--font-body);
-      font-size: 0.75rem;
-      letter-spacing: 0.15em;
-      color: var(--ink-faint);
-      margin-top: 0.3rem;
-    }
-
-    .login-app-label {
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: 1.1rem;
-      color: var(--ink-soft);
-      margin-top: 3rem;
-      margin-bottom: 2rem;
-    }
-
-    .btn-google {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.95rem 2rem;
-      background: var(--ink);
-      color: var(--cream-soft);
-      border-radius: 50px;
-      font-weight: 500;
-      font-size: 0.9rem;
-      letter-spacing: 0.04em;
-      transition: all 0.2s ease;
-    }
+    .login-crest { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; border: 1px solid var(--gold); border-radius: 50px; font-family: var(--font-display); font-style: italic; font-size: 0.85rem; color: var(--gold-deep); margin-bottom: 2.5rem; letter-spacing: 0.03em; }
+    .login-name { font-family: var(--font-display); font-size: clamp(2.8rem, 6vw, 4rem); font-weight: 400; letter-spacing: 0.02em; line-height: 1; margin-bottom: 0.3rem; text-transform: uppercase; }
+    .login-name-first, .login-name-last { display: block; }
+    .login-title-rule { width: 60px; height: 1px; background: var(--gold); margin: 1.8rem auto; }
+    .login-role { font-family: var(--font-body); font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-soft); font-weight: 500; }
+    .login-crp { font-family: var(--font-body); font-size: 0.75rem; letter-spacing: 0.15em; color: var(--ink-faint); margin-top: 0.3rem; }
+    .login-app-label { font-family: var(--font-display); font-style: italic; font-size: 1.1rem; color: var(--ink-soft); margin-top: 3rem; margin-bottom: 2rem; }
+    .btn-google { display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.95rem 2rem; background: var(--ink); color: var(--cream-soft); border-radius: 50px; font-weight: 500; font-size: 0.9rem; letter-spacing: 0.04em; transition: all 0.2s ease; }
     .btn-google:hover { background: #1a1916; transform: translateY(-1px); box-shadow: var(--shadow-md); }
     .btn-google svg { width: 18px; height: 18px; }
 
-    /* ============================================================
-       APP
-       ============================================================ */
-    .app {
-      display: none;
-      position: relative;
-      z-index: 1;
-      min-height: 100vh;
-      grid-template-columns: 280px 1fr;
-    }
+    /* APP */
+    .app { display: none; position: relative; z-index: 1; min-height: 100vh; grid-template-columns: 280px 1fr; }
     .app.active { display: grid; }
 
-    .sidebar {
-      background: rgba(251, 246, 234, 0.6);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-right: 1px solid var(--border-soft);
-      padding: 2.5rem 1.5rem 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-    }
+    .sidebar { background: rgba(251, 246, 234, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid var(--border-soft); padding: 2.5rem 1.5rem 2rem; display: flex; flex-direction: column; gap: 2rem; position: sticky; top: 0; height: 100vh; }
+    .brand { text-align: center; padding: 0 0.5rem 1.5rem; border-bottom: 1px solid var(--border-soft); }
+    .brand-monogram { font-family: var(--font-display); font-style: italic; font-size: 3rem; color: var(--gold); line-height: 1; margin-bottom: 0.3rem; }
+    .brand-name { font-family: var(--font-display); font-size: 1.05rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); line-height: 1.2; }
+    .brand-role { font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-faint); margin-top: 0.4rem; }
 
-    .brand {
-      text-align: center;
-      padding: 0 0.5rem 1.5rem;
-      border-bottom: 1px solid var(--border-soft);
-    }
-    .brand-monogram {
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: 3rem;
-      color: var(--gold);
-      line-height: 1;
-      margin-bottom: 0.3rem;
-    }
-    .brand-name {
-      font-family: var(--font-display);
-      font-size: 1.05rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--ink);
-      line-height: 1.2;
-    }
-    .brand-role {
-      font-size: 0.65rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--ink-faint);
-      margin-top: 0.4rem;
-    }
-
-    .nav {
-      display: flex;
-      flex-direction: column;
-      gap: 0.125rem;
-      flex: 1;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-      padding: 0.7rem 0.9rem;
-      border-radius: var(--radius-md);
-      color: var(--ink-soft);
-      font-size: 0.88rem;
-      font-weight: 500;
-      transition: all 0.15s ease;
-      text-align: left;
-      width: 100%;
-      letter-spacing: 0.01em;
-    }
+    .nav { display: flex; flex-direction: column; gap: 0.125rem; flex: 1; }
+    .nav-item { display: flex; align-items: center; gap: 0.85rem; padding: 0.7rem 0.9rem; border-radius: var(--radius-md); color: var(--ink-soft); font-size: 0.88rem; font-weight: 500; transition: all 0.15s ease; text-align: left; width: 100%; letter-spacing: 0.01em; }
     .nav-item:hover { background: var(--border-soft); color: var(--ink); }
-    .nav-item.active {
-      background: var(--ink);
-      color: var(--cream-soft);
-    }
+    .nav-item.active { background: var(--ink); color: var(--cream-soft); }
     .nav-item.active .icon { color: var(--gold-soft); }
     .nav-item .icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--gold); }
     .nav-item[disabled] { opacity: 0.4; cursor: not-allowed; }
     .nav-item[disabled]:hover { background: transparent; color: var(--ink-soft); }
+    .nav-item .badge { margin-left: auto; font-size: 0.6rem; padding: 0.15rem 0.5rem; background: var(--gold-wash); color: var(--gold-deep); border-radius: 10px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
 
-    .nav-item .badge {
-      margin-left: auto;
-      font-size: 0.6rem;
-      padding: 0.15rem 0.5rem;
-      background: var(--gold-wash);
-      color: var(--gold-deep);
-      border-radius: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 500;
-    }
-
-    .user-footer {
-      border-top: 1px solid var(--border-soft);
-      padding-top: 1.25rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.82rem;
-    }
-    .avatar {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--gold), var(--gold-deep));
-      color: var(--cream-soft);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-display);
-      font-weight: 500;
-      font-size: 0.95rem;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
+    .user-footer { border-top: 1px solid var(--border-soft); padding-top: 1.25rem; display: flex; align-items: center; gap: 0.75rem; font-size: 0.82rem; }
+    .avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-deep)); color: var(--cream-soft); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 500; font-size: 0.95rem; overflow: hidden; flex-shrink: 0; }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
     .user-info { flex: 1; min-width: 0; }
     .user-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .user-email { color: var(--ink-faint); font-size: 0.72rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .btn-logout {
-      padding: 0.4rem;
-      color: var(--ink-faint);
-      border-radius: var(--radius-sm);
-      transition: all 0.15s;
-    }
+    .btn-logout { padding: 0.4rem; color: var(--ink-faint); border-radius: var(--radius-sm); transition: all 0.15s; }
     .btn-logout:hover { color: var(--danger); background: var(--border-soft); }
 
-    .main {
-      padding: 3rem 3.5rem;
-      max-width: 1200px;
-      width: 100%;
-    }
+    .main { padding: 3rem 3.5rem; max-width: 1200px; width: 100%; }
 
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 2.5rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
+    .page-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+    .page-title { font-family: var(--font-display); font-size: 3rem; font-weight: 400; letter-spacing: 0.005em; line-height: 1; }
+    .page-title em { font-style: italic; color: var(--gold-deep); font-weight: 400; }
+    .page-subtitle { color: var(--ink-soft); margin-top: 0.75rem; font-size: 0.92rem; font-family: var(--font-display); font-style: italic; }
 
-    .page-title {
-      font-family: var(--font-display);
-      font-size: 3rem;
-      font-weight: 400;
-      letter-spacing: 0.005em;
-      line-height: 1;
-    }
-    .page-title em {
-      font-style: italic;
-      color: var(--gold-deep);
-      font-weight: 400;
-    }
-
-    .page-subtitle {
-      color: var(--ink-soft);
-      margin-top: 0.75rem;
-      font-size: 0.92rem;
-      font-family: var(--font-display);
-      font-style: italic;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.7rem 1.4rem;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      letter-spacing: 0.03em;
-      transition: all 0.15s ease;
-    }
-    .btn-primary {
-      background: var(--ink);
-      color: var(--cream-soft);
-    }
+    .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.4rem; border-radius: 50px; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.03em; transition: all 0.15s ease; }
+    .btn-primary { background: var(--ink); color: var(--cream-soft); }
     .btn-primary:hover { background: #1a1916; transform: translateY(-1px); box-shadow: var(--shadow-md); }
-
-    .btn-gold {
-      background: var(--gold);
-      color: var(--cream-soft);
-    }
+    .btn-gold { background: var(--gold); color: var(--cream-soft); }
     .btn-gold:hover { background: var(--gold-deep); transform: translateY(-1px); }
-
-    .btn-secondary {
-      background: transparent;
-      color: var(--ink);
-      border: 1px solid var(--border);
-    }
+    .btn-secondary { background: transparent; color: var(--ink); border: 1px solid var(--border); }
     .btn-secondary:hover { background: var(--cream-soft); border-color: var(--gold); }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--ink-soft);
-      padding: 0.5rem 0.85rem;
-      border-radius: var(--radius-md);
-    }
+    .btn-ghost { background: transparent; color: var(--ink-soft); padding: 0.5rem 0.85rem; border-radius: var(--radius-md); }
     .btn-ghost:hover { color: var(--ink); background: var(--border-soft); }
-
-    .btn-danger {
-      background: transparent;
-      color: var(--danger);
-      border: 1px solid var(--danger-soft);
-    }
+    .btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger-soft); }
     .btn-danger:hover { background: var(--danger); color: var(--cream); border-color: var(--danger); }
+    .btn-sm { padding: 0.45rem 0.9rem; font-size: 0.78rem; }
 
-    .toolbar {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      align-items: center;
-    }
-
-    .search-wrap {
-      flex: 1;
-      position: relative;
-      max-width: 400px;
-    }
-    .search-wrap svg {
-      position: absolute;
-      left: 1.1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 15px;
-      height: 15px;
-      color: var(--ink-faint);
-    }
-    .search-input {
-      width: 100%;
-      padding: 0.75rem 1rem 0.75rem 2.6rem;
-      background: var(--cream-soft);
-      border: 1px solid var(--border);
-      border-radius: 50px;
-      font-size: 0.88rem;
-      transition: all 0.15s;
-    }
+    .toolbar { display: flex; gap: 1rem; margin-bottom: 2rem; align-items: center; flex-wrap: wrap; }
+    .search-wrap { flex: 1; position: relative; max-width: 400px; min-width: 220px; }
+    .search-wrap svg { position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--ink-faint); }
+    .search-input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.6rem; background: var(--cream-soft); border: 1px solid var(--border); border-radius: 50px; font-size: 0.88rem; transition: all 0.15s; }
     .search-input::placeholder { color: var(--ink-faint); font-style: italic; }
-    .search-input:focus {
-      outline: none;
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px var(--gold-wash);
-    }
+    .search-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-wash); }
+    .status-filter { padding: 0.7rem 1rem; background: var(--cream-soft); border: 1px solid var(--border); border-radius: 50px; font-size: 0.85rem; color: var(--ink); cursor: pointer; min-width: 180px; }
+    .status-filter:focus { outline: none; border-color: var(--gold); }
 
-    .status-filter {
-      padding: 0.7rem 1rem;
-      background: var(--cream-soft);
-      border: 1px solid var(--border);
-      border-radius: 50px;
-      font-size: 0.85rem;
-      color: var(--ink);
-      cursor: pointer;
-      min-width: 180px;
-    }
-    .status-filter:focus {
-      outline: none;
-      border-color: var(--gold);
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2.5rem;
-    }
-    .stat-card {
-      background: var(--cream-soft);
-      border: 1px solid var(--border-soft);
-      border-radius: var(--radius-lg);
-      padding: 1.3rem 1.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 3px;
-      height: 100%;
-      background: var(--gold);
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; margin-bottom: 2.5rem; }
+    .stat-card { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: 1.3rem 1.5rem; position: relative; overflow: hidden; }
+    .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--gold); opacity: 0; transition: opacity 0.2s; }
     .stat-card:hover::before { opacity: 1; }
+    .stat-label { font-family: var(--font-display); font-style: italic; font-size: 0.85rem; color: var(--ink-faint); margin-bottom: 0.4rem; }
+    .stat-value { font-family: var(--font-display); font-size: 2.3rem; font-weight: 400; color: var(--ink); line-height: 1; }
+    .stat-hint { font-size: 0.72rem; color: var(--ink-soft); margin-top: 0.5rem; letter-spacing: 0.05em; text-transform: uppercase; }
 
-    .stat-label {
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: 0.85rem;
-      color: var(--ink-faint);
-      margin-bottom: 0.4rem;
-    }
-    .stat-value {
-      font-family: var(--font-display);
-      font-size: 2.3rem;
-      font-weight: 400;
-      color: var(--ink);
-      line-height: 1;
-    }
-    .stat-hint {
-      font-size: 0.72rem;
-      color: var(--ink-soft);
-      margin-top: 0.5rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    .patient-list {
-      background: var(--cream-soft);
-      border: 1px solid var(--border-soft);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-    }
-
-    .patient-item {
-      display: grid;
-      grid-template-columns: auto 1fr auto auto;
-      align-items: center;
-      gap: 1.25rem;
-      padding: 1.3rem 1.75rem;
-      border-bottom: 1px solid var(--border-soft);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+    .patient-list { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); overflow: hidden; }
+    .patient-item { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 1.25rem; padding: 1.3rem 1.75rem; border-bottom: 1px solid var(--border-soft); cursor: pointer; transition: all 0.2s ease; }
     .patient-item:last-child { border-bottom: none; }
     .patient-item:hover { background: var(--cream); padding-left: 2rem; }
-
-    .patient-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--gold-soft), var(--gold));
-      color: var(--cream-soft);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-display);
-      font-size: 1.15rem;
-      font-weight: 500;
-      flex-shrink: 0;
-      border: 2px solid var(--cream-soft);
-      box-shadow: 0 1px 4px rgba(184, 148, 74, 0.25);
-    }
-
+    .patient-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--gold-soft), var(--gold)); color: var(--cream-soft); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 1.15rem; font-weight: 500; flex-shrink: 0; border: 2px solid var(--cream-soft); box-shadow: 0 1px 4px rgba(184, 148, 74, 0.25); }
     .patient-info { min-width: 0; }
-    .patient-name {
-      font-family: var(--font-display);
-      font-weight: 500;
-      font-size: 1.15rem;
-      color: var(--ink);
-      margin-bottom: 0.15rem;
-      letter-spacing: 0.01em;
-    }
-    .patient-meta {
-      font-size: 0.78rem;
-      color: var(--ink-soft);
-      display: flex;
-      gap: 0.7rem;
-      align-items: center;
-    }
-    .patient-meta .dot {
-      width: 3px;
-      height: 3px;
-      border-radius: 50%;
-      background: var(--gold-soft);
-    }
+    .patient-name { font-family: var(--font-display); font-weight: 500; font-size: 1.15rem; color: var(--ink); margin-bottom: 0.15rem; letter-spacing: 0.01em; }
+    .patient-meta { font-size: 0.78rem; color: var(--ink-soft); display: flex; gap: 0.7rem; align-items: center; flex-wrap: wrap; }
+    .patient-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gold-soft); }
 
-    .patient-tag {
-      font-size: 0.65rem;
-      padding: 0.3rem 0.7rem;
-      border-radius: 50px;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
+    .patient-tag { font-size: 0.65rem; padding: 0.3rem 0.7rem; border-radius: 50px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
     .patient-tag.status-ativo { background: var(--sage-wash); color: var(--sage-deep); }
     .patient-tag.status-pausa { background: var(--gold-wash); color: var(--gold-deep); }
     .patient-tag.status-alta { background: var(--border); color: var(--ink-soft); }
     .patient-tag.status-transferido { background: var(--border); color: var(--ink-soft); }
-
-    .patient-chevron {
-      color: var(--ink-faint);
-      transition: all 0.2s;
-    }
+    .patient-chevron { color: var(--ink-faint); transition: all 0.2s; }
     .patient-item:hover .patient-chevron { color: var(--gold); transform: translateX(4px); }
 
-    .empty-state {
-      text-align: center;
-      padding: 5rem 2rem;
-      background: var(--cream-soft);
-      border: 1px dashed var(--border);
-      border-radius: var(--radius-lg);
-      position: relative;
-    }
-    .empty-state::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: radial-gradient(circle at 30% 30%, var(--sage-wash) 0%, transparent 40%),
-                        radial-gradient(circle at 70% 70%, var(--gold-wash) 0%, transparent 40%);
-      opacity: 0.3;
-      border-radius: var(--radius-lg);
-      pointer-events: none;
-    }
+    .empty-state { text-align: center; padding: 5rem 2rem; background: var(--cream-soft); border: 1px dashed var(--border); border-radius: var(--radius-lg); position: relative; }
+    .empty-state::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 30% 30%, var(--sage-wash) 0%, transparent 40%), radial-gradient(circle at 70% 70%, var(--gold-wash) 0%, transparent 40%); opacity: 0.3; border-radius: var(--radius-lg); pointer-events: none; }
     .empty-state-content { position: relative; z-index: 1; }
-    .empty-state h3 {
-      font-family: var(--font-display);
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
-      font-weight: 400;
-    }
+    .empty-state h3 { font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 400; }
     .empty-state h3 em { font-style: italic; color: var(--gold-deep); }
-    .empty-state p {
-      color: var(--ink-soft);
-      max-width: 44ch;
-      margin: 0 auto 2rem;
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: 1rem;
-    }
+    .empty-state p { color: var(--ink-soft); max-width: 44ch; margin: 0 auto 2rem; font-family: var(--font-display); font-style: italic; font-size: 1rem; }
 
-    .sync-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.72rem;
-      color: var(--ink-faint);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .sync-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--sage-deep);
-    }
-    .sync-indicator.syncing .sync-dot {
-      background: var(--gold);
-      animation: pulse 1.2s infinite;
-    }
+    .sync-indicator { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--ink-faint); letter-spacing: 0.05em; text-transform: uppercase; }
+    .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sage-deep); }
+    .sync-indicator.syncing .sync-dot { background: var(--gold); animation: pulse 1.2s infinite; }
     .sync-indicator.error .sync-dot { background: var(--danger); }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(44, 42, 38, 0.55);
-      backdrop-filter: blur(6px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      padding: 2rem;
-      animation: fadeIn 0.2s ease;
-    }
+    /* MODAL */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(44, 42, 38, 0.55); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 2rem; animation: fadeIn 0.2s ease; }
     .modal-backdrop.active { display: flex; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .modal {
-      background: var(--cream-soft);
-      border-radius: var(--radius-lg);
-      width: 100%;
-      max-width: 680px;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: var(--shadow-lg);
-      animation: slideUp 0.3s ease;
-      position: relative;
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .modal-header {
-      padding: 2.2rem 2.2rem 1.2rem;
-      border-bottom: 1px solid var(--border);
-      text-align: center;
-      position: relative;
-    }
-    .modal-header::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 2px;
-      background: var(--gold);
-    }
-    .modal-header h2 {
-      font-size: 2rem;
-      font-weight: 400;
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal { background: var(--cream-soft); border-radius: var(--radius-lg); width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease; position: relative; }
+    .modal.wide { max-width: 860px; }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-header { padding: 2.2rem 2.2rem 1.2rem; border-bottom: 1px solid var(--border); text-align: center; position: relative; }
+    .modal-header::after { content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%); width: 60px; height: 2px; background: var(--gold); }
+    .modal-header h2 { font-size: 2rem; font-weight: 400; }
     .modal-header h2 em { font-style: italic; color: var(--gold-deep); }
-    .modal-header p {
-      color: var(--ink-soft);
-      font-size: 0.88rem;
-      margin-top: 0.3rem;
-      font-family: var(--font-display);
-      font-style: italic;
-    }
-
+    .modal-header p { color: var(--ink-soft); font-size: 0.88rem; margin-top: 0.3rem; font-family: var(--font-display); font-style: italic; }
     .modal-body { padding: 1.8rem 2.2rem; }
-    .modal-footer {
-      padding: 1.25rem 2.2rem;
-      border-top: 1px solid var(--border-soft);
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.75rem;
-      background: var(--cream);
-    }
+    .modal-footer { padding: 1.25rem 2.2rem; border-top: 1px solid var(--border-soft); display: flex; justify-content: flex-end; gap: 0.75rem; background: var(--cream); }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
-    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
     .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
     .form-group.full { grid-column: 1 / -1; }
-
-    .form-label {
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--ink-soft);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
+    .form-label { font-size: 0.75rem; font-weight: 500; color: var(--ink-soft); letter-spacing: 0.1em; text-transform: uppercase; }
     .form-label .required { color: var(--gold-deep); }
-
-    .form-input, .form-select, .form-textarea {
-      padding: 0.7rem 0.95rem;
-      background: var(--cream);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-      transition: all 0.15s;
-    }
+    .form-input, .form-select, .form-textarea { padding: 0.7rem 0.95rem; background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.9rem; transition: all 0.15s; }
     .form-textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      outline: none;
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px var(--gold-wash);
-    }
-
-    .form-section-title {
-      font-family: var(--font-display);
-      font-size: 1.15rem;
-      font-style: italic;
-      color: var(--gold-deep);
-      margin: 1.5rem 0 0.5rem;
-      grid-column: 1 / -1;
-      padding-bottom: 0.6rem;
-      border-bottom: 1px solid var(--border-soft);
-      font-weight: 500;
-    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-wash); }
+    .form-section-title { font-family: var(--font-display); font-size: 1.15rem; font-style: italic; color: var(--gold-deep); margin: 1.5rem 0 0.5rem; grid-column: 1 / -1; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border-soft); font-weight: 500; }
     .form-section-title:first-child { margin-top: 0; }
 
+    /* DETAIL */
     .detail-view { display: none; }
     .detail-view.active { display: block; }
-
-    .detail-header {
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-      margin-bottom: 2.5rem;
-      padding-bottom: 2rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .detail-avatar {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--gold-soft), var(--gold-deep));
-      color: var(--cream-soft);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-display);
-      font-size: 2.3rem;
-      font-weight: 400;
-      flex-shrink: 0;
-      border: 3px solid var(--cream-soft);
-      box-shadow: 0 4px 14px rgba(184, 148, 74, 0.25);
-    }
-    .detail-head-info h2 {
-      font-family: var(--font-display);
-      font-size: 2.3rem;
-      font-weight: 400;
-      letter-spacing: 0.005em;
-    }
-    .detail-head-info .meta {
-      color: var(--ink-soft);
-      margin-top: 0.5rem;
-      display: flex;
-      gap: 0.75rem;
-      align-items: center;
-      font-size: 0.85rem;
-      flex-wrap: wrap;
-    }
+    .detail-header { display: flex; gap: 1.5rem; align-items: center; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .detail-avatar { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, var(--gold-soft), var(--gold-deep)); color: var(--cream-soft); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 2.3rem; font-weight: 400; flex-shrink: 0; border: 3px solid var(--cream-soft); box-shadow: 0 4px 14px rgba(184, 148, 74, 0.25); }
+    .detail-head-info { flex: 1; min-width: 200px; }
+    .detail-head-info h2 { font-family: var(--font-display); font-size: 2.3rem; font-weight: 400; letter-spacing: 0.005em; }
+    .detail-head-info .meta { color: var(--ink-soft); margin-top: 0.5rem; display: flex; gap: 0.75rem; align-items: center; font-size: 0.85rem; flex-wrap: wrap; }
     .detail-head-info .meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gold-soft); }
+    .detail-actions { margin-left: auto; display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
-    .detail-actions {
-      margin-left: auto;
-      display: flex;
-      gap: 0.5rem;
-    }
+    /* TABS na ficha do paciente */
+    .tabs { display: flex; gap: 0.25rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); overflow-x: auto; }
+    .tab-btn { padding: 0.75rem 1.2rem; font-size: 0.88rem; font-weight: 500; color: var(--ink-faint); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; white-space: nowrap; letter-spacing: 0.02em; }
+    .tab-btn:hover { color: var(--ink-soft); }
+    .tab-btn.active { color: var(--gold-deep); border-bottom-color: var(--gold); }
+    .tab-btn .count { display: inline-block; margin-left: 0.4rem; padding: 0.1rem 0.45rem; background: var(--border-soft); color: var(--ink-soft); border-radius: 10px; font-size: 0.72rem; }
+    .tab-btn.active .count { background: var(--gold-wash); color: var(--gold-deep); }
 
-    .detail-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 1.5rem;
-    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
 
-    .detail-card {
-      background: var(--cream-soft);
-      border: 1px solid var(--border-soft);
-      border-radius: var(--radius-lg);
-      padding: 1.75rem 1.85rem;
-      margin-bottom: 1.5rem;
-    }
-    .detail-card h3 {
-      font-family: var(--font-display);
-      font-size: 1.3rem;
-      font-weight: 500;
-      margin-bottom: 1.1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding-bottom: 0.7rem;
-      border-bottom: 1px solid var(--border-soft);
-    }
-    .detail-card h3 em {
-      font-style: italic;
-      color: var(--gold-deep);
-      font-weight: 400;
-      font-size: 0.9rem;
-    }
-
-    .field-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.7rem 0;
-      border-bottom: 1px solid var(--border-soft);
-      gap: 1rem;
-    }
+    .detail-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+    .detail-card { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: 1.75rem 1.85rem; margin-bottom: 1.5rem; }
+    .detail-card h3 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 500; margin-bottom: 1.1rem; display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 0.7rem; border-bottom: 1px solid var(--border-soft); }
+    .detail-card h3 em { font-style: italic; color: var(--gold-deep); font-weight: 400; font-size: 0.9rem; }
+    .field-row { display: flex; justify-content: space-between; padding: 0.7rem 0; border-bottom: 1px solid var(--border-soft); gap: 1rem; }
     .field-row:last-child { border-bottom: none; }
-    .field-row .label {
-      color: var(--ink-soft);
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .field-row .value {
-      font-size: 0.92rem;
-      text-align: right;
-      color: var(--ink);
-    }
-    .field-row .value.empty {
-      color: var(--ink-faint);
-      font-style: italic;
-      font-family: var(--font-display);
-    }
+    .field-row .label { color: var(--ink-soft); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .field-row .value { font-size: 0.92rem; text-align: right; color: var(--ink); }
+    .field-row .value.empty { color: var(--ink-faint); font-style: italic; font-family: var(--font-display); }
 
-    .toast-container {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      z-index: 200;
-    }
-    .toast {
-      background: var(--ink);
-      color: var(--cream-soft);
-      padding: 0.9rem 1.3rem;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      box-shadow: var(--shadow-lg);
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      animation: slideInRight 0.3s ease;
-      max-width: 420px;
-    }
+    /* EVOLUÇÕES — Timeline */
+    .evolution-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .evolution-header h3 { font-family: var(--font-display); font-size: 1.6rem; font-weight: 400; }
+    .evolution-header h3 em { font-style: italic; color: var(--gold-deep); }
+    .evolution-filter-row { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .evolution-filter-row .search-wrap { min-width: 200px; }
+
+    .tags-bar { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+    .tag-chip { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.7rem; background: var(--cream); border: 1px solid var(--border); border-radius: 50px; font-size: 0.75rem; color: var(--ink-soft); cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em; }
+    .tag-chip:hover { border-color: var(--gold); color: var(--ink); }
+    .tag-chip.active { background: var(--gold); color: var(--cream-soft); border-color: var(--gold); }
+    .tag-chip.remove { background: var(--danger-soft); color: var(--danger); border-color: var(--danger-soft); }
+    .tag-chip .x { opacity: 0.6; font-weight: 600; }
+    .tag-chip:hover .x { opacity: 1; }
+
+    .timeline { position: relative; padding-left: 1.5rem; }
+    .timeline::before { content: ''; position: absolute; left: 8px; top: 12px; bottom: 12px; width: 2px; background: var(--border); }
+
+    .evolution-card { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: 1.5rem 1.75rem; margin-bottom: 1.25rem; position: relative; transition: all 0.2s; }
+    .evolution-card::before { content: ''; position: absolute; left: -1.5rem; top: 1.75rem; width: 16px; height: 16px; border-radius: 50%; background: var(--cream); border: 2px solid var(--gold); }
+    .evolution-card:hover { border-color: var(--gold-soft); transform: translateX(2px); box-shadow: var(--shadow-md); }
+
+    .evolution-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .evolution-top-left { display: flex; flex-direction: column; gap: 0.25rem; }
+    .evolution-session-num { font-family: var(--font-display); font-size: 1.4rem; font-weight: 500; color: var(--ink); }
+    .evolution-session-num em { font-style: italic; color: var(--gold-deep); }
+    .evolution-date { font-size: 0.8rem; color: var(--ink-soft); display: flex; gap: 0.5rem; align-items: center; }
+    .evolution-date .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gold-soft); }
+    .modality-badge { font-size: 0.65rem; padding: 0.25rem 0.6rem; border-radius: 50px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+    .modality-badge.presencial { background: var(--sage-wash); color: var(--sage-deep); }
+    .modality-badge.online { background: var(--gold-wash); color: var(--gold-deep); }
+    .evolution-top-right { display: flex; gap: 0.3rem; align-items: center; }
+    .btn-icon { padding: 0.45rem; color: var(--ink-faint); border-radius: var(--radius-sm); transition: all 0.15s; }
+    .btn-icon:hover { color: var(--ink); background: var(--border-soft); }
+    .btn-icon.danger:hover { color: var(--danger); background: var(--danger-soft); }
+
+    .evolution-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1rem; }
+    .evolution-tag { font-size: 0.7rem; padding: 0.2rem 0.6rem; background: var(--sage-wash); color: var(--sage-deep); border-radius: 50px; letter-spacing: 0.03em; }
+
+    .evolution-sections { display: grid; gap: 1rem; }
+    .evolution-section { background: var(--cream); border-radius: var(--radius-md); padding: 1rem 1.15rem; border-left: 3px solid var(--gold-soft); }
+    .evolution-section h4 { font-family: var(--font-display); font-style: italic; font-size: 0.95rem; color: var(--gold-deep); margin-bottom: 0.35rem; font-weight: 500; }
+    .evolution-section .content { font-size: 0.9rem; color: var(--ink); line-height: 1.65; }
+    .evolution-section .content p { margin-bottom: 0.5rem; }
+    .evolution-section .content p:last-child { margin-bottom: 0; }
+    .evolution-section .content strong { font-weight: 600; color: var(--ink); }
+    .evolution-section .content em { font-style: italic; }
+    .evolution-section .content u { text-decoration: underline; }
+    .evolution-section .content ul, .evolution-section .content ol { margin: 0.4rem 0 0.4rem 1.3rem; }
+    .evolution-section .content li { margin-bottom: 0.2rem; }
+    .evolution-section .content.empty { color: var(--ink-faint); font-style: italic; font-family: var(--font-display); }
+
+    /* Editor de evolução no modal */
+    .editor-wrap { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--cream); overflow: hidden; }
+    .editor-wrap:focus-within { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-wash); }
+    .editor-toolbar { display: flex; gap: 0.2rem; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border-soft); background: var(--cream-soft); flex-wrap: wrap; }
+    .editor-btn { padding: 0.35rem 0.55rem; border-radius: var(--radius-sm); color: var(--ink-soft); font-size: 0.82rem; font-weight: 600; transition: all 0.1s; min-width: 28px; display: inline-flex; align-items: center; justify-content: center; }
+    .editor-btn:hover { background: var(--border-soft); color: var(--ink); }
+    .editor-btn.active { background: var(--gold); color: var(--cream-soft); }
+    .editor-btn svg { width: 14px; height: 14px; }
+    .editor-divider { width: 1px; background: var(--border); margin: 0.15rem 0.2rem; }
+    .editor-content { min-height: 100px; padding: 0.75rem 1rem; outline: none; font-size: 0.92rem; line-height: 1.65; color: var(--ink); }
+    .editor-content[data-placeholder]:empty::before { content: attr(data-placeholder); color: var(--ink-faint); font-style: italic; pointer-events: none; }
+    .editor-content p { margin-bottom: 0.5rem; }
+    .editor-content p:last-child { margin-bottom: 0; }
+    .editor-content ul, .editor-content ol { margin: 0.4rem 0 0.4rem 1.3rem; }
+
+    /* Tag input */
+    .tag-input-wrap { display: flex; flex-wrap: wrap; gap: 0.3rem; padding: 0.5rem 0.6rem; background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius-md); min-height: 44px; align-items: center; transition: all 0.15s; }
+    .tag-input-wrap:focus-within { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-wash); }
+    .tag-input-wrap .tag-chip { background: var(--sage-wash); color: var(--sage-deep); border-color: var(--sage-soft); }
+    .tag-input-wrap input { flex: 1; min-width: 100px; border: none; outline: none; padding: 0.3rem; background: transparent; font-size: 0.88rem; }
+    .tag-input-wrap input::placeholder { color: var(--ink-faint); font-style: italic; font-size: 0.85rem; }
+    .tag-suggestions { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.5rem; }
+    .tag-suggestions .label-hint { font-size: 0.72rem; color: var(--ink-faint); font-style: italic; font-family: var(--font-display); margin-right: 0.3rem; align-self: center; }
+    .tag-suggestion { padding: 0.25rem 0.6rem; background: var(--cream); border: 1px dashed var(--border); border-radius: 50px; font-size: 0.72rem; color: var(--ink-soft); cursor: pointer; transition: all 0.15s; }
+    .tag-suggestion:hover { background: var(--sage-wash); color: var(--sage-deep); border-color: var(--sage-soft); border-style: solid; }
+
+    /* Toasts */
+    .toast-container { position: fixed; bottom: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 200; }
+    .toast { background: var(--ink); color: var(--cream-soft); padding: 0.9rem 1.3rem; border-radius: 50px; font-size: 0.85rem; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 0.75rem; animation: slideInRight 0.3s ease; max-width: 420px; }
     .toast.success { background: var(--sage-deep); }
     .toast.error { background: var(--danger); }
+    @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-    @keyframes slideInRight {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    .spinner {
-      width: 14px;
-      height: 14px;
-      border: 2px solid var(--border);
-      border-top-color: var(--gold);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
+    .spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-box { text-align: center; padding: 3rem 2rem; color: var(--ink-soft); }
+    .loading-box .spinner { margin: 0 auto 1rem; width: 24px; height: 24px; }
+    .loading-box p { font-family: var(--font-display); font-style: italic; }
 
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
@@ -957,6 +350,9 @@
       .page-title { font-size: 2.3rem; }
       .login-card { padding: 2.5rem 1.5rem; }
       .login-monogram { font-size: 9rem; }
+      .modal-body { padding: 1.2rem 1.5rem; }
+      .modal-header { padding: 1.5rem 1.5rem 1rem; }
+      .evolution-card { padding: 1.25rem; }
     }
   </style>
 </head>
@@ -974,19 +370,14 @@
       <div class="login-monogram">G</div>
       <div class="login-content">
         <div class="login-crest">♦ Prontuários GSG ♦</div>
-
         <h1 class="login-name">
           <span class="login-name-first">Gabrielly</span>
           <span class="login-name-last">Guandalino</span>
         </h1>
-
         <div class="login-title-rule"></div>
-
         <div class="login-role">Psicóloga</div>
         <div class="login-crp">CRP-PR 08/38673</div>
-
         <div class="login-app-label">— sistema de gestão clínica —</div>
-
         <button class="btn-google" id="btnLogin">
           <svg viewBox="0 0 24 24" fill="currentColor">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -1002,14 +393,12 @@
 
   <!-- APP -->
   <div class="app" id="app">
-
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-monogram">G</div>
         <div class="brand-name">Gabrielly<br>Guandalino</div>
         <div class="brand-role">Psicóloga · CRP 08/38673</div>
       </div>
-
       <nav class="nav">
         <button class="nav-item active" data-page="patients">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -1017,21 +406,13 @@
         </button>
         <button class="nav-item" disabled>
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          Agenda
-          <span class="badge">em breve</span>
-        </button>
-        <button class="nav-item" disabled>
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          Evoluções
-          <span class="badge">em breve</span>
+          Agenda <span class="badge">em breve</span>
         </button>
         <button class="nav-item" disabled>
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          Financeiro
-          <span class="badge">em breve</span>
+          Financeiro <span class="badge">em breve</span>
         </button>
       </nav>
-
       <div class="user-footer">
         <div class="avatar" id="userAvatar">?</div>
         <div class="user-info">
@@ -1045,7 +426,7 @@
     </aside>
 
     <main class="main">
-
+      <!-- LISTA -->
       <div id="listView">
         <div class="page-header">
           <div>
@@ -1054,8 +435,7 @@
           </div>
           <div style="display:flex; gap:0.75rem; align-items:center;">
             <div class="sync-indicator" id="syncIndicator">
-              <span class="sync-dot"></span>
-              <span id="syncText">Sincronizado</span>
+              <span class="sync-dot"></span><span id="syncText">Sincronizado</span>
             </div>
             <button class="btn btn-gold" id="btnNewPatient">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -1063,30 +443,12 @@
             </button>
           </div>
         </div>
-
         <div class="stats">
-          <div class="stat-card">
-            <div class="stat-label">Ativos</div>
-            <div class="stat-value" id="statActive">0</div>
-            <div class="stat-hint">em acompanhamento</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Em pausa</div>
-            <div class="stat-value" id="statPause">0</div>
-            <div class="stat-hint">retorno pendente</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Alta</div>
-            <div class="stat-value" id="statDone">0</div>
-            <div class="stat-hint">encerrados</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Total</div>
-            <div class="stat-value" id="statTotal">0</div>
-            <div class="stat-hint">cadastrados</div>
-          </div>
+          <div class="stat-card"><div class="stat-label">Ativos</div><div class="stat-value" id="statActive">0</div><div class="stat-hint">em acompanhamento</div></div>
+          <div class="stat-card"><div class="stat-label">Em pausa</div><div class="stat-value" id="statPause">0</div><div class="stat-hint">retorno pendente</div></div>
+          <div class="stat-card"><div class="stat-label">Alta</div><div class="stat-value" id="statDone">0</div><div class="stat-hint">encerrados</div></div>
+          <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value" id="statTotal">0</div><div class="stat-hint">cadastrados</div></div>
         </div>
-
         <div class="toolbar">
           <div class="search-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1100,10 +462,10 @@
             <option value="transferido">Transferidos</option>
           </select>
         </div>
-
         <div id="patientListWrap"></div>
       </div>
 
+      <!-- DETAIL -->
       <div id="detailView" class="detail-view">
         <button class="btn btn-ghost" id="btnBack" style="margin-bottom:1.5rem;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
@@ -1117,39 +479,67 @@
             <div class="meta" id="detailMeta">—</div>
           </div>
           <div class="detail-actions">
-            <button class="btn btn-secondary" id="btnEdit">Editar</button>
-            <button class="btn btn-danger" id="btnDelete">Excluir</button>
+            <button class="btn btn-secondary btn-sm" id="btnEdit">Editar ficha</button>
+            <button class="btn btn-danger btn-sm" id="btnDelete">Excluir</button>
           </div>
         </div>
 
-        <div class="detail-grid">
-          <div>
-            <div class="detail-card">
-              <h3>Dados pessoais <em>— ficha</em></h3>
-              <div id="detailPersonal"></div>
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="info">Ficha</button>
+          <button class="tab-btn" data-tab="evolutions">Evoluções <span class="count" id="evolutionCount">0</span></button>
+        </div>
+
+        <!-- TAB: INFO -->
+        <div class="tab-panel active" id="tabInfo">
+          <div class="detail-grid">
+            <div>
+              <div class="detail-card">
+                <h3>Dados pessoais <em>— ficha</em></h3>
+                <div id="detailPersonal"></div>
+              </div>
+              <div class="detail-card">
+                <h3>Acompanhamento <em>— contexto clínico</em></h3>
+                <div id="detailClinical"></div>
+              </div>
             </div>
-            <div class="detail-card">
-              <h3>Acompanhamento <em>— contexto clínico</em></h3>
-              <div id="detailClinical"></div>
+            <div>
+              <div class="detail-card">
+                <h3>Contato</h3>
+                <div id="detailContact"></div>
+              </div>
+              <div class="detail-card">
+                <h3>Emergência</h3>
+                <div id="detailEmergency"></div>
+              </div>
             </div>
           </div>
-          <div>
-            <div class="detail-card">
-              <h3>Contato</h3>
-              <div id="detailContact"></div>
-            </div>
-            <div class="detail-card">
-              <h3>Emergência</h3>
-              <div id="detailEmergency"></div>
-            </div>
+        </div>
+
+        <!-- TAB: EVOLUÇÕES -->
+        <div class="tab-panel" id="tabEvolutions">
+          <div class="evolution-header">
+            <h3>Evoluções <em>— registro de sessões</em></h3>
+            <button class="btn btn-gold" id="btnNewEvolution">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nova evolução
+            </button>
           </div>
+
+          <div class="evolution-filter-row">
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" class="search-input" id="evolutionSearch" placeholder="buscar nas evoluções..." />
+            </div>
+            <div class="tags-bar" id="tagFilterBar"></div>
+          </div>
+
+          <div id="evolutionListWrap"></div>
         </div>
       </div>
-
     </main>
   </div>
 
-  <!-- MODAL -->
+  <!-- MODAL PACIENTE -->
   <div class="modal-backdrop" id="patientModal">
     <div class="modal">
       <div class="modal-header">
@@ -1159,134 +549,125 @@
       <form id="patientForm">
         <div class="modal-body">
           <div class="form-grid">
-
             <div class="form-section-title">Identificação</div>
-
-            <div class="form-group full">
-              <label class="form-label">Nome completo <span class="required">*</span></label>
-              <input type="text" class="form-input" name="nome" required />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Data de nascimento</label>
-              <input type="date" class="form-input" name="nascimento" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">CPF</label>
-              <input type="text" class="form-input" name="cpf" placeholder="000.000.000-00" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">RG</label>
-              <input type="text" class="form-input" name="rg" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Gênero</label>
+            <div class="form-group full"><label class="form-label">Nome completo <span class="required">*</span></label><input type="text" class="form-input" name="nome" required /></div>
+            <div class="form-group"><label class="form-label">Data de nascimento</label><input type="date" class="form-input" name="nascimento" /></div>
+            <div class="form-group"><label class="form-label">CPF</label><input type="text" class="form-input" name="cpf" placeholder="000.000.000-00" /></div>
+            <div class="form-group"><label class="form-label">RG</label><input type="text" class="form-input" name="rg" /></div>
+            <div class="form-group"><label class="form-label">Gênero</label>
               <select class="form-select" name="genero">
-                <option value="">Não informar</option>
-                <option>Feminino</option>
-                <option>Masculino</option>
-                <option>Não-binário</option>
-                <option>Outro</option>
+                <option value="">Não informar</option><option>Feminino</option><option>Masculino</option><option>Não-binário</option><option>Outro</option>
               </select>
             </div>
-
             <div class="form-section-title">Contato</div>
-
-            <div class="form-group">
-              <label class="form-label">Telefone / WhatsApp</label>
-              <input type="tel" class="form-input" name="telefone" placeholder="(44) 99999-9999" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">E-mail</label>
-              <input type="email" class="form-input" name="email" />
-            </div>
-
-            <div class="form-group full">
-              <label class="form-label">Endereço</label>
-              <input type="text" class="form-input" name="endereco" placeholder="Rua, número, bairro, cidade" />
-            </div>
-
+            <div class="form-group"><label class="form-label">Telefone / WhatsApp</label><input type="tel" class="form-input" name="telefone" placeholder="(44) 99999-9999" /></div>
+            <div class="form-group"><label class="form-label">E-mail</label><input type="email" class="form-input" name="email" /></div>
+            <div class="form-group full"><label class="form-label">Endereço</label><input type="text" class="form-input" name="endereco" placeholder="Rua, número, bairro, cidade" /></div>
             <div class="form-section-title">Responsável (se menor)</div>
-
-            <div class="form-group">
-              <label class="form-label">Nome do responsável</label>
-              <input type="text" class="form-input" name="responsavel_nome" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Parentesco</label>
-              <input type="text" class="form-input" name="responsavel_parentesco" placeholder="Mãe, pai, tutor..." />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Contato do responsável</label>
-              <input type="text" class="form-input" name="responsavel_contato" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">CPF do responsável</label>
-              <input type="text" class="form-input" name="responsavel_cpf" />
-            </div>
-
+            <div class="form-group"><label class="form-label">Nome do responsável</label><input type="text" class="form-input" name="responsavel_nome" /></div>
+            <div class="form-group"><label class="form-label">Parentesco</label><input type="text" class="form-input" name="responsavel_parentesco" /></div>
+            <div class="form-group"><label class="form-label">Contato do responsável</label><input type="text" class="form-input" name="responsavel_contato" /></div>
+            <div class="form-group"><label class="form-label">CPF do responsável</label><input type="text" class="form-input" name="responsavel_cpf" /></div>
             <div class="form-section-title">Contato de emergência</div>
-
-            <div class="form-group">
-              <label class="form-label">Nome</label>
-              <input type="text" class="form-input" name="emergencia_nome" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Telefone</label>
-              <input type="text" class="form-input" name="emergencia_telefone" />
-            </div>
-
+            <div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" name="emergencia_nome" /></div>
+            <div class="form-group"><label class="form-label">Telefone</label><input type="text" class="form-input" name="emergencia_telefone" /></div>
             <div class="form-section-title">Acompanhamento</div>
-
-            <div class="form-group">
-              <label class="form-label">Status</label>
-              <select class="form-select" name="status">
-                <option value="ativo">Ativo</option>
-                <option value="pausa">Em pausa</option>
-                <option value="alta">Alta</option>
-                <option value="transferido">Transferido</option>
-              </select>
+            <div class="form-group"><label class="form-label">Status</label>
+              <select class="form-select" name="status"><option value="ativo">Ativo</option><option value="pausa">Em pausa</option><option value="alta">Alta</option><option value="transferido">Transferido</option></select>
             </div>
-
-            <div class="form-group">
-              <label class="form-label">Início do acompanhamento</label>
-              <input type="date" class="form-input" name="inicio" />
+            <div class="form-group"><label class="form-label">Início do acompanhamento</label><input type="date" class="form-input" name="inicio" /></div>
+            <div class="form-group"><label class="form-label">Tipo de pagamento</label>
+              <select class="form-select" name="tipo_pagamento"><option value="">Não informado</option><option value="particular">Particular</option><option value="convenio">Convênio</option></select>
             </div>
-
-            <div class="form-group">
-              <label class="form-label">Tipo de pagamento</label>
-              <select class="form-select" name="tipo_pagamento">
-                <option value="">Não informado</option>
-                <option value="particular">Particular</option>
-                <option value="convenio">Convênio</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Convênio (se aplicável)</label>
-              <input type="text" class="form-input" name="convenio" placeholder="Nome do convênio" />
-            </div>
-
-            <div class="form-group full">
-              <label class="form-label">Queixa inicial / motivo da procura</label>
-              <textarea class="form-textarea" name="queixa" rows="3"></textarea>
-            </div>
-
+            <div class="form-group"><label class="form-label">Convênio</label><input type="text" class="form-input" name="convenio" /></div>
+            <div class="form-group full"><label class="form-label">Queixa inicial / motivo da procura</label><textarea class="form-textarea" name="queixa" rows="3"></textarea></div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-ghost" id="btnCancel">Cancelar</button>
-          <button type="submit" class="btn btn-gold" id="btnSave">
-            <span>Salvar</span>
-          </button>
+          <button type="submit" class="btn btn-gold" id="btnSave"><span>Salvar</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL EVOLUÇÃO -->
+  <div class="modal-backdrop" id="evolutionModal">
+    <div class="modal wide">
+      <div class="modal-header">
+        <h2 id="evolutionModalTitle">Nova <em>evolução</em></h2>
+        <p id="evolutionModalSubtitle">registro da sessão clínica</p>
+      </div>
+      <form id="evolutionForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-section-title">Dados da sessão</div>
+            <div class="form-group">
+              <label class="form-label">Número da sessão</label>
+              <input type="number" class="form-input" name="numero" min="1" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Data <span class="required">*</span></label>
+              <input type="date" class="form-input" name="data" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Horário</label>
+              <input type="time" class="form-input" name="hora" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Modalidade</label>
+              <select class="form-select" name="modalidade">
+                <option value="presencial">Presencial</option>
+                <option value="online">Online</option>
+              </select>
+            </div>
+
+            <div class="form-group full">
+              <label class="form-label">Tags / marcadores</label>
+              <div class="tag-input-wrap" id="tagInputWrap">
+                <input type="text" id="tagInput" placeholder="digite uma tag e aperte enter ou vírgula..." />
+              </div>
+              <div class="tag-suggestions" id="tagSuggestions"></div>
+            </div>
+
+            <div class="form-section-title">Registro da sessão</div>
+
+            <div class="form-group full">
+              <label class="form-label">Relato da sessão</label>
+              <div class="editor-wrap" data-field="relato">
+                <div class="editor-toolbar"></div>
+                <div class="editor-content" contenteditable="true" data-placeholder="o que foi trabalhado, conteúdos trazidos pelo paciente..."></div>
+              </div>
+            </div>
+
+            <div class="form-group full">
+              <label class="form-label">Observações técnicas</label>
+              <div class="editor-wrap" data-field="observacoes">
+                <div class="editor-toolbar"></div>
+                <div class="editor-content" contenteditable="true" data-placeholder="afeto, postura, apresentação, comportamentos observados..."></div>
+              </div>
+            </div>
+
+            <div class="form-group full">
+              <label class="form-label">Hipóteses / intervenções</label>
+              <div class="editor-wrap" data-field="hipoteses">
+                <div class="editor-toolbar"></div>
+                <div class="editor-content" contenteditable="true" data-placeholder="reflexões clínicas, técnicas aplicadas, hipóteses diagnósticas..."></div>
+              </div>
+            </div>
+
+            <div class="form-group full">
+              <label class="form-label">Plano para próxima sessão</label>
+              <div class="editor-wrap" data-field="plano">
+                <div class="editor-toolbar"></div>
+                <div class="editor-content" contenteditable="true" data-placeholder="o que trabalhar na próxima, tarefas, encaminhamentos..."></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="btnCancelEvolution">Cancelar</button>
+          <button type="submit" class="btn btn-gold" id="btnSaveEvolution"><span>Salvar evolução</span></button>
         </div>
       </form>
     </div>
@@ -1298,13 +679,19 @@
   <script src="https://apis.google.com/js/api.js"></script>
 
   <script>
+    // ============================================================
+    // CONFIG + ESTADO
+    // ============================================================
     const GOOGLE_CLIENT_ID = '129202173439-ifobkovt7fd5ddvm0sgpijjjl1fgd2b5.apps.googleusercontent.com';
     const GOOGLE_API_KEY = 'AIzaSyCwTF4upHfrwADh03Pw-KOUy1llac3pAD8';
-
     const DRIVE_FOLDER_NAME = 'Consultorio_Dados';
+    const EVOLUTIONS_FOLDER_NAME = 'evolucoes';
     const DATA_FILENAME = 'pacientes.json';
     const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
     const SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
+
+    // Tags sugeridas
+    const SUGGESTED_TAGS = ['ansiedade', 'depressão', 'luto', 'crise', 'progresso', 'família', 'relacionamento', 'autoestima', 'trauma', 'trabalho'];
 
     const state = {
       tokenClient: null,
@@ -1312,42 +699,46 @@
       user: { name: '', email: '', picture: '' },
       patients: [],
       folderId: null,
+      evolutionsFolderId: null,
       dataFileId: null,
       searchQuery: '',
       statusFilter: '',
       view: 'list',
+      activeTab: 'info',
       selectedPatientId: null,
       editingId: null,
       gapiReady: false,
       gisReady: false,
+
+      // Evoluções
+      evolutions: [],              // do paciente atualmente aberto
+      evolutionsFileId: null,      // id do arquivo json do paciente atual
+      evolutionsLoading: false,
+      editingEvolutionId: null,
+      evolutionSearch: '',
+      selectedTagFilters: [],      // tags ativas no filtro
+      currentTags: [],             // tags da evolução sendo editada
     };
 
     const $ = (id) => document.getElementById(id);
 
+    // ============================================================
+    // UTILITÁRIOS
+    // ============================================================
     function toast(msg, type = 'info') {
       const el = document.createElement('div');
       el.className = 'toast ' + type;
       el.textContent = msg;
       $('toastContainer').appendChild(el);
-      setTimeout(() => {
-        el.style.animation = 'slideInRight 0.3s ease reverse';
-        setTimeout(() => el.remove(), 300);
-      }, 3500);
+      setTimeout(() => { el.style.animation = 'slideInRight 0.3s ease reverse'; setTimeout(() => el.remove(), 300); }, 3500);
     }
 
     function setSyncState(status) {
-      const ind = $('syncIndicator');
-      const txt = $('syncText');
+      const ind = $('syncIndicator'), txt = $('syncText');
       ind.classList.remove('syncing', 'error');
-      if (status === 'syncing') {
-        ind.classList.add('syncing');
-        txt.textContent = 'Sincronizando...';
-      } else if (status === 'error') {
-        ind.classList.add('error');
-        txt.textContent = 'Erro de sincronia';
-      } else {
-        txt.textContent = 'Sincronizado';
-      }
+      if (status === 'syncing') { ind.classList.add('syncing'); txt.textContent = 'Sincronizando...'; }
+      else if (status === 'error') { ind.classList.add('error'); txt.textContent = 'Erro de sincronia'; }
+      else { txt.textContent = 'Sincronizado'; }
     }
 
     function initials(name) {
@@ -1361,33 +752,61 @@
       return d.toLocaleDateString('pt-BR');
     }
 
+    function formatDateLong(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso + 'T00:00:00');
+      return d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+    }
+
     function calcAge(birthIso) {
       if (!birthIso) return null;
-      const birth = new Date(birthIso);
-      const today = new Date();
+      const birth = new Date(birthIso), today = new Date();
       let age = today.getFullYear() - birth.getFullYear();
       const m = today.getMonth() - birth.getMonth();
       if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
       return age;
     }
 
-    function uid() {
-      return 'p_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+    function uid(prefix = 'p') {
+      return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
     }
 
     function escapeHtml(s) {
       if (s == null) return '';
-      return String(s).replace(/[&<>"']/g, c => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      }[c]));
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     }
 
+    // Sanitiza HTML do editor — mantém só tags seguras de formatação
+    function sanitizeEditorHtml(html) {
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      const allowed = ['P', 'BR', 'STRONG', 'B', 'EM', 'I', 'U', 'UL', 'OL', 'LI'];
+      const walk = (node) => {
+        const children = Array.from(node.childNodes);
+        children.forEach(child => {
+          if (child.nodeType === 1) {
+            if (!allowed.includes(child.tagName)) {
+              // substitui por seu conteúdo
+              while (child.firstChild) child.parentNode.insertBefore(child.firstChild, child);
+              child.parentNode.removeChild(child);
+            } else {
+              // remove todos atributos
+              [...child.attributes].forEach(a => child.removeAttribute(a.name));
+              walk(child);
+            }
+          }
+        });
+      };
+      walk(div);
+      return div.innerHTML.trim();
+    }
+
+    // ============================================================
+    // GOOGLE AUTH + DRIVE
+    // ============================================================
     function initGapi() {
       gapi.load('client', async () => {
-        await gapi.client.init({
-          apiKey: GOOGLE_API_KEY,
-          discoveryDocs: [DISCOVERY_DOC],
-        });
+        await gapi.client.init({ apiKey: GOOGLE_API_KEY, discoveryDocs: [DISCOVERY_DOC] });
         state.gapiReady = true;
       });
     }
@@ -1397,9 +816,7 @@
         if (window.google && google.accounts) {
           clearInterval(check);
           state.tokenClient = google.accounts.oauth2.initTokenClient({
-            client_id: GOOGLE_CLIENT_ID,
-            scope: SCOPES,
-            callback: handleAuthResponse,
+            client_id: GOOGLE_CLIENT_ID, scope: SCOPES, callback: handleAuthResponse,
           });
           state.gisReady = true;
         }
@@ -1407,43 +824,32 @@
     }
 
     async function handleAuthResponse(resp) {
-      if (resp.error) {
-        toast('Erro no login: ' + resp.error, 'error');
-        return;
-      }
+      if (resp.error) { toast('Erro no login: ' + resp.error, 'error'); return; }
       state.accessToken = resp.access_token;
       gapi.client.setToken({ access_token: resp.access_token });
-
       try {
         const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: 'Bearer ' + resp.access_token }
         });
         const data = await r.json();
         state.user = { name: data.name, email: data.email, picture: data.picture };
-      } catch (e) {
-        console.warn('Não obteve perfil:', e);
-      }
-
+      } catch (e) { console.warn('Não obteve perfil:', e); }
       await bootstrapDrive();
       showApp();
     }
 
     function login() {
-      if (!state.gapiReady || !state.gisReady) {
-        toast('Aguarde o Google carregar...', 'info');
-        return;
-      }
+      if (!state.gapiReady || !state.gisReady) { toast('Aguarde o Google carregar...', 'info'); return; }
       state.tokenClient.requestAccessToken({ prompt: 'consent' });
     }
 
     function logout() {
-      if (state.accessToken && window.google) {
-        google.accounts.oauth2.revoke(state.accessToken, () => {});
-      }
+      if (state.accessToken && window.google) google.accounts.oauth2.revoke(state.accessToken, () => {});
       state.accessToken = null;
       state.patients = [];
       state.folderId = null;
       state.dataFileId = null;
+      state.evolutionsFolderId = null;
       $('app').classList.remove('active');
       $('loginScreen').style.display = 'flex';
     }
@@ -1451,104 +857,119 @@
     async function bootstrapDrive() {
       setSyncState('syncing');
       try {
+        // pasta principal
         let res = await gapi.client.drive.files.list({
           q: `name='${DRIVE_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
           fields: 'files(id, name)',
         });
-        if (res.result.files.length) {
-          state.folderId = res.result.files[0].id;
-        } else {
-          const folder = await gapi.client.drive.files.create({
-            resource: { name: DRIVE_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' },
-            fields: 'id',
-          });
-          state.folderId = folder.result.id;
-        }
+        state.folderId = res.result.files.length ? res.result.files[0].id
+          : (await gapi.client.drive.files.create({ resource: { name: DRIVE_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' }, fields: 'id' })).result.id;
 
+        // subpasta de evoluções
+        res = await gapi.client.drive.files.list({
+          q: `name='${EVOLUTIONS_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and '${state.folderId}' in parents and trashed=false`,
+          fields: 'files(id, name)',
+        });
+        state.evolutionsFolderId = res.result.files.length ? res.result.files[0].id
+          : (await gapi.client.drive.files.create({ resource: { name: EVOLUTIONS_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder', parents: [state.folderId] }, fields: 'id' })).result.id;
+
+        // arquivo de pacientes
         res = await gapi.client.drive.files.list({
           q: `name='${DATA_FILENAME}' and '${state.folderId}' in parents and trashed=false`,
           fields: 'files(id, name)',
         });
-        if (res.result.files.length) {
-          state.dataFileId = res.result.files[0].id;
-          await loadPatients();
-        } else {
-          state.dataFileId = null;
-          state.patients = [];
-          await savePatients();
-        }
+        if (res.result.files.length) { state.dataFileId = res.result.files[0].id; await loadPatients(); }
+        else { state.dataFileId = null; state.patients = []; await savePatients(); }
         setSyncState('ok');
       } catch (e) {
-        console.error(e);
-        setSyncState('error');
+        console.error(e); setSyncState('error');
         toast('Erro ao acessar o Drive: ' + (e.message || 'desconhecido'), 'error');
       }
     }
 
     async function loadPatients() {
       if (!state.dataFileId) return;
-      const res = await gapi.client.drive.files.get({
-        fileId: state.dataFileId,
-        alt: 'media',
-      });
-      try {
-        state.patients = JSON.parse(res.body);
-      } catch {
-        state.patients = [];
-      }
+      const res = await gapi.client.drive.files.get({ fileId: state.dataFileId, alt: 'media' });
+      try { state.patients = JSON.parse(res.body); } catch { state.patients = []; }
     }
 
     async function savePatients() {
       setSyncState('syncing');
       try {
-        const content = JSON.stringify(state.patients, null, 2);
-        const boundary = '-------consultorio_' + Date.now();
-        const metadata = state.dataFileId
-          ? { name: DATA_FILENAME, mimeType: 'application/json' }
-          : { name: DATA_FILENAME, mimeType: 'application/json', parents: [state.folderId] };
-
-        const body =
-          `--${boundary}\r\nContent-Type: application/json\r\n\r\n` +
-          JSON.stringify(metadata) +
-          `\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n` +
-          content +
-          `\r\n--${boundary}--`;
-
-        const path = state.dataFileId
-          ? `/upload/drive/v3/files/${state.dataFileId}?uploadType=multipart`
-          : '/upload/drive/v3/files?uploadType=multipart';
-        const method = state.dataFileId ? 'PATCH' : 'POST';
-
-        const res = await gapi.client.request({
-          path, method,
-          params: { uploadType: 'multipart' },
-          headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
-          body,
-        });
-
-        if (!state.dataFileId) state.dataFileId = res.result.id;
+        await uploadJsonFile(state.dataFileId, DATA_FILENAME, state.patients, state.folderId, (newId) => { state.dataFileId = newId; });
         setSyncState('ok');
+      } catch (e) { console.error(e); setSyncState('error'); toast('Erro ao salvar no Drive', 'error'); throw e; }
+    }
+
+    // Upload genérico (usado por pacientes + evoluções)
+    async function uploadJsonFile(fileId, filename, contentObj, parentFolderId, onCreated) {
+      const content = JSON.stringify(contentObj, null, 2);
+      const boundary = '-------upload_' + Date.now();
+      const metadata = fileId
+        ? { name: filename, mimeType: 'application/json' }
+        : { name: filename, mimeType: 'application/json', parents: [parentFolderId] };
+      const body =
+        `--${boundary}\r\nContent-Type: application/json\r\n\r\n` + JSON.stringify(metadata) +
+        `\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n` + content +
+        `\r\n--${boundary}--`;
+      const path = fileId ? `/upload/drive/v3/files/${fileId}?uploadType=multipart` : '/upload/drive/v3/files?uploadType=multipart';
+      const method = fileId ? 'PATCH' : 'POST';
+      const res = await gapi.client.request({ path, method, params: { uploadType: 'multipart' }, headers: { 'Content-Type': `multipart/related; boundary=${boundary}` }, body });
+      if (!fileId && onCreated) onCreated(res.result.id);
+      return res.result.id || fileId;
+    }
+
+    // ============================================================
+    // EVOLUÇÕES — carregar/salvar
+    // ============================================================
+    function evolutionFilenameFor(patientId) {
+      return `evolucoes_${patientId}.json`;
+    }
+
+    async function loadPatientEvolutions(patientId) {
+      state.evolutionsLoading = true;
+      state.evolutions = [];
+      state.evolutionsFileId = null;
+      try {
+        const filename = evolutionFilenameFor(patientId);
+        const res = await gapi.client.drive.files.list({
+          q: `name='${filename}' and '${state.evolutionsFolderId}' in parents and trashed=false`,
+          fields: 'files(id, name)',
+        });
+        if (res.result.files.length) {
+          state.evolutionsFileId = res.result.files[0].id;
+          const data = await gapi.client.drive.files.get({ fileId: state.evolutionsFileId, alt: 'media' });
+          try { state.evolutions = JSON.parse(data.body) || []; } catch { state.evolutions = []; }
+        }
       } catch (e) {
         console.error(e);
-        setSyncState('error');
-        toast('Erro ao salvar no Drive', 'error');
-        throw e;
+        toast('Erro ao carregar evoluções', 'error');
+      } finally {
+        state.evolutionsLoading = false;
       }
     }
 
+    async function savePatientEvolutions(patientId) {
+      setSyncState('syncing');
+      try {
+        const filename = evolutionFilenameFor(patientId);
+        const newId = await uploadJsonFile(state.evolutionsFileId, filename, state.evolutions, state.evolutionsFolderId, (id) => { state.evolutionsFileId = id; });
+        state.evolutionsFileId = newId || state.evolutionsFileId;
+        setSyncState('ok');
+      } catch (e) { console.error(e); setSyncState('error'); toast('Erro ao salvar evolução', 'error'); throw e; }
+    }
+
+    // ============================================================
+    // RENDER
+    // ============================================================
     function showApp() {
       $('loginScreen').style.display = 'none';
       $('app').classList.add('active');
-
       $('userName').textContent = state.user.name || 'Usuária';
       $('userEmail').textContent = state.user.email || '';
       const avatar = $('userAvatar');
-      if (state.user.picture) {
-        avatar.innerHTML = `<img src="${state.user.picture}" alt="avatar" />`;
-      } else {
-        avatar.textContent = initials(state.user.name);
-      }
-
+      if (state.user.picture) avatar.innerHTML = `<img src="${state.user.picture}" alt="avatar" />`;
+      else avatar.textContent = initials(state.user.name);
       renderAll();
     }
 
@@ -1556,8 +977,7 @@
       if (state.view === 'list') {
         $('listView').style.display = 'block';
         $('detailView').classList.remove('active');
-        renderStats();
-        renderList();
+        renderStats(); renderList();
       } else {
         $('listView').style.display = 'none';
         $('detailView').classList.add('active');
@@ -1585,45 +1005,33 @@
     }
 
     function renderList() {
-      const wrap = $('patientListWrap');
-      const list = filteredPatients();
-
-      if (list.length === 0) {
+      const wrap = $('patientListWrap'), list = filteredPatients();
+      if (!list.length) {
         const hasAny = state.patients.length > 0;
-        wrap.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-content">
-              <h3>${hasAny ? 'Nenhum resultado' : 'Um novo começo'}<em>.</em></h3>
-              <p>${hasAny
-                ? 'tente ajustar a busca ou os filtros acima.'
-                : 'cadastre seu primeiro paciente e comece a escrever essa história.'}</p>
-              ${hasAny ? '' : '<button class="btn btn-gold" onclick="openNewPatient()">Cadastrar primeiro paciente</button>'}
-            </div>
-          </div>
-        `;
+        wrap.innerHTML = `<div class="empty-state"><div class="empty-state-content">
+          <h3>${hasAny ? 'Nenhum resultado' : 'Um novo começo'}<em>.</em></h3>
+          <p>${hasAny ? 'tente ajustar a busca ou os filtros acima.' : 'cadastre seu primeiro paciente e comece a escrever essa história.'}</p>
+          ${hasAny ? '' : '<button class="btn btn-gold" onclick="openNewPatient()">Cadastrar primeiro paciente</button>'}
+        </div></div>`;
         return;
       }
-
       wrap.innerHTML = `<div class="patient-list">` + list.map(p => {
         const age = calcAge(p.nascimento);
         const ageStr = age !== null ? `${age} anos` : '';
         const statusLabel = { ativo: 'Ativo', pausa: 'Em pausa', alta: 'Alta', transferido: 'Transferido' }[p.status] || p.status;
-        const statusClass = 'status-' + (p.status || 'ativo');
-        return `
-          <div class="patient-item" onclick="openPatient('${p.id}')">
-            <div class="patient-avatar">${initials(p.nome)}</div>
-            <div class="patient-info">
-              <div class="patient-name">${escapeHtml(p.nome)}</div>
-              <div class="patient-meta">
-                ${ageStr ? `<span>${ageStr}</span><span class="dot"></span>` : ''}
-                <span>${p.telefone || 'sem telefone'}</span>
-                ${p.inicio ? `<span class="dot"></span><span>desde ${formatDate(p.inicio)}</span>` : ''}
-              </div>
+        return `<div class="patient-item" onclick="openPatient('${p.id}')">
+          <div class="patient-avatar">${initials(p.nome)}</div>
+          <div class="patient-info">
+            <div class="patient-name">${escapeHtml(p.nome)}</div>
+            <div class="patient-meta">
+              ${ageStr ? `<span>${ageStr}</span><span class="dot"></span>` : ''}
+              <span>${p.telefone || 'sem telefone'}</span>
+              ${p.inicio ? `<span class="dot"></span><span>desde ${formatDate(p.inicio)}</span>` : ''}
             </div>
-            <span class="patient-tag ${statusClass}">${statusLabel}</span>
-            <svg class="patient-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
-        `;
+          <span class="patient-tag status-${p.status || 'ativo'}">${statusLabel}</span>
+          <svg class="patient-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>`;
       }).join('') + `</div>`;
     }
 
@@ -1636,53 +1044,248 @@
       const age = calcAge(p.nascimento);
       $('detailMeta').innerHTML = `
         ${age !== null ? `<span>${age} anos</span><span class="dot"></span>` : ''}
-        <span class="patient-tag status-${p.status || 'ativo'}">${({ ativo: 'Ativo', pausa: 'Em pausa', alta: 'Alta', transferido: 'Transferido' })[p.status] || p.status}</span>
+        <span class="patient-tag status-${p.status || 'ativo'}">${({ativo:'Ativo',pausa:'Em pausa',alta:'Alta',transferido:'Transferido'})[p.status] || p.status}</span>
       `;
 
-      const rows = (arr) => arr.map(([label, value]) => `
-        <div class="field-row">
-          <span class="label">${label}</span>
-          <span class="value ${!value ? 'empty' : ''}">${value || 'não informado'}</span>
-        </div>
-      `).join('');
+      const rows = (arr) => arr.map(([label, value]) => `<div class="field-row"><span class="label">${label}</span><span class="value ${!value ? 'empty' : ''}">${value || 'não informado'}</span></div>`).join('');
 
       $('detailPersonal').innerHTML = rows([
         ['Nome completo', escapeHtml(p.nome)],
         ['Nascimento', p.nascimento ? `${formatDate(p.nascimento)}${age !== null ? ' (' + age + ' anos)' : ''}` : ''],
-        ['CPF', p.cpf],
-        ['RG', p.rg],
-        ['Gênero', p.genero],
+        ['CPF', p.cpf], ['RG', p.rg], ['Gênero', p.genero],
       ]);
-
       $('detailClinical').innerHTML = rows([
-        ['Status', ({ ativo: 'Ativo', pausa: 'Em pausa', alta: 'Alta', transferido: 'Transferido' })[p.status] || p.status],
+        ['Status', ({ativo:'Ativo',pausa:'Em pausa',alta:'Alta',transferido:'Transferido'})[p.status] || p.status],
         ['Início', p.inicio ? formatDate(p.inicio) : ''],
-        ['Pagamento', ({ particular: 'Particular', convenio: 'Convênio' })[p.tipo_pagamento] || ''],
+        ['Pagamento', ({particular:'Particular',convenio:'Convênio'})[p.tipo_pagamento] || ''],
         ['Convênio', p.convenio],
         ['Queixa inicial', p.queixa ? `<div style="text-align:left; max-width:280px; white-space:pre-wrap;">${escapeHtml(p.queixa)}</div>` : ''],
       ]);
-
       $('detailContact').innerHTML = rows([
-        ['Telefone', p.telefone],
-        ['E-mail', p.email],
+        ['Telefone', p.telefone], ['E-mail', p.email],
         ['Endereço', p.endereco ? `<div style="text-align:right; max-width:220px;">${escapeHtml(p.endereco)}</div>` : ''],
       ]);
+      let emerg = '';
+      if (p.responsavel_nome) emerg = rows([['Responsável', escapeHtml(p.responsavel_nome)], ['Parentesco', p.responsavel_parentesco], ['Contato resp.', p.responsavel_contato]]);
+      emerg += rows([['Emergência', p.emergencia_nome ? escapeHtml(p.emergencia_nome) : ''], ['Tel. emergência', p.emergencia_telefone]]);
+      $('detailEmergency').innerHTML = emerg;
 
-      let emergencyContent = '';
-      if (p.responsavel_nome) {
-        emergencyContent = rows([
-          ['Responsável', escapeHtml(p.responsavel_nome)],
-          ['Parentesco', p.responsavel_parentesco],
-          ['Contato resp.', p.responsavel_contato],
-        ]);
-      }
-      emergencyContent += rows([
-        ['Emergência', p.emergencia_nome ? escapeHtml(p.emergencia_nome) : ''],
-        ['Tel. emergência', p.emergencia_telefone],
-      ]);
-      $('detailEmergency').innerHTML = emergencyContent;
+      // Contagem de evoluções
+      $('evolutionCount').textContent = state.evolutions.length;
+
+      // Renderiza a aba ativa
+      if (state.activeTab === 'evolutions') renderEvolutions();
     }
 
+    // ============================================================
+    // EVOLUÇÕES — render
+    // ============================================================
+    function getAllUsedTags() {
+      const set = new Set();
+      state.evolutions.forEach(e => (e.tags || []).forEach(t => set.add(t)));
+      return Array.from(set).sort();
+    }
+
+    function renderEvolutions() {
+      const wrap = $('evolutionListWrap');
+
+      if (state.evolutionsLoading) {
+        wrap.innerHTML = `<div class="loading-box"><div class="spinner"></div><p>carregando evoluções...</p></div>`;
+        return;
+      }
+
+      // barra de tags
+      renderTagFilterBar();
+
+      let list = state.evolutions.slice();
+
+      // filtro busca
+      if (state.evolutionSearch) {
+        const q = state.evolutionSearch.toLowerCase();
+        list = list.filter(ev => {
+          const hay = [ev.relato, ev.observacoes, ev.hipoteses, ev.plano, (ev.tags || []).join(' ')].filter(Boolean).join(' ').toLowerCase();
+          return hay.includes(q);
+        });
+      }
+      // filtro tags (AND — tem que ter todas as selecionadas)
+      if (state.selectedTagFilters.length) {
+        list = list.filter(ev => {
+          const tags = ev.tags || [];
+          return state.selectedTagFilters.every(t => tags.includes(t));
+        });
+      }
+
+      // ordena por data desc (mais recentes primeiro)
+      list.sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+
+      if (!list.length) {
+        const hasAny = state.evolutions.length > 0;
+        wrap.innerHTML = `<div class="empty-state"><div class="empty-state-content">
+          <h3>${hasAny ? 'Nenhum resultado' : 'Sem evoluções ainda'}<em>.</em></h3>
+          <p>${hasAny ? 'ajuste a busca ou os filtros de tag.' : 'registre a primeira sessão clicando em "Nova evolução".'}</p>
+        </div></div>`;
+        return;
+      }
+
+      wrap.innerHTML = '<div class="timeline">' + list.map(ev => {
+        const modalidadeLabel = ev.modalidade === 'online' ? 'Online' : 'Presencial';
+        const horario = ev.hora ? ` · ${ev.hora}` : '';
+        const tags = (ev.tags || []).map(t => `<span class="evolution-tag">${escapeHtml(t)}</span>`).join('');
+        const section = (title, html) => {
+          const hasContent = html && html.trim();
+          return `<div class="evolution-section">
+            <h4>${title}</h4>
+            <div class="content ${!hasContent ? 'empty' : ''}">${hasContent ? html : 'não preenchido'}</div>
+          </div>`;
+        };
+        return `<div class="evolution-card">
+          <div class="evolution-top">
+            <div class="evolution-top-left">
+              <div class="evolution-session-num">Sessão <em>nº ${ev.numero || '—'}</em></div>
+              <div class="evolution-date">
+                <span>${formatDateLong(ev.data)}${horario}</span>
+                <span class="dot"></span>
+                <span class="modality-badge ${ev.modalidade || 'presencial'}">${modalidadeLabel}</span>
+              </div>
+            </div>
+            <div class="evolution-top-right">
+              <button class="btn-icon" onclick="openEditEvolution('${ev.id}')" title="Editar">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button class="btn-icon danger" onclick="deleteEvolution('${ev.id}')" title="Excluir">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          </div>
+          ${tags ? `<div class="evolution-tags">${tags}</div>` : ''}
+          <div class="evolution-sections">
+            ${section('Relato', ev.relato)}
+            ${section('Observações técnicas', ev.observacoes)}
+            ${section('Hipóteses / intervenções', ev.hipoteses)}
+            ${section('Plano para próxima sessão', ev.plano)}
+          </div>
+        </div>`;
+      }).join('') + '</div>';
+    }
+
+    function renderTagFilterBar() {
+      const bar = $('tagFilterBar');
+      const tags = getAllUsedTags();
+      if (!tags.length) { bar.innerHTML = ''; return; }
+      bar.innerHTML = tags.map(t => {
+        const active = state.selectedTagFilters.includes(t);
+        return `<span class="tag-chip ${active ? 'active' : ''}" onclick="toggleTagFilter('${escapeHtml(t).replace(/'/g,'&#39;')}')">#${escapeHtml(t)}</span>`;
+      }).join('');
+    }
+
+    function toggleTagFilter(tag) {
+      const i = state.selectedTagFilters.indexOf(tag);
+      if (i >= 0) state.selectedTagFilters.splice(i, 1);
+      else state.selectedTagFilters.push(tag);
+      renderEvolutions();
+    }
+
+    // ============================================================
+    // EDITOR SIMPLES (usa execCommand — leve, sem dependências)
+    // ============================================================
+    function setupEditors() {
+      document.querySelectorAll('.editor-wrap').forEach(wrap => {
+        const toolbar = wrap.querySelector('.editor-toolbar');
+        const content = wrap.querySelector('.editor-content');
+        if (toolbar.dataset.ready) return;
+        toolbar.dataset.ready = '1';
+
+        const btn = (cmd, icon, title) => `<button type="button" class="editor-btn" data-cmd="${cmd}" title="${title}">${icon}</button>`;
+        toolbar.innerHTML =
+          btn('bold', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>', 'Negrito (Ctrl+B)') +
+          btn('italic', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>', 'Itálico (Ctrl+I)') +
+          btn('underline', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg>', 'Sublinhado (Ctrl+U)') +
+          '<span class="editor-divider"></span>' +
+          btn('insertUnorderedList', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>', 'Lista') +
+          btn('insertOrderedList', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>', 'Lista numerada');
+
+        toolbar.querySelectorAll('.editor-btn').forEach(b => {
+          b.addEventListener('mousedown', (e) => e.preventDefault()); // evita perder foco
+          b.addEventListener('click', () => {
+            content.focus();
+            document.execCommand(b.dataset.cmd, false, null);
+            updateToolbarState(wrap);
+          });
+        });
+
+        content.addEventListener('keyup', () => updateToolbarState(wrap));
+        content.addEventListener('mouseup', () => updateToolbarState(wrap));
+        content.addEventListener('focus', () => updateToolbarState(wrap));
+      });
+    }
+
+    function updateToolbarState(wrap) {
+      wrap.querySelectorAll('.editor-btn').forEach(b => {
+        try {
+          const cmd = b.dataset.cmd;
+          b.classList.toggle('active', document.queryCommandState(cmd));
+        } catch {}
+      });
+    }
+
+    function getEditorHtml(field) {
+      const el = document.querySelector(`.editor-wrap[data-field="${field}"] .editor-content`);
+      return sanitizeEditorHtml(el.innerHTML);
+    }
+
+    function setEditorHtml(field, html) {
+      const el = document.querySelector(`.editor-wrap[data-field="${field}"] .editor-content`);
+      el.innerHTML = html || '';
+    }
+
+    function clearEditors() {
+      document.querySelectorAll('.editor-wrap .editor-content').forEach(el => el.innerHTML = '');
+    }
+
+    // ============================================================
+    // TAG INPUT
+    // ============================================================
+    function renderTagChips() {
+      const wrap = $('tagInputWrap');
+      // remove chips existentes (mantém o input)
+      wrap.querySelectorAll('.tag-chip').forEach(c => c.remove());
+      const input = $('tagInput');
+      state.currentTags.forEach(t => {
+        const chip = document.createElement('span');
+        chip.className = 'tag-chip';
+        chip.innerHTML = `#${escapeHtml(t)} <span class="x" data-tag="${escapeHtml(t).replace(/"/g,'&quot;')}">×</span>`;
+        wrap.insertBefore(chip, input);
+      });
+      renderTagSuggestions();
+    }
+
+    function renderTagSuggestions() {
+      const cont = $('tagSuggestions');
+      // sugestões = tags usadas anteriormente + sugeridas fixas, exceto as já selecionadas
+      const used = getAllUsedTags();
+      const all = Array.from(new Set([...SUGGESTED_TAGS, ...used])).filter(t => !state.currentTags.includes(t));
+      if (!all.length) { cont.innerHTML = ''; return; }
+      cont.innerHTML = `<span class="label-hint">sugestões:</span>` + all.slice(0, 10).map(t =>
+        `<span class="tag-suggestion" data-tag="${escapeHtml(t).replace(/"/g,'&quot;')}">#${escapeHtml(t)}</span>`
+      ).join('');
+    }
+
+    function addTag(raw) {
+      const t = raw.trim().toLowerCase().replace(/^#/, '');
+      if (!t) return;
+      if (state.currentTags.includes(t)) return;
+      state.currentTags.push(t);
+      renderTagChips();
+    }
+
+    function removeTag(t) {
+      state.currentTags = state.currentTags.filter(x => x !== t);
+      renderTagChips();
+    }
+
+    // ============================================================
+    // AÇÕES — PACIENTE
+    // ============================================================
     function openNewPatient() {
       state.editingId = null;
       $('modalTitle').innerHTML = 'Novo <em>paciente</em>';
@@ -1700,115 +1303,245 @@
       $('modalSubtitle').textContent = 'atualize os dados conforme necessário.';
       const form = $('patientForm');
       form.reset();
-      Object.keys(p).forEach(key => {
-        if (form[key] !== undefined) form[key].value = p[key] || '';
-      });
+      Object.keys(p).forEach(key => { if (form[key] !== undefined) form[key].value = p[key] || ''; });
       $('patientModal').classList.add('active');
     }
 
-    function closeModal() {
-      $('patientModal').classList.remove('active');
-    }
+    function closePatientModal() { $('patientModal').classList.remove('active'); }
 
-    function openPatient(id) {
+    async function openPatient(id) {
       state.selectedPatientId = id;
       state.view = 'detail';
+      state.activeTab = 'info';
+      state.evolutions = [];
+      state.evolutionsFileId = null;
+      state.evolutionSearch = '';
+      state.selectedTagFilters = [];
+
+      // Switch tab UI
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === 'info'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tabInfo'));
+
       renderAll();
+      // Carrega evoluções em background
+      await loadPatientEvolutions(id);
+      $('evolutionCount').textContent = state.evolutions.length;
+      // Se estiver na aba evoluções, renderiza
+      if (state.activeTab === 'evolutions') renderEvolutions();
     }
 
     async function savePatient(e) {
       e.preventDefault();
       const form = e.target;
       const data = {};
-      Array.from(form.elements).forEach(el => {
-        if (el.name) data[el.name] = el.value.trim();
-      });
-
-      if (!data.nome) {
-        toast('Nome é obrigatório', 'error');
-        return;
-      }
-
+      Array.from(form.elements).forEach(el => { if (el.name) data[el.name] = el.value.trim(); });
+      if (!data.nome) { toast('Nome é obrigatório', 'error'); return; }
       $('btnSave').innerHTML = '<span class="spinner"></span><span>Salvando...</span>';
-
       try {
         if (state.editingId) {
           const idx = state.patients.findIndex(p => p.id === state.editingId);
-          if (idx >= 0) {
-            state.patients[idx] = { ...state.patients[idx], ...data, atualizado_em: new Date().toISOString() };
-          }
+          if (idx >= 0) state.patients[idx] = { ...state.patients[idx], ...data, atualizado_em: new Date().toISOString() };
         } else {
-          state.patients.push({
-            id: uid(),
-            ...data,
-            criado_em: new Date().toISOString(),
-            atualizado_em: new Date().toISOString(),
-          });
+          state.patients.push({ id: uid('p'), ...data, criado_em: new Date().toISOString(), atualizado_em: new Date().toISOString() });
         }
         await savePatients();
-        closeModal();
+        closePatientModal();
         renderAll();
         toast(state.editingId ? 'Paciente atualizado' : 'Paciente cadastrado', 'success');
-      } catch (e) {
-        toast('Erro ao salvar', 'error');
-      } finally {
-        $('btnSave').innerHTML = '<span>Salvar</span>';
-      }
+      } catch (e) { toast('Erro ao salvar', 'error'); }
+      finally { $('btnSave').innerHTML = '<span>Salvar</span>'; }
     }
 
     async function deletePatient() {
       if (!state.selectedPatientId) return;
       const p = state.patients.find(x => x.id === state.selectedPatientId);
       if (!p) return;
-      if (!confirm(`Excluir o paciente "${p.nome}"? Esta ação não pode ser desfeita.`)) return;
-
+      if (!confirm(`Excluir o paciente "${p.nome}"? Esta ação também excluirá todas as evoluções e não pode ser desfeita.`)) return;
       state.patients = state.patients.filter(x => x.id !== state.selectedPatientId);
       try {
         await savePatients();
+        // Remove arquivo de evoluções do Drive (se existir)
+        if (state.evolutionsFileId) {
+          try { await gapi.client.drive.files.delete({ fileId: state.evolutionsFileId }); } catch {}
+        }
         state.view = 'list';
         state.selectedPatientId = null;
+        state.evolutions = [];
+        state.evolutionsFileId = null;
         renderAll();
         toast('Paciente excluído', 'success');
-      } catch {
-        toast('Erro ao excluir', 'error');
-      }
+      } catch { toast('Erro ao excluir', 'error'); }
     }
 
+    // ============================================================
+    // AÇÕES — EVOLUÇÃO
+    // ============================================================
+    function nextSessionNumber() {
+      if (!state.evolutions.length) return 1;
+      const max = Math.max(...state.evolutions.map(e => parseInt(e.numero, 10) || 0));
+      return max + 1;
+    }
+
+    function openNewEvolution() {
+      if (!state.selectedPatientId) return;
+      state.editingEvolutionId = null;
+      state.currentTags = [];
+      $('evolutionModalTitle').innerHTML = 'Nova <em>evolução</em>';
+      $('evolutionModalSubtitle').textContent = 'registro da sessão clínica';
+      const form = $('evolutionForm');
+      form.reset();
+      form.numero.value = nextSessionNumber();
+      form.data.value = new Date().toISOString().slice(0, 10);
+      form.modalidade.value = 'presencial';
+      clearEditors();
+      renderTagChips();
+      setupEditors();
+      $('evolutionModal').classList.add('active');
+    }
+
+    function openEditEvolution(id) {
+      const ev = state.evolutions.find(x => x.id === id);
+      if (!ev) return;
+      state.editingEvolutionId = id;
+      state.currentTags = [...(ev.tags || [])];
+      $('evolutionModalTitle').innerHTML = 'Editar <em>evolução</em>';
+      $('evolutionModalSubtitle').textContent = `sessão nº ${ev.numero || '—'} · ${formatDate(ev.data)}`;
+      const form = $('evolutionForm');
+      form.reset();
+      form.numero.value = ev.numero || '';
+      form.data.value = ev.data || '';
+      form.hora.value = ev.hora || '';
+      form.modalidade.value = ev.modalidade || 'presencial';
+      setupEditors();
+      setEditorHtml('relato', ev.relato || '');
+      setEditorHtml('observacoes', ev.observacoes || '');
+      setEditorHtml('hipoteses', ev.hipoteses || '');
+      setEditorHtml('plano', ev.plano || '');
+      renderTagChips();
+      $('evolutionModal').classList.add('active');
+    }
+
+    function closeEvolutionModal() { $('evolutionModal').classList.remove('active'); }
+
+    async function saveEvolution(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        numero: parseInt(form.numero.value, 10) || null,
+        data: form.data.value,
+        hora: form.hora.value,
+        modalidade: form.modalidade.value,
+        relato: getEditorHtml('relato'),
+        observacoes: getEditorHtml('observacoes'),
+        hipoteses: getEditorHtml('hipoteses'),
+        plano: getEditorHtml('plano'),
+        tags: [...state.currentTags],
+      };
+      if (!data.data) { toast('Data é obrigatória', 'error'); return; }
+
+      $('btnSaveEvolution').innerHTML = '<span class="spinner"></span><span>Salvando...</span>';
+      try {
+        if (state.editingEvolutionId) {
+          const idx = state.evolutions.findIndex(x => x.id === state.editingEvolutionId);
+          if (idx >= 0) state.evolutions[idx] = { ...state.evolutions[idx], ...data, atualizado_em: new Date().toISOString() };
+        } else {
+          state.evolutions.push({ id: uid('ev'), ...data, criado_em: new Date().toISOString(), atualizado_em: new Date().toISOString() });
+        }
+        await savePatientEvolutions(state.selectedPatientId);
+        closeEvolutionModal();
+        $('evolutionCount').textContent = state.evolutions.length;
+        renderEvolutions();
+        toast(state.editingEvolutionId ? 'Evolução atualizada' : 'Evolução registrada', 'success');
+      } catch (e) { toast('Erro ao salvar evolução', 'error'); }
+      finally { $('btnSaveEvolution').innerHTML = '<span>Salvar evolução</span>'; }
+    }
+
+    async function deleteEvolution(id) {
+      const ev = state.evolutions.find(x => x.id === id);
+      if (!ev) return;
+      if (!confirm(`Excluir a evolução da sessão nº ${ev.numero || '—'} (${formatDate(ev.data)})? Esta ação não pode ser desfeita.`)) return;
+      state.evolutions = state.evolutions.filter(x => x.id !== id);
+      try {
+        await savePatientEvolutions(state.selectedPatientId);
+        $('evolutionCount').textContent = state.evolutions.length;
+        renderEvolutions();
+        toast('Evolução excluída', 'success');
+      } catch { toast('Erro ao excluir', 'error'); }
+    }
+
+    // ============================================================
+    // EVENTS
+    // ============================================================
     window.openNewPatient = openNewPatient;
     window.openPatient = openPatient;
+    window.openEditEvolution = openEditEvolution;
+    window.deleteEvolution = deleteEvolution;
+    window.toggleTagFilter = toggleTagFilter;
 
     $('btnLogin').addEventListener('click', login);
     $('btnLogout').addEventListener('click', logout);
     $('btnNewPatient').addEventListener('click', openNewPatient);
-    $('btnCancel').addEventListener('click', closeModal);
+    $('btnCancel').addEventListener('click', closePatientModal);
     $('patientForm').addEventListener('submit', savePatient);
     $('btnBack').addEventListener('click', () => { state.view = 'list'; renderAll(); });
     $('btnEdit').addEventListener('click', () => openEditPatient(state.selectedPatientId));
     $('btnDelete').addEventListener('click', deletePatient);
 
-    $('searchInput').addEventListener('input', (e) => {
-      state.searchQuery = e.target.value;
-      renderList();
-    });
-    $('statusFilter').addEventListener('change', (e) => {
-      state.statusFilter = e.target.value;
-      renderList();
-    });
-
-    $('patientModal').addEventListener('click', (e) => {
-      if (e.target.id === 'patientModal') closeModal();
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        const tab = b.dataset.tab;
+        state.activeTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(x => x.classList.toggle('active', x.dataset.tab === tab));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === ('tab' + tab.charAt(0).toUpperCase() + tab.slice(1))));
+        if (tab === 'evolutions') renderEvolutions();
+      });
     });
 
+    // Evolução
+    $('btnNewEvolution').addEventListener('click', openNewEvolution);
+    $('btnCancelEvolution').addEventListener('click', closeEvolutionModal);
+    $('evolutionForm').addEventListener('submit', saveEvolution);
+    $('evolutionSearch').addEventListener('input', (e) => { state.evolutionSearch = e.target.value; renderEvolutions(); });
+
+    // Tag input — adicionar / remover
+    $('tagInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const val = e.target.value;
+        if (val.trim()) { addTag(val); e.target.value = ''; }
+      } else if (e.key === 'Backspace' && !e.target.value && state.currentTags.length) {
+        state.currentTags.pop();
+        renderTagChips();
+      }
+    });
+    $('tagInputWrap').addEventListener('click', (e) => {
+      if (e.target.classList.contains('x')) {
+        removeTag(e.target.dataset.tag);
+      } else if (e.target === $('tagInputWrap')) {
+        $('tagInput').focus();
+      }
+    });
+    $('tagSuggestions').addEventListener('click', (e) => {
+      if (e.target.classList.contains('tag-suggestion')) { addTag(e.target.dataset.tag); }
+    });
+
+    // Busca / filtros pacientes
+    $('searchInput').addEventListener('input', (e) => { state.searchQuery = e.target.value; renderList(); });
+    $('statusFilter').addEventListener('change', (e) => { state.statusFilter = e.target.value; renderList(); });
+
+    // Fecha modais
+    $('patientModal').addEventListener('click', (e) => { if (e.target.id === 'patientModal') closePatientModal(); });
+    $('evolutionModal').addEventListener('click', (e) => { if (e.target.id === 'evolutionModal') closeEvolutionModal(); });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && $('patientModal').classList.contains('active')) {
-        closeModal();
+      if (e.key === 'Escape') {
+        if ($('evolutionModal').classList.contains('active')) closeEvolutionModal();
+        else if ($('patientModal').classList.contains('active')) closePatientModal();
       }
     });
 
     window.addEventListener('load', () => {
-      const waitGapi = setInterval(() => {
-        if (window.gapi) { clearInterval(waitGapi); initGapi(); }
-      }, 100);
+      const waitGapi = setInterval(() => { if (window.gapi) { clearInterval(waitGapi); initGapi(); } }, 100);
       initGis();
     });
   </script>
