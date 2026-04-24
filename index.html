@@ -399,6 +399,19 @@
     .anamnese-progress { font-size: 0.78rem; color: var(--ink-soft); font-family: var(--font-display); font-style: italic; }
     .anamnese-progress strong { color: var(--gold-deep); font-weight: 600; font-style: normal; font-family: var(--font-body); }
 
+    /* Dropdown de exportação */
+    .export-wrap { position: relative; display: inline-block; }
+    .export-menu { position: absolute; top: calc(100% + 6px); right: 0; background: var(--cream-soft); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); min-width: 220px; overflow: hidden; z-index: 50; display: none; }
+    .export-menu.active { display: block; animation: fadeIn 0.15s ease; }
+    .export-menu-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.1s; border-bottom: 1px solid var(--border-soft); }
+    .export-menu-item:last-child { border-bottom: none; }
+    .export-menu-item:hover { background: var(--cream); }
+    .export-menu-item .icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); flex-shrink: 0; }
+    .export-menu-item.elegant .icon { background: var(--gold-wash); color: var(--gold-deep); }
+    .export-menu-item.sober .icon { background: #e8e8e8; color: #333; }
+    .export-menu-item .title { font-size: 0.88rem; font-weight: 500; color: var(--ink); line-height: 1.2; }
+    .export-menu-item .desc { font-size: 0.72rem; color: var(--ink-soft); margin-top: 0.15rem; }
+
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
       .sidebar { position: static; height: auto; }
@@ -771,6 +784,7 @@
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://apis.google.com/js/api.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <script>
     // ============================================================
@@ -1224,6 +1238,28 @@
             <div class="anamnese-status">última atualização: ${atualizadoEm}</div>
           </div>
           <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <div class="export-wrap">
+              <button class="btn btn-secondary btn-sm" onclick="toggleExportMenu('anamnese', event)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Exportar PDF
+              </button>
+              <div class="export-menu" id="exportMenuAnamnese">
+                <div class="export-menu-item elegant" onclick="exportAnamnesePdf('elegant')">
+                  <div class="icon">✦</div>
+                  <div>
+                    <div class="title">PDF elegante</div>
+                    <div class="desc">com identidade visual do consultório</div>
+                  </div>
+                </div>
+                <div class="export-menu-item sober" onclick="exportAnamnesePdf('sober')">
+                  <div class="icon">▪</div>
+                  <div>
+                    <div class="title">PDF sóbrio</div>
+                    <div class="desc">estilo documento oficial</div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <button class="btn btn-secondary btn-sm" onclick="openAnamneseModal()">Editar</button>
             <button class="btn btn-danger btn-sm" onclick="deleteAnamnese()">Excluir</button>
           </div>
@@ -1409,6 +1445,432 @@
 
     window.openAnamneseModal = openAnamneseModal;
     window.deleteAnamnese = deleteAnamnese;
+
+    // ============================================================
+    // EXPORTAÇÃO PDF — infraestrutura comum
+    // ============================================================
+    function toggleExportMenu(which, event) {
+      if (event) event.stopPropagation();
+      const menuId = 'exportMenu' + which.charAt(0).toUpperCase() + which.slice(1);
+      const menu = $(menuId);
+      document.querySelectorAll('.export-menu').forEach(m => { if (m.id !== menuId) m.classList.remove('active'); });
+      if (menu) menu.classList.toggle('active');
+    }
+    // Fecha ao clicar fora
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.export-wrap')) {
+        document.querySelectorAll('.export-menu').forEach(m => m.classList.remove('active'));
+      }
+    });
+    window.toggleExportMenu = toggleExportMenu;
+
+    // Converte HTML (vindo do editor rich text) em texto plano, preservando quebras
+    function htmlToPlainText(html) {
+      if (!html) return '';
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      // substitui <br> e </p>/<li> por \n
+      div.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
+      div.querySelectorAll('p, li').forEach(el => { el.append('\n'); });
+      div.querySelectorAll('li').forEach(li => { li.prepend('• '); });
+      let text = div.textContent || '';
+      // normaliza múltiplas quebras
+      return text.replace(/\n{3,}/g, '\n\n').trim();
+    }
+
+    // Cria um helper do jsPDF com API simples e paginação automática
+    function createPdfHelper(style) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      const pageW = doc.internal.pageSize.getWidth();   // 210mm
+      const pageH = doc.internal.pageSize.getHeight();  // 297mm
+      const marginX = 20, marginTop = 30, marginBottom = 22;
+      let y = marginTop;
+
+      // Cores por estilo
+      const palette = style === 'elegant' ? {
+        ink: [44, 42, 38],
+        sub: [90, 84, 74],
+        faint: [149, 141, 125],
+        gold: [184, 148, 74],
+        goldDeep: [142, 111, 52],
+        rule: [228, 217, 193],
+        sageDeep: [109, 127, 92],
+        paperFill: [246, 239, 224], // creme — só cabeçalho e rodapé
+      } : {
+        ink: [20, 20, 20],
+        sub: [70, 70, 70],
+        faint: [130, 130, 130],
+        gold: [80, 80, 80],
+        goldDeep: [40, 40, 40],
+        rule: [180, 180, 180],
+        sageDeep: [60, 60, 60],
+        paperFill: [245, 245, 245],
+      };
+
+      function setColor(c) { doc.setTextColor(c[0], c[1], c[2]); }
+      function setDraw(c) { doc.setDrawColor(c[0], c[1], c[2]); }
+      function setFill(c) { doc.setFillColor(c[0], c[1], c[2]); }
+
+      // Cabeçalho elegante (logo G + nome + CRP)
+      function drawHeader(pageNum) {
+        if (style === 'elegant') {
+          // monograma G dourado em itálico no canto esquerdo
+          doc.setFont('times', 'italic');
+          doc.setFontSize(22);
+          setColor(palette.gold);
+          doc.text('G', marginX, 18);
+          // Nome + CRP à direita
+          doc.setFont('times', 'normal');
+          doc.setFontSize(11);
+          setColor(palette.ink);
+          doc.text('GABRIELLY GUANDALINO', pageW - marginX, 13, { align: 'right' });
+          doc.setFontSize(8);
+          setColor(palette.faint);
+          doc.text('Psicóloga · CRP-PR 08/38673', pageW - marginX, 18, { align: 'right' });
+          // linha dourada
+          setDraw(palette.gold);
+          doc.setLineWidth(0.4);
+          doc.line(marginX, 22, pageW - marginX, 22);
+        } else {
+          // sóbrio — nome e CRP simples
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(10);
+          setColor(palette.ink);
+          doc.text('GABRIELLY GUANDALINO', marginX, 15);
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8);
+          setColor(palette.sub);
+          doc.text('Psicóloga · CRP-PR 08/38673', marginX, 20);
+          // linha preta
+          setDraw(palette.ink);
+          doc.setLineWidth(0.3);
+          doc.line(marginX, 23, pageW - marginX, 23);
+        }
+      }
+
+      function drawFooter(pageNum, totalPages) {
+        const footerY = pageH - 12;
+        setDraw(palette.rule);
+        doc.setLineWidth(0.2);
+        doc.line(marginX, footerY - 4, pageW - marginX, footerY - 4);
+        doc.setFont(style === 'elegant' ? 'times' : 'helvetica', style === 'elegant' ? 'italic' : 'normal');
+        doc.setFontSize(7.5);
+        setColor(palette.faint);
+        doc.text('Gabrielly Guandalino · CRP-PR 08/38673 · sistema de gestão clínica', marginX, footerY);
+        doc.text(`pág ${pageNum} de ${totalPages}`, pageW - marginX, footerY, { align: 'right' });
+      }
+
+      // Quebra de página — abre nova e reseta y
+      function newPage() {
+        doc.addPage();
+        drawHeader();
+        y = marginTop;
+      }
+
+      // Garante espaço ou quebra página
+      function ensureSpace(h) {
+        if (y + h > pageH - marginBottom) newPage();
+      }
+
+      // Texto com auto-wrap e quebra de linha
+      function writeText(text, opts = {}) {
+        const font = opts.font || (style === 'elegant' ? 'times' : 'helvetica');
+        const weight = opts.weight || 'normal';
+        const size = opts.size || 10;
+        const color = opts.color || palette.ink;
+        const lineHeight = opts.lineHeight || size * 0.45;
+        const bottomGap = opts.bottomGap || 1.5;
+        doc.setFont(font, weight);
+        doc.setFontSize(size);
+        setColor(color);
+        const maxW = pageW - 2 * marginX;
+        const lines = doc.splitTextToSize(text, maxW);
+        lines.forEach(line => {
+          ensureSpace(lineHeight + 1);
+          doc.text(line, marginX, y);
+          y += lineHeight;
+        });
+        y += bottomGap;
+      }
+
+      // Título grande (capa / título do documento)
+      function writeMainTitle(text) {
+        const font = style === 'elegant' ? 'times' : 'helvetica';
+        doc.setFont(font, 'normal');
+        doc.setFontSize(style === 'elegant' ? 26 : 20);
+        setColor(palette.ink);
+        const maxW = pageW - 2 * marginX;
+        const lines = doc.splitTextToSize(text, maxW);
+        lines.forEach(line => {
+          ensureSpace(12);
+          doc.text(line, pageW / 2, y + 8, { align: 'center' });
+          y += 11;
+        });
+        // Linha dourada curta abaixo
+        setDraw(palette.gold);
+        doc.setLineWidth(style === 'elegant' ? 0.6 : 0.4);
+        const lineW = 30;
+        doc.line(pageW / 2 - lineW / 2, y + 3, pageW / 2 + lineW / 2, y + 3);
+        y += 10;
+      }
+
+      // Subtítulo (abaixo do título principal, ex: "Prontuário clínico")
+      function writeSubtitle(text) {
+        const font = style === 'elegant' ? 'times' : 'helvetica';
+        doc.setFont(font, style === 'elegant' ? 'italic' : 'normal');
+        doc.setFontSize(11);
+        setColor(palette.sub);
+        ensureSpace(6);
+        doc.text(text, pageW / 2, y, { align: 'center' });
+        y += 8;
+      }
+
+      // Seção (cabeçalho grande com linha)
+      function writeSection(title) {
+        ensureSpace(16);
+        y += 4;
+        const font = style === 'elegant' ? 'times' : 'helvetica';
+        doc.setFont(font, style === 'elegant' ? 'italic' : 'bold');
+        doc.setFontSize(style === 'elegant' ? 14 : 12);
+        setColor(style === 'elegant' ? palette.goldDeep : palette.ink);
+        doc.text(title, marginX, y);
+        y += 1.5;
+        setDraw(style === 'elegant' ? palette.gold : palette.ink);
+        doc.setLineWidth(0.4);
+        doc.line(marginX, y, pageW - marginX, y);
+        y += 6;
+      }
+
+      // Pergunta + resposta (usado em ficha e anamnese)
+      function writeQA(question, answer) {
+        const isEmpty = !answer || !String(answer).trim();
+        const font = style === 'elegant' ? 'times' : 'helvetica';
+        // Pergunta
+        doc.setFont(font, 'normal');
+        doc.setFontSize(9);
+        setColor(palette.sub);
+        const maxW = pageW - 2 * marginX;
+        const qLines = doc.splitTextToSize(question, maxW);
+        const blockH = qLines.length * 4 + 6 + (isEmpty ? 5 : 0);
+        ensureSpace(blockH);
+        qLines.forEach(l => { doc.text(l, marginX, y); y += 4; });
+        y += 1;
+        // Resposta
+        if (isEmpty) {
+          doc.setFont(font, 'italic');
+          doc.setFontSize(9.5);
+          setColor(palette.faint);
+          doc.text('não preenchido', marginX, y);
+          y += 5;
+        } else {
+          doc.setFont(font, 'normal');
+          doc.setFontSize(10);
+          setColor(palette.ink);
+          const aLines = doc.splitTextToSize(String(answer), maxW);
+          aLines.forEach(l => { ensureSpace(5); doc.text(l, marginX, y); y += 5; });
+        }
+        // separador fino
+        y += 2;
+        setDraw(palette.rule);
+        doc.setLineWidth(0.15);
+        doc.line(marginX, y, pageW - marginX, y);
+        y += 3;
+      }
+
+      // Chips (para checkboxes)
+      function writeChips(items) {
+        if (!items || !items.length) return;
+        const font = style === 'elegant' ? 'times' : 'helvetica';
+        doc.setFont(font, 'normal');
+        doc.setFontSize(9);
+        const padX = 3, padY = 1.5, gap = 2;
+        const maxX = pageW - marginX;
+        let x = marginX;
+        let rowH = 6;
+        items.forEach(item => {
+          const w = doc.getTextWidth(item) + padX * 2;
+          if (x + w > maxX) { x = marginX; y += rowH + 2; }
+          ensureSpace(rowH + 4);
+          // chip background
+          if (style === 'elegant') {
+            setFill(palette.paperFill);
+            doc.setDrawColor(palette.gold[0], palette.gold[1], palette.gold[2]);
+            doc.setLineWidth(0.2);
+            doc.roundedRect(x, y - rowH + 1.5, w, rowH, 2, 2, 'FD');
+            setColor(palette.goldDeep);
+          } else {
+            setFill(palette.paperFill);
+            setDraw(palette.sub);
+            doc.setLineWidth(0.2);
+            doc.roundedRect(x, y - rowH + 1.5, w, rowH, 1, 1, 'FD');
+            setColor(palette.ink);
+          }
+          doc.text(item, x + padX, y - 0.5);
+          x += w + gap;
+        });
+        y += rowH + 4;
+      }
+
+      // Paragraph title (nome do paciente no início)
+      function writePatientHeader(patient, docType) {
+        // "Documento do paciente"
+        const font = style === 'elegant' ? 'times' : 'helvetica';
+        doc.setFont(font, style === 'elegant' ? 'italic' : 'normal');
+        doc.setFontSize(9);
+        setColor(palette.faint);
+        ensureSpace(6);
+        doc.text(docType, marginX, y);
+        y += 5;
+        // Nome do paciente em destaque
+        doc.setFont(font, 'normal');
+        doc.setFontSize(style === 'elegant' ? 22 : 18);
+        setColor(palette.ink);
+        const lines = doc.splitTextToSize(patient.nome || 'Paciente', pageW - 2 * marginX);
+        lines.forEach(l => { ensureSpace(10); doc.text(l, marginX, y + 6); y += 9; });
+        // Meta info
+        doc.setFont(font, 'normal');
+        doc.setFontSize(9);
+        setColor(palette.sub);
+        const age = calcAge(patient.nascimento);
+        const metas = [];
+        if (patient.nascimento) metas.push(`${formatDate(patient.nascimento)}${age !== null ? ` (${age} anos)` : ''}`);
+        if (patient.cpf) metas.push('CPF ' + patient.cpf);
+        if (metas.length) {
+          ensureSpace(6);
+          doc.text(metas.join('  ·  '), marginX, y + 2);
+          y += 6;
+        }
+        // linha separadora
+        y += 3;
+        setDraw(palette.rule);
+        doc.setLineWidth(0.3);
+        doc.line(marginX, y, pageW - marginX, y);
+        y += 8;
+      }
+
+      // Data de emissão (rodapé da seção)
+      function writeEmissionDate() {
+        const font = style === 'elegant' ? 'times' : 'helvetica';
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+        const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        doc.setFont(font, style === 'elegant' ? 'italic' : 'normal');
+        doc.setFontSize(8.5);
+        setColor(palette.faint);
+        ensureSpace(6);
+        doc.text(`documento emitido em ${dateStr}, às ${timeStr}`, marginX, y);
+        y += 4;
+      }
+
+      // Finaliza: aplica rodapé com paginação em todas as páginas
+      function finalize() {
+        const totalPages = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+          doc.setPage(i);
+          drawFooter(i, totalPages);
+        }
+      }
+
+      // Inicia primeira página
+      drawHeader();
+
+      return {
+        doc, palette,
+        writeText, writeMainTitle, writeSubtitle, writeSection, writeQA, writeChips,
+        writePatientHeader, writeEmissionDate, finalize, ensureSpace, newPage,
+        get y() { return y; }, set y(v) { y = v; }
+      };
+    }
+
+    // Sanitiza nome pra virar nome de arquivo
+    function sanitizeFilename(s) {
+      return String(s || 'paciente').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_|_$/g, '').toLowerCase();
+    }
+
+    // ============================================================
+    // EXPORTAÇÃO PDF — ANAMNESE
+    // ============================================================
+    function exportAnamnesePdf(style) {
+      // fecha o menu
+      document.querySelectorAll('.export-menu').forEach(m => m.classList.remove('active'));
+
+      if (!state.anamnese) { toast('Anamnese não preenchida', 'error'); return; }
+      const patient = state.patients.find(p => p.id === state.selectedPatientId);
+      if (!patient) { toast('Paciente não encontrado', 'error'); return; }
+      if (!window.jspdf) { toast('Biblioteca de PDF não carregada. Aguarde e tente novamente.', 'error'); return; }
+
+      try {
+        const pdf = createPdfHelper(style);
+        const respostas = state.anamnese.respostas || {};
+
+        // Título do documento
+        pdf.writeMainTitle('Anamnese');
+        pdf.writeSubtitle('comportamental');
+        pdf.y += 4;
+        // Dados do paciente
+        pdf.writePatientHeader(patient, 'ANAMNESE CLÍNICA');
+        pdf.writeEmissionDate();
+        pdf.y += 6;
+
+        // Conteúdo — percorre schema
+        ANAMNESE_SCHEMA.forEach(section => {
+          pdf.writeSection(section.title);
+          section.questions.forEach(q => {
+            const v = respostas[q.id];
+            const qLabel = `${q.num}. ${q.label}`;
+            if (q.type === 'checkbox') {
+              const opts = (v && v.options) || [];
+              const other = (v && v.other) || '';
+              // Escreve pergunta (sem separador, sem "não preenchido")
+              const { doc: pdoc } = pdf;
+              const font = style === 'elegant' ? 'times' : 'helvetica';
+              pdoc.setFont(font, 'normal');
+              pdoc.setFontSize(9);
+              pdoc.setTextColor(pdf.palette.sub[0], pdf.palette.sub[1], pdf.palette.sub[2]);
+              const maxW = 210 - 2*20;
+              const qLines = pdoc.splitTextToSize(qLabel, maxW);
+              const need = qLines.length * 4 + 12;
+              pdf.ensureSpace(need);
+              qLines.forEach(l => { pdoc.text(l, 20, pdf.y); pdf.y += 4; });
+              pdf.y += 2;
+              // Chips (ou "não preenchido")
+              if (!opts.length && !other) {
+                pdoc.setFont(font, 'italic');
+                pdoc.setFontSize(9.5);
+                pdoc.setTextColor(pdf.palette.faint[0], pdf.palette.faint[1], pdf.palette.faint[2]);
+                pdoc.text('não preenchido', 20, pdf.y);
+                pdf.y += 5;
+              } else {
+                const allItems = [...opts];
+                if (other) allItems.push(`Outro: ${other}`);
+                pdf.writeChips(allItems);
+              }
+              // separador
+              pdf.y += 1;
+              pdoc.setDrawColor(pdf.palette.rule[0], pdf.palette.rule[1], pdf.palette.rule[2]);
+              pdoc.setLineWidth(0.15);
+              pdoc.line(20, pdf.y, 210-20, pdf.y);
+              pdf.y += 3;
+            } else if (q.type === 'date') {
+              pdf.writeQA(qLabel, v ? formatDate(v) : '');
+            } else {
+              pdf.writeQA(qLabel, v || '');
+            }
+          });
+        });
+
+        pdf.finalize();
+        const filename = `anamnese_${sanitizeFilename(patient.nome)}_${new Date().toISOString().slice(0,10)}.pdf`;
+        pdf.doc.save(filename);
+        toast('PDF da anamnese gerado', 'success');
+      } catch (e) {
+        console.error(e);
+        toast('Erro ao gerar PDF', 'error');
+      }
+    }
+
+    window.exportAnamnesePdf = exportAnamnesePdf;
 
     // ============================================================
     // EVOLUÇÕES — carregar/salvar
