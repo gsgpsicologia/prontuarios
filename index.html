@@ -399,6 +399,94 @@
     .anamnese-progress { font-size: 0.78rem; color: var(--ink-soft); font-family: var(--font-display); font-style: italic; }
     .anamnese-progress strong { color: var(--gold-deep); font-weight: 600; font-style: normal; font-family: var(--font-body); }
 
+    /* AGENDA — layout semanal */
+    .agenda-page { display: none; }
+    .agenda-page.active { display: block; }
+
+    .agenda-toolbar { display: flex; gap: 0.75rem; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .agenda-nav { display: flex; align-items: center; gap: 0.5rem; }
+    .agenda-nav .btn { padding: 0.5rem 0.8rem; }
+    .agenda-week-label { font-family: var(--font-display); font-size: 1.2rem; color: var(--ink); min-width: 280px; text-align: center; font-style: italic; }
+    .agenda-week-label em { color: var(--gold-deep); font-weight: 500; }
+
+    .agenda-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+    .agenda-stat { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-md); padding: 0.8rem 1.1rem; }
+    .agenda-stat .label { font-family: var(--font-display); font-style: italic; font-size: 0.78rem; color: var(--ink-faint); }
+    .agenda-stat .value { font-family: var(--font-display); font-size: 1.5rem; font-weight: 500; color: var(--ink); line-height: 1.2; }
+    .agenda-stat .hint { font-size: 0.7rem; color: var(--ink-soft); margin-top: 0.1rem; letter-spacing: 0.04em; text-transform: uppercase; }
+
+    /* Grade semanal */
+    .agenda-grid-wrap { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); overflow: hidden; }
+    .agenda-grid-header { display: grid; grid-template-columns: 60px repeat(6, 1fr); border-bottom: 1px solid var(--border); background: var(--cream); }
+    .agenda-day-header { padding: 0.75rem 0.5rem; text-align: center; border-right: 1px solid var(--border-soft); }
+    .agenda-day-header:last-child { border-right: none; }
+    .agenda-day-header .dow { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-faint); font-weight: 500; }
+    .agenda-day-header .dom { font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); line-height: 1.1; margin-top: 0.15rem; }
+    .agenda-day-header.today .dom { color: var(--gold-deep); font-weight: 500; }
+    .agenda-day-header.today { background: var(--gold-wash); }
+
+    .agenda-grid-body { display: grid; grid-template-columns: 60px repeat(6, 1fr); position: relative; }
+    .agenda-hour-col { border-right: 1px solid var(--border); background: var(--cream); }
+    .agenda-hour-slot { height: 32px; padding: 2px 8px; font-size: 0.68rem; color: var(--ink-faint); text-align: right; border-bottom: 1px dashed var(--border-soft); font-family: var(--font-body); }
+    .agenda-hour-slot.full-hour { color: var(--ink-soft); font-weight: 500; border-bottom-style: solid; }
+
+    .agenda-day-col { position: relative; border-right: 1px solid var(--border-soft); }
+    .agenda-day-col:last-child { border-right: none; }
+    .agenda-day-col .slot { height: 32px; border-bottom: 1px dashed var(--border-soft); cursor: pointer; transition: background 0.12s; }
+    .agenda-day-col .slot.full-hour { border-bottom-style: solid; }
+    .agenda-day-col .slot:hover { background: var(--gold-wash); }
+
+    /* Card de atendimento */
+    .apt-card { position: absolute; left: 3px; right: 3px; border-radius: var(--radius-sm); padding: 4px 7px; overflow: hidden; cursor: pointer; transition: all 0.15s; font-size: 0.75rem; z-index: 2; border-left: 3px solid; line-height: 1.2; }
+    .apt-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); z-index: 3; }
+    .apt-card .apt-time { font-weight: 600; font-size: 0.7rem; opacity: 0.85; }
+    .apt-card .apt-patient { font-family: var(--font-display); font-size: 0.9rem; font-weight: 500; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .apt-card .apt-type { font-size: 0.68rem; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1px; }
+
+    /* Cores por tipo */
+    .apt-card.type-sessao { background: #e8d6ac; border-left-color: #b8944a; color: #5e4a1e; }
+    .apt-card.type-avaliacao { background: #d9e0cc; border-left-color: #6d7f5c; color: #3d4934; }
+    .apt-card.type-devolutiva { background: #e8d0ca; border-left-color: #a64e3d; color: #5a2820; }
+    .apt-card.type-primeira { background: #d6dde8; border-left-color: #4a6d8e; color: #1e3a5a; }
+    .apt-card.type-retorno { background: #eae2d3; border-left-color: #8c7552; color: #493b24; }
+
+    /* Modificadores de status */
+    .apt-card.status-cancelado { opacity: 0.4; text-decoration: line-through; }
+    .apt-card.status-faltou { opacity: 0.55; }
+    .apt-card.status-faltou::after, .apt-card.status-cancelado::after { content: ''; position: absolute; top: 50%; left: 5%; right: 5%; height: 1px; background: currentColor; opacity: 0.4; }
+    .apt-card.status-realizado { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08); }
+    .apt-card.status-realizado::before { content: '✓'; position: absolute; top: 3px; right: 4px; font-size: 0.7rem; opacity: 0.55; }
+
+    /* Agenda vazia */
+    .agenda-empty { text-align: center; padding: 4rem 2rem; color: var(--ink-soft); }
+    .agenda-empty h3 { font-family: var(--font-display); font-size: 1.4rem; color: var(--ink); margin-bottom: 0.5rem; }
+    .agenda-empty h3 em { color: var(--gold-deep); font-style: italic; }
+    .agenda-empty p { font-family: var(--font-display); font-style: italic; max-width: 40ch; margin: 0 auto 1.5rem; }
+
+    /* Legendas de cor */
+    .agenda-legend { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; padding: 0.75rem 1rem; background: var(--cream-soft); border-radius: var(--radius-md); border: 1px solid var(--border-soft); font-size: 0.78rem; color: var(--ink-soft); align-items: center; }
+    .agenda-legend .legend-title { font-family: var(--font-display); font-style: italic; color: var(--ink-faint); margin-right: 0.4rem; }
+    .agenda-legend-item { display: inline-flex; align-items: center; gap: 0.4rem; }
+    .agenda-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+    .legend-sessao { background: #b8944a; }
+    .legend-avaliacao { background: #6d7f5c; }
+    .legend-devolutiva { background: #a64e3d; }
+    .legend-primeira { background: #4a6d8e; }
+    .legend-retorno { background: #8c7552; }
+
+    /* Dropdown de busca de paciente (modal de atendimento) */
+    .patient-picker { position: relative; }
+    .patient-picker-input { width: 100%; padding: 0.7rem 0.95rem; background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.9rem; transition: all 0.15s; }
+    .patient-picker-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-wash); }
+    .patient-picker-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--cream-soft); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); max-height: 240px; overflow-y: auto; z-index: 20; display: none; }
+    .patient-picker-dropdown.active { display: block; }
+    .patient-picker-item { padding: 0.6rem 0.85rem; cursor: pointer; border-bottom: 1px solid var(--border-soft); display: flex; align-items: center; gap: 0.6rem; transition: all 0.1s; }
+    .patient-picker-item:last-child { border-bottom: none; }
+    .patient-picker-item:hover { background: var(--cream); }
+    .patient-picker-item .pp-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--gold-soft), var(--gold)); color: var(--cream-soft); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 0.8rem; font-weight: 500; flex-shrink: 0; }
+    .patient-picker-item .pp-name { font-size: 0.9rem; color: var(--ink); }
+    .patient-picker-empty { padding: 1rem; text-align: center; font-size: 0.85rem; color: var(--ink-faint); font-style: italic; }
+
     /* Dropdown de exportação */
     .export-wrap { position: relative; display: inline-block; }
     .export-menu { position: absolute; top: calc(100% + 6px); right: 0; background: var(--cream-soft); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); min-width: 220px; overflow: hidden; z-index: 50; display: none; }
@@ -480,9 +568,9 @@
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           Pacientes
         </button>
-        <button class="nav-item" disabled>
+        <button class="nav-item" data-page="agenda">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          Agenda <span class="badge">em breve</span>
+          Agenda
         </button>
         <button class="nav-item" disabled>
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -503,6 +591,51 @@
 
     <main class="main">
       <!-- LISTA -->
+      <!-- AGENDA -->
+      <div id="agendaPage" class="agenda-page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Agenda</h1>
+            <p class="page-subtitle">atendimentos da semana</p>
+          </div>
+          <div style="display:flex; gap:0.75rem; align-items:center;">
+            <button class="btn btn-gold" id="btnNewAppointment">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Novo atendimento
+            </button>
+          </div>
+        </div>
+
+        <div class="agenda-toolbar">
+          <div class="agenda-nav">
+            <button class="btn btn-secondary btn-sm" id="btnPrevWeek" title="Semana anterior">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="btn btn-ghost btn-sm" id="btnTodayWeek">Hoje</button>
+            <button class="btn btn-secondary btn-sm" id="btnNextWeek" title="Próxima semana">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <div class="agenda-week-label" id="weekLabel">—</div>
+          </div>
+        </div>
+
+        <div class="agenda-stats" id="agendaStats"></div>
+
+        <div class="agenda-grid-wrap">
+          <div class="agenda-grid-header" id="agendaGridHeader"></div>
+          <div class="agenda-grid-body" id="agendaGridBody"></div>
+        </div>
+
+        <div class="agenda-legend">
+          <span class="legend-title">tipos:</span>
+          <span class="agenda-legend-item"><span class="agenda-legend-dot legend-sessao"></span>Sessão</span>
+          <span class="agenda-legend-item"><span class="agenda-legend-dot legend-avaliacao"></span>Avaliação</span>
+          <span class="agenda-legend-item"><span class="agenda-legend-dot legend-devolutiva"></span>Devolutiva</span>
+          <span class="agenda-legend-item"><span class="agenda-legend-dot legend-primeira"></span>Primeira consulta</span>
+          <span class="agenda-legend-item"><span class="agenda-legend-dot legend-retorno"></span>Retorno</span>
+        </div>
+      </div>
+
       <div id="listView">
         <div class="page-header">
           <div>
@@ -671,6 +804,102 @@
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- MODAL ATENDIMENTO -->
+  <div class="modal-backdrop" id="appointmentModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="apptModalTitle">Novo <em>atendimento</em></h2>
+        <p id="apptModalSubtitle">agendar sessão com paciente</p>
+      </div>
+      <form id="appointmentForm">
+        <div class="modal-body">
+          <div class="form-grid">
+
+            <div class="form-section-title">Paciente</div>
+
+            <div class="form-group full">
+              <label class="form-label">Paciente <span class="required">*</span></label>
+              <div class="patient-picker">
+                <input type="text" class="patient-picker-input" id="apptPatientSearch" placeholder="digite o nome do paciente..." autocomplete="off" />
+                <input type="hidden" id="apptPatientId" />
+                <div class="patient-picker-dropdown" id="apptPatientDropdown"></div>
+              </div>
+            </div>
+
+            <div class="form-section-title">Data e horário</div>
+
+            <div class="form-group">
+              <label class="form-label">Data <span class="required">*</span></label>
+              <input type="date" class="form-input" id="apptData" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Modalidade</label>
+              <select class="form-select" id="apptModalidade">
+                <option value="presencial">Presencial</option>
+                <option value="online">Online</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Hora de início <span class="required">*</span></label>
+              <input type="time" class="form-input" id="apptHoraInicio" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Hora de término</label>
+              <input type="time" class="form-input" id="apptHoraFim" />
+            </div>
+
+            <div class="form-section-title">Tipo e valor</div>
+
+            <div class="form-group">
+              <label class="form-label">Tipo de atendimento <span class="required">*</span></label>
+              <select class="form-select" id="apptTipo" required>
+                <option value="sessao">Sessão</option>
+                <option value="avaliacao">Avaliação</option>
+                <option value="devolutiva">Devolutiva</option>
+                <option value="primeira">Primeira consulta</option>
+                <option value="retorno">Retorno</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Valor (R$)</label>
+              <input type="number" class="form-input" id="apptValor" step="0.01" min="0" placeholder="0,00" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <select class="form-select" id="apptStatus">
+                <option value="agendado">Agendado</option>
+                <option value="confirmado">Confirmado</option>
+                <option value="realizado">Realizado</option>
+                <option value="faltou">Paciente faltou</option>
+                <option value="cancelado">Cancelado</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <!-- placeholder pro grid -->
+            </div>
+
+            <div class="form-group full">
+              <label class="form-label">Observações</label>
+              <textarea class="form-textarea" id="apptObservacoes" rows="2"></textarea>
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger btn-sm" id="btnDeleteAppt" style="margin-right:auto; display:none;">Excluir</button>
+          <button type="button" class="btn btn-ghost" id="btnCancelAppt">Cancelar</button>
+          <button type="submit" class="btn btn-gold" id="btnSaveAppt"><span>Salvar</span></button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- MODAL PACIENTE -->
@@ -852,6 +1081,7 @@
     const EVOLUTIONS_FOLDER_NAME = 'evolucoes';
     const ANAMNESES_FOLDER_NAME = 'anamneses';
     const DATA_FILENAME = 'pacientes.json';
+    const AGENDA_FILENAME = 'agenda.json';
     const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
     const SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
 
@@ -991,6 +1221,13 @@
       anamnese: null,              // objeto com respostas do paciente atual
       anamneseFileId: null,        // id do arquivo json no Drive
       anamneseLoading: false,
+
+      // Agenda
+      appointments: [],            // todos os atendimentos
+      agendaFileId: null,
+      currentWeekStart: null,      // data (Date) da segunda-feira da semana visível
+      editingApptId: null,
+      currentPage: 'patients',     // patients | agenda
     };
 
     const $ = (id) => document.getElementById(id);
@@ -1126,6 +1363,8 @@
       state.anamnesesFolderId = null;
       state.anamnese = null;
       state.anamneseFileId = null;
+      state.appointments = [];
+      state.agendaFileId = null;
       $('app').classList.remove('active');
       $('loginScreen').style.display = 'flex';
     }
@@ -1164,6 +1403,15 @@
         });
         if (res.result.files.length) { state.dataFileId = res.result.files[0].id; await loadPatients(); }
         else { state.dataFileId = null; state.patients = []; await savePatients(); }
+
+        // arquivo de agenda
+        res = await gapi.client.drive.files.list({
+          q: `name='${AGENDA_FILENAME}' and '${state.folderId}' in parents and trashed=false`,
+          fields: 'files(id, name)',
+        });
+        if (res.result.files.length) { state.agendaFileId = res.result.files[0].id; await loadAppointments(); }
+        else { state.agendaFileId = null; state.appointments = []; }
+
         setSyncState('ok');
       } catch (e) {
         console.error(e); setSyncState('error');
@@ -2398,6 +2646,427 @@
     window.exportProntuarioPdf = exportProntuarioPdf;
 
     // ============================================================
+    // AGENDA — carregar/salvar
+    // ============================================================
+    const APPT_TYPES = {
+      sessao: 'Sessão',
+      avaliacao: 'Avaliação',
+      devolutiva: 'Devolutiva',
+      primeira: 'Primeira consulta',
+      retorno: 'Retorno',
+    };
+    const APPT_STATUS = {
+      agendado: 'Agendado',
+      confirmado: 'Confirmado',
+      realizado: 'Realizado',
+      faltou: 'Paciente faltou',
+      cancelado: 'Cancelado',
+    };
+
+    async function loadAppointments() {
+      if (!state.agendaFileId) return;
+      try {
+        const res = await gapi.client.drive.files.get({ fileId: state.agendaFileId, alt: 'media' });
+        state.appointments = JSON.parse(res.body) || [];
+      } catch (e) {
+        console.error(e);
+        state.appointments = [];
+      }
+    }
+
+    async function saveAppointments() {
+      setSyncState('syncing');
+      try {
+        await uploadJsonFile(state.agendaFileId, AGENDA_FILENAME, state.appointments, state.folderId, (id) => { state.agendaFileId = id; });
+        setSyncState('ok');
+      } catch (e) {
+        console.error(e); setSyncState('error');
+        toast('Erro ao salvar agenda', 'error');
+        throw e;
+      }
+    }
+
+    // ============================================================
+    // AGENDA — utilidades de data
+    // ============================================================
+    function startOfWeek(date) {
+      // Retorna a segunda-feira da semana contendo 'date'
+      const d = new Date(date);
+      d.setHours(0, 0, 0, 0);
+      const dow = d.getDay(); // 0=dom, 1=seg...
+      const diff = (dow === 0 ? -6 : 1 - dow); // pra chegar na segunda
+      d.setDate(d.getDate() + diff);
+      return d;
+    }
+
+    function addDays(date, days) {
+      const d = new Date(date);
+      d.setDate(d.getDate() + days);
+      return d;
+    }
+
+    function toIsoDate(date) {
+      const d = new Date(date);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function isSameDay(a, b) {
+      return toIsoDate(a) === toIsoDate(b);
+    }
+
+    function formatWeekRange(weekStart) {
+      const end = addDays(weekStart, 5); // sábado
+      const opts = { day: '2-digit', month: 'short' };
+      const startStr = weekStart.toLocaleDateString('pt-BR', opts);
+      const endStr = end.toLocaleDateString('pt-BR', opts);
+      const year = end.getFullYear();
+      return { startStr, endStr, year };
+    }
+
+    function timeToMinutes(hhmm) {
+      if (!hhmm) return 0;
+      const [h, m] = hhmm.split(':').map(Number);
+      return h * 60 + m;
+    }
+
+    function minutesToTime(minutes) {
+      const h = Math.floor(minutes / 60);
+      const m = minutes % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+
+    // ============================================================
+    // AGENDA — renderização
+    // ============================================================
+    const AGENDA_START_HOUR = 7;
+    const AGENDA_END_HOUR = 21;
+    const AGENDA_SLOT_MINUTES = 30;
+    const AGENDA_SLOT_HEIGHT = 32; // px — tem que bater com .agenda-hour-slot
+
+    function renderAgendaPage() {
+      if (!state.currentWeekStart) state.currentWeekStart = startOfWeek(new Date());
+      renderAgendaHeader();
+      renderAgendaStats();
+      renderAgendaGrid();
+    }
+
+    function renderAgendaHeader() {
+      const weekStart = state.currentWeekStart;
+      const { startStr, endStr, year } = formatWeekRange(weekStart);
+      $('weekLabel').innerHTML = `<em>${startStr}</em> até <em>${endStr}</em> de ${year}`;
+
+      // Cabeçalho das colunas
+      const header = $('agendaGridHeader');
+      let html = '<div class="agenda-day-header" style="border-right:1px solid var(--border-soft);"></div>';
+      const dowNames = ['SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+      for (let i = 0; i < 6; i++) {
+        const d = addDays(weekStart, i);
+        const isToday = isSameDay(d, new Date());
+        const dom = d.getDate();
+        html += `<div class="agenda-day-header ${isToday ? 'today' : ''}">
+          <div class="dow">${dowNames[i]}</div>
+          <div class="dom">${String(dom).padStart(2, '0')}</div>
+        </div>`;
+      }
+      header.innerHTML = html;
+    }
+
+    function renderAgendaStats() {
+      const weekStart = state.currentWeekStart;
+      const weekEnd = addDays(weekStart, 5);
+      const weekEndIso = toIsoDate(weekEnd);
+      const weekStartIso = toIsoDate(weekStart);
+
+      const weekAppts = state.appointments.filter(a =>
+        a.data >= weekStartIso && a.data <= weekEndIso
+      );
+
+      const total = weekAppts.length;
+      const realizados = weekAppts.filter(a => a.status === 'realizado').length;
+      const agendados = weekAppts.filter(a => ['agendado', 'confirmado'].includes(a.status)).length;
+      const valorPrevisto = weekAppts
+        .filter(a => !['cancelado', 'faltou'].includes(a.status))
+        .reduce((sum, a) => sum + (parseFloat(a.valor) || 0), 0);
+
+      const fmtReal = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+      $('agendaStats').innerHTML = `
+        <div class="agenda-stat">
+          <div class="label">Total</div>
+          <div class="value">${total}</div>
+          <div class="hint">atendimentos</div>
+        </div>
+        <div class="agenda-stat">
+          <div class="label">Agendados</div>
+          <div class="value">${agendados}</div>
+          <div class="hint">por confirmar</div>
+        </div>
+        <div class="agenda-stat">
+          <div class="label">Realizados</div>
+          <div class="value">${realizados}</div>
+          <div class="hint">concluídos</div>
+        </div>
+        <div class="agenda-stat">
+          <div class="label">Receita prevista</div>
+          <div class="value">${fmtReal(valorPrevisto)}</div>
+          <div class="hint">na semana</div>
+        </div>
+      `;
+    }
+
+    function renderAgendaGrid() {
+      const body = $('agendaGridBody');
+      const weekStart = state.currentWeekStart;
+
+      // Coluna de horários
+      let html = '<div class="agenda-hour-col">';
+      for (let h = AGENDA_START_HOUR; h < AGENDA_END_HOUR; h++) {
+        html += `<div class="agenda-hour-slot full-hour">${String(h).padStart(2, '0')}:00</div>`;
+        html += `<div class="agenda-hour-slot"></div>`;
+      }
+      html += '</div>';
+
+      // 6 colunas de dias
+      for (let i = 0; i < 6; i++) {
+        const d = addDays(weekStart, i);
+        const isoDate = toIsoDate(d);
+        html += `<div class="agenda-day-col" data-date="${isoDate}">`;
+        // Slots vazios (clicáveis)
+        for (let h = AGENDA_START_HOUR; h < AGENDA_END_HOUR; h++) {
+          html += `<div class="slot full-hour" data-date="${isoDate}" data-hour="${String(h).padStart(2, '0')}:00"></div>`;
+          html += `<div class="slot" data-date="${isoDate}" data-hour="${String(h).padStart(2, '0')}:30"></div>`;
+        }
+        html += '</div>';
+      }
+      body.innerHTML = html;
+
+      // Posicionar atendimentos da semana como cards absolutos
+      const weekEndIso = toIsoDate(addDays(weekStart, 5));
+      const weekStartIso = toIsoDate(weekStart);
+      const weekAppts = state.appointments.filter(a =>
+        a.data >= weekStartIso && a.data <= weekEndIso
+      );
+
+      weekAppts.forEach(apt => {
+        const dayCol = body.querySelector(`.agenda-day-col[data-date="${apt.data}"]`);
+        if (!dayCol) return;
+        const patient = state.patients.find(p => p.id === apt.patientId);
+        const patientName = patient ? patient.nome : '(paciente excluído)';
+
+        const startMin = timeToMinutes(apt.horaInicio);
+        const endMin = apt.horaFim ? timeToMinutes(apt.horaFim) : startMin + 50;
+        const duration = Math.max(endMin - startMin, 20);
+
+        // Posição relativa ao slot início (7h)
+        const topSlots = (startMin - AGENDA_START_HOUR * 60) / AGENDA_SLOT_MINUTES;
+        const heightSlots = duration / AGENDA_SLOT_MINUTES;
+        const top = topSlots * AGENDA_SLOT_HEIGHT;
+        const height = heightSlots * AGENDA_SLOT_HEIGHT - 2;
+
+        if (top < 0) return; // atendimento antes das 7h — não mostra
+
+        const card = document.createElement('div');
+        card.className = `apt-card type-${apt.tipo || 'sessao'} status-${apt.status || 'agendado'}`;
+        card.style.top = top + 'px';
+        card.style.height = height + 'px';
+        card.dataset.apptId = apt.id;
+        card.innerHTML = `
+          <div class="apt-time">${apt.horaInicio}${apt.horaFim ? ' – ' + apt.horaFim : ''}</div>
+          <div class="apt-patient">${escapeHtml(patientName)}</div>
+          <div class="apt-type">${APPT_TYPES[apt.tipo] || apt.tipo}</div>
+        `;
+        card.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openEditAppointment(apt.id);
+        });
+        dayCol.appendChild(card);
+      });
+
+      // Clicar num slot vazio → novo atendimento pré-preenchido
+      body.querySelectorAll('.slot').forEach(slot => {
+        slot.addEventListener('click', () => {
+          openNewAppointment({ data: slot.dataset.date, hora: slot.dataset.hour });
+        });
+      });
+    }
+
+    // ============================================================
+    // AGENDA — CRUD de atendimentos
+    // ============================================================
+    function openNewAppointment(prefill = {}) {
+      state.editingApptId = null;
+      $('apptModalTitle').innerHTML = 'Novo <em>atendimento</em>';
+      $('apptModalSubtitle').textContent = 'agendar sessão com paciente';
+      $('btnDeleteAppt').style.display = 'none';
+
+      $('appointmentForm').reset();
+      $('apptPatientId').value = '';
+      $('apptPatientSearch').value = '';
+      $('apptData').value = prefill.data || toIsoDate(new Date());
+      $('apptHoraInicio').value = prefill.hora || '08:00';
+      // Hora fim padrão = início + 50min
+      const endMin = timeToMinutes(prefill.hora || '08:00') + 50;
+      $('apptHoraFim').value = minutesToTime(endMin);
+      $('apptModalidade').value = 'presencial';
+      $('apptTipo').value = 'sessao';
+      $('apptStatus').value = 'agendado';
+
+      $('appointmentModal').classList.add('active');
+      setTimeout(() => $('apptPatientSearch').focus(), 150);
+    }
+
+    function openEditAppointment(id) {
+      const apt = state.appointments.find(a => a.id === id);
+      if (!apt) return;
+      state.editingApptId = id;
+      $('apptModalTitle').innerHTML = 'Editar <em>atendimento</em>';
+      const patient = state.patients.find(p => p.id === apt.patientId);
+      if (patient) {
+        $('apptModalSubtitle').innerHTML = `${escapeHtml(patient.nome)} · ${formatDate(apt.data)} · <a href="#" onclick="goToPatientFromAppt('${patient.id}'); return false;" style="color:var(--gold-deep); font-style:italic;">abrir ficha →</a>`;
+      } else {
+        $('apptModalSubtitle').textContent = 'atendimento';
+      }
+      $('btnDeleteAppt').style.display = 'inline-flex';
+
+      $('apptPatientId').value = apt.patientId;
+      $('apptPatientSearch').value = patient ? patient.nome : '';
+      $('apptData').value = apt.data;
+      $('apptHoraInicio').value = apt.horaInicio;
+      $('apptHoraFim').value = apt.horaFim || '';
+      $('apptModalidade').value = apt.modalidade || 'presencial';
+      $('apptTipo').value = apt.tipo || 'sessao';
+      $('apptValor').value = apt.valor || '';
+      $('apptStatus').value = apt.status || 'agendado';
+      $('apptObservacoes').value = apt.observacoes || '';
+
+      $('appointmentModal').classList.add('active');
+    }
+
+    function goToPatientFromAppt(patientId) {
+      closeAppointmentModal();
+      switchPage('patients');
+      openPatient(patientId);
+    }
+    window.goToPatientFromAppt = goToPatientFromAppt;
+
+    function closeAppointmentModal() {
+      $('appointmentModal').classList.remove('active');
+      $('apptPatientDropdown').classList.remove('active');
+    }
+
+    async function saveAppointment(e) {
+      e.preventDefault();
+      const patientId = $('apptPatientId').value;
+      if (!patientId) { toast('Selecione um paciente', 'error'); $('apptPatientSearch').focus(); return; }
+
+      const data = {
+        patientId,
+        data: $('apptData').value,
+        horaInicio: $('apptHoraInicio').value,
+        horaFim: $('apptHoraFim').value,
+        modalidade: $('apptModalidade').value,
+        tipo: $('apptTipo').value,
+        valor: $('apptValor').value ? parseFloat($('apptValor').value) : null,
+        status: $('apptStatus').value,
+        observacoes: $('apptObservacoes').value.trim(),
+      };
+
+      if (!data.data || !data.horaInicio) { toast('Data e hora são obrigatórias', 'error'); return; }
+
+      $('btnSaveAppt').innerHTML = '<span class="spinner"></span><span>Salvando...</span>';
+      try {
+        if (state.editingApptId) {
+          const idx = state.appointments.findIndex(a => a.id === state.editingApptId);
+          if (idx >= 0) state.appointments[idx] = { ...state.appointments[idx], ...data, atualizado_em: new Date().toISOString() };
+        } else {
+          state.appointments.push({
+            id: uid('ap'),
+            ...data,
+            criado_em: new Date().toISOString(),
+            atualizado_em: new Date().toISOString(),
+          });
+        }
+        await saveAppointments();
+        closeAppointmentModal();
+        renderAgendaPage();
+        toast(state.editingApptId ? 'Atendimento atualizado' : 'Atendimento agendado', 'success');
+      } catch {
+        toast('Erro ao salvar', 'error');
+      } finally {
+        $('btnSaveAppt').innerHTML = '<span>Salvar</span>';
+      }
+    }
+
+    async function deleteAppointment() {
+      if (!state.editingApptId) return;
+      if (!confirm('Excluir este atendimento? Esta ação não pode ser desfeita.')) return;
+      state.appointments = state.appointments.filter(a => a.id !== state.editingApptId);
+      try {
+        await saveAppointments();
+        closeAppointmentModal();
+        renderAgendaPage();
+        toast('Atendimento excluído', 'success');
+      } catch {
+        toast('Erro ao excluir', 'error');
+      }
+    }
+
+    // ============================================================
+    // AGENDA — picker de paciente
+    // ============================================================
+    function renderPatientPicker(query) {
+      const drop = $('apptPatientDropdown');
+      const q = (query || '').trim().toLowerCase();
+      let list = state.patients;
+      if (q) {
+        list = list.filter(p => (p.nome || '').toLowerCase().includes(q));
+      }
+      list = list.slice().sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
+      if (!list.length) {
+        drop.innerHTML = '<div class="patient-picker-empty">nenhum paciente encontrado</div>';
+      } else {
+        drop.innerHTML = list.slice(0, 15).map(p => `
+          <div class="patient-picker-item" data-id="${p.id}">
+            <div class="pp-avatar">${initials(p.nome)}</div>
+            <div class="pp-name">${escapeHtml(p.nome)}</div>
+          </div>
+        `).join('');
+        drop.querySelectorAll('.patient-picker-item').forEach(it => {
+          it.addEventListener('click', () => {
+            const id = it.dataset.id;
+            const p = state.patients.find(x => x.id === id);
+            if (!p) return;
+            $('apptPatientId').value = p.id;
+            $('apptPatientSearch').value = p.nome;
+            drop.classList.remove('active');
+          });
+        });
+      }
+      drop.classList.add('active');
+    }
+
+    // ============================================================
+    // AGENDA — navegação de páginas
+    // ============================================================
+    function switchPage(page) {
+      state.currentPage = page;
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
+      if (page === 'agenda') {
+        $('listView').style.display = 'none';
+        $('detailView').classList.remove('active');
+        $('agendaPage').classList.add('active');
+        renderAgendaPage();
+      } else {
+        $('agendaPage').classList.remove('active');
+        renderAll();
+      }
+    }
+    window.switchPage = switchPage;
+
+    // ============================================================
     // EVOLUÇÕES — carregar/salvar
     // ============================================================
     function evolutionFilenameFor(patientId) {
@@ -2999,6 +3668,59 @@
     $('btnCancelAnamnese').addEventListener('click', closeAnamneseModal);
     $('anamneseForm').addEventListener('submit', saveAnamnese);
 
+    // Agenda — navegação da sidebar
+    document.querySelectorAll('.nav-item[data-page]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.disabled) return;
+        switchPage(btn.dataset.page);
+      });
+    });
+
+    // Agenda — botões de navegação semanal
+    $('btnPrevWeek').addEventListener('click', () => {
+      state.currentWeekStart = addDays(state.currentWeekStart, -7);
+      renderAgendaPage();
+    });
+    $('btnNextWeek').addEventListener('click', () => {
+      state.currentWeekStart = addDays(state.currentWeekStart, 7);
+      renderAgendaPage();
+    });
+    $('btnTodayWeek').addEventListener('click', () => {
+      state.currentWeekStart = startOfWeek(new Date());
+      renderAgendaPage();
+    });
+
+    // Agenda — novo atendimento
+    $('btnNewAppointment').addEventListener('click', () => openNewAppointment());
+
+    // Modal de atendimento
+    $('btnCancelAppt').addEventListener('click', closeAppointmentModal);
+    $('btnDeleteAppt').addEventListener('click', deleteAppointment);
+    $('appointmentForm').addEventListener('submit', saveAppointment);
+    $('appointmentModal').addEventListener('click', (e) => { if (e.target.id === 'appointmentModal') closeAppointmentModal(); });
+
+    // Atualiza hora fim quando muda a hora início (+50min padrão)
+    $('apptHoraInicio').addEventListener('change', (e) => {
+      if (!$('apptHoraFim').value && e.target.value) {
+        const endMin = timeToMinutes(e.target.value) + 50;
+        $('apptHoraFim').value = minutesToTime(endMin);
+      }
+    });
+
+    // Patient picker
+    $('apptPatientSearch').addEventListener('input', (e) => {
+      $('apptPatientId').value = ''; // limpa seleção se alterou o texto
+      renderPatientPicker(e.target.value);
+    });
+    $('apptPatientSearch').addEventListener('focus', (e) => {
+      renderPatientPicker(e.target.value);
+    });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.patient-picker')) {
+        $('apptPatientDropdown').classList.remove('active');
+      }
+    });
+
     // Tag input — adicionar / remover
     $('tagInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ',') {
@@ -3033,6 +3755,7 @@
       if (e.key === 'Escape') {
         if ($('anamneseModal').classList.contains('active')) closeAnamneseModal();
         else if ($('evolutionModal').classList.contains('active')) closeEvolutionModal();
+        else if ($('appointmentModal').classList.contains('active')) closeAppointmentModal();
         else if ($('patientModal').classList.contains('active')) closePatientModal();
       }
     });
