@@ -340,6 +340,65 @@
     .loading-box .spinner { margin: 0 auto 1rem; width: 24px; height: 24px; }
     .loading-box p { font-family: var(--font-display); font-style: italic; }
 
+    /* ANAMNESE */
+    .anamnese-intro { background: var(--cream-soft); border: 1px solid var(--border-soft); border-left: 4px solid var(--gold); border-radius: var(--radius-lg); padding: 1.75rem 2rem; margin-bottom: 2rem; }
+    .anamnese-intro h3 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 400; margin-bottom: 0.75rem; }
+    .anamnese-intro h3 em { font-style: italic; color: var(--gold-deep); }
+    .anamnese-intro p { font-family: var(--font-display); font-style: italic; font-size: 1rem; color: var(--ink-soft); line-height: 1.7; margin-bottom: 0.5rem; }
+    .anamnese-intro p:last-child { margin-bottom: 0; }
+
+    .anamnese-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .anamnese-header h3 { font-family: var(--font-display); font-size: 1.6rem; font-weight: 400; }
+    .anamnese-header h3 em { font-style: italic; color: var(--gold-deep); }
+    .anamnese-status { font-size: 0.78rem; color: var(--ink-faint); font-family: var(--font-display); font-style: italic; margin-top: 0.3rem; }
+
+    .anamnese-empty { text-align: center; padding: 4rem 2rem; background: var(--cream-soft); border: 1px dashed var(--border); border-radius: var(--radius-lg); position: relative; }
+    .anamnese-empty::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 30% 30%, var(--sage-wash) 0%, transparent 40%), radial-gradient(circle at 70% 70%, var(--gold-wash) 0%, transparent 40%); opacity: 0.3; border-radius: var(--radius-lg); pointer-events: none; }
+    .anamnese-empty-content { position: relative; z-index: 1; }
+    .anamnese-empty h3 { font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 400; }
+    .anamnese-empty h3 em { font-style: italic; color: var(--gold-deep); }
+    .anamnese-empty p { color: var(--ink-soft); max-width: 44ch; margin: 0 auto 2rem; font-family: var(--font-display); font-style: italic; font-size: 1rem; }
+
+    .anamnese-view-section { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: 1.75rem 2rem; margin-bottom: 1.25rem; }
+    .anamnese-view-section h4 { font-family: var(--font-display); font-style: italic; font-size: 1.25rem; color: var(--gold-deep); margin-bottom: 1rem; padding-bottom: 0.7rem; border-bottom: 1px solid var(--border-soft); font-weight: 500; }
+    .anamnese-answer { padding: 0.75rem 0; border-bottom: 1px solid var(--border-soft); }
+    .anamnese-answer:last-child { border-bottom: none; }
+    .anamnese-answer .q { font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.03em; margin-bottom: 0.35rem; line-height: 1.4; }
+    .anamnese-answer .a { font-size: 0.95rem; color: var(--ink); line-height: 1.65; white-space: pre-wrap; word-wrap: break-word; }
+    .anamnese-answer .a.empty { color: var(--ink-faint); font-style: italic; font-family: var(--font-display); }
+    .anamnese-answer .a.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .anamnese-answer .a.chips .chip { background: var(--sage-wash); color: var(--sage-deep); padding: 0.25rem 0.65rem; border-radius: 50px; font-size: 0.8rem; }
+
+    /* Modal de anamnese — diferente do modal normal (vertical, seções colapsáveis) */
+    .anamnese-form-section { margin-bottom: 1.5rem; }
+    .anamnese-form-section-header { font-family: var(--font-display); font-size: 1.2rem; font-style: italic; color: var(--gold-deep); padding: 0.7rem 0; border-bottom: 2px solid var(--gold-wash); margin-bottom: 1rem; font-weight: 500; display: flex; align-items: center; justify-content: space-between; }
+    .anamnese-form-section-header .section-idx { font-family: var(--font-body); font-size: 0.7rem; color: var(--ink-faint); letter-spacing: 0.1em; text-transform: uppercase; font-style: normal; }
+    .anamnese-form-q { margin-bottom: 1.15rem; }
+    .anamnese-form-q label { display: block; font-size: 0.85rem; color: var(--ink); margin-bottom: 0.4rem; line-height: 1.5; }
+    .anamnese-form-q label .required { color: var(--gold-deep); }
+    .anamnese-form-q label .q-num { color: var(--ink-faint); font-size: 0.75rem; margin-right: 0.3rem; }
+    .anamnese-form-q textarea, .anamnese-form-q input[type="text"], .anamnese-form-q input[type="date"] { width: 100%; padding: 0.7rem 0.95rem; background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.9rem; transition: all 0.15s; font-family: inherit; }
+    .anamnese-form-q textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+    .anamnese-form-q textarea:focus, .anamnese-form-q input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-wash); }
+
+    .checkbox-group { display: flex; flex-direction: column; gap: 0.5rem; }
+    .checkbox-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.85rem; background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius-md); cursor: pointer; transition: all 0.15s; }
+    .checkbox-item:hover { border-color: var(--gold-soft); background: var(--cream-soft); }
+    .checkbox-item input[type="checkbox"] { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 4px; background: var(--cream-soft); cursor: pointer; position: relative; flex-shrink: 0; transition: all 0.15s; margin: 0; }
+    .checkbox-item input[type="checkbox"]:checked { background: var(--gold); border-color: var(--gold); }
+    .checkbox-item input[type="checkbox"]:checked::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--cream-soft); font-size: 12px; font-weight: bold; }
+    .checkbox-item span { font-size: 0.9rem; color: var(--ink); }
+    .checkbox-item.other-wrap { display: grid; grid-template-columns: auto 1fr; gap: 0.6rem; align-items: center; }
+    .checkbox-item.other-wrap input[type="text"] { padding: 0.35rem 0.6rem; font-size: 0.85rem; border-radius: var(--radius-sm); }
+
+    /* Modal maior específico pra anamnese */
+    .modal.anamnese-modal { max-width: 820px; }
+
+    /* Sticky footer na anamnese */
+    .anamnese-modal-footer-bar { position: sticky; bottom: 0; background: var(--cream); padding: 0.9rem 1.25rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; border-radius: 0 0 var(--radius-lg) var(--radius-lg); z-index: 10; flex-wrap: wrap; }
+    .anamnese-progress { font-size: 0.78rem; color: var(--ink-soft); font-family: var(--font-display); font-style: italic; }
+    .anamnese-progress strong { color: var(--gold-deep); font-weight: 600; font-style: normal; font-family: var(--font-body); }
+
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
       .sidebar { position: static; height: auto; }
@@ -486,6 +545,7 @@
 
         <div class="tabs">
           <button class="tab-btn active" data-tab="info">Ficha</button>
+          <button class="tab-btn" data-tab="anamnese">Anamnese</button>
           <button class="tab-btn" data-tab="evolutions">Evoluções <span class="count" id="evolutionCount">0</span></button>
         </div>
 
@@ -513,6 +573,11 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- TAB: ANAMNESE -->
+        <div class="tab-panel" id="tabAnamnese">
+          <div id="anamneseContent"></div>
         </div>
 
         <!-- TAB: EVOLUÇÕES -->
@@ -586,6 +651,35 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-ghost" id="btnCancel">Cancelar</button>
           <button type="submit" class="btn btn-gold" id="btnSave"><span>Salvar</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL ANAMNESE -->
+  <div class="modal-backdrop" id="anamneseModal">
+    <div class="modal anamnese-modal">
+      <div class="modal-header">
+        <h2 id="anamneseModalTitle">Anamnese <em>comportamental</em></h2>
+        <p id="anamneseModalSubtitle">preencha as informações sobre a criança</p>
+      </div>
+      <form id="anamneseForm">
+        <div class="modal-body">
+          <div class="anamnese-intro">
+            <h3>Olá, como vai? <em>✦</em></h3>
+            <p>Se você está lendo e preenchendo esse formulário, é porque daremos início ao processo terapêutico da sua criança. Que bom ter você por aqui!</p>
+            <p>Acreditamos que uma boa intervenção no desenvolvimento infantil deve levar em conta a tríade família — escola — clínica. Vocês são partes fundamentais do processo!</p>
+            <p>Neste documento, você vai preencher alguns dados importantes para que a equipe consiga conhecer um pouco mais sobre sua criança, tornando cada etapa do processo singular e personalizada.</p>
+          </div>
+
+          <div id="anamneseFormFields"></div>
+        </div>
+        <div class="anamnese-modal-footer-bar">
+          <div class="anamnese-progress" id="anamneseProgress">preenchidas: <strong>0</strong> de <strong>46</strong></div>
+          <div style="display:flex; gap:0.5rem;">
+            <button type="button" class="btn btn-ghost" id="btnCancelAnamnese">Cancelar</button>
+            <button type="submit" class="btn btn-gold" id="btnSaveAnamnese"><span>Salvar anamnese</span></button>
+          </div>
         </div>
       </form>
     </div>
@@ -686,12 +780,106 @@
     const GOOGLE_API_KEY = 'AIzaSyCwTF4upHfrwADh03Pw-KOUy1llac3pAD8';
     const DRIVE_FOLDER_NAME = 'Consultorio_Dados';
     const EVOLUTIONS_FOLDER_NAME = 'evolucoes';
+    const ANAMNESES_FOLDER_NAME = 'anamneses';
     const DATA_FILENAME = 'pacientes.json';
     const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
     const SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
 
     // Tags sugeridas
     const SUGGESTED_TAGS = ['ansiedade', 'depressão', 'luto', 'crise', 'progresso', 'família', 'relacionamento', 'autoestima', 'trauma', 'trabalho'];
+
+    // SCHEMA DA ANAMNESE (baseado no Google Forms da Gabrielly)
+    // tipos: 'text' (curto), 'textarea' (parágrafo), 'date', 'checkbox' (múltipla escolha com "outro")
+    const ANAMNESE_SCHEMA = [
+      {
+        title: 'Informações sobre a criança',
+        questions: [
+          { id: 'q01', num: 1, label: 'Nome completo', type: 'text', required: true },
+          { id: 'q02', num: 2, label: 'Data de nascimento', type: 'date', required: true, hint: 'Exemplo: 7 de janeiro de 2019' },
+          { id: 'q03', num: 3, label: 'A criança recebeu diagnóstico formal? Se sim, qual?', type: 'textarea', required: true },
+          { id: 'q04', num: 4, label: 'Quem é o médico que acompanha?', type: 'textarea', required: true },
+          { id: 'q05', num: 5, label: 'Faz uso de alguma medicação? Qual (ou quais)? Qual a dosagem?', type: 'textarea', required: true },
+          { id: 'q06', num: 6, label: 'Possui alguma alergia? Qual?', type: 'textarea', required: true },
+          { id: 'q07', num: 7, label: 'Realiza algum outro tratamento de saúde? Possui alguma comorbidade?', type: 'textarea', required: true },
+          { id: 'q08', num: 8, label: 'Como é a dieta (hábitos alimentares) da criança?', type: 'textarea', required: true },
+          { id: 'q09', num: 9, label: 'Qual escola estuda? Em qual série está?', type: 'textarea', required: true },
+          { id: 'q10', num: 10, label: 'Possui assistente educacional?', type: 'textarea', required: true },
+        ]
+      },
+      {
+        title: 'Informações sobre os pais ou responsáveis',
+        questions: [
+          { id: 'q11', num: 11, label: 'Nome completo e idade dos dois', type: 'textarea', required: true },
+          { id: 'q12', num: 12, label: 'Celular e email para contato', type: 'textarea', required: true },
+          { id: 'q13', num: 13, label: 'Endereço', type: 'textarea', required: true },
+          { id: 'q14', num: 14, label: 'Escolaridade, profissão e ocupação atual', type: 'textarea', required: true },
+        ]
+      },
+      {
+        title: 'Sobre o sono da criança',
+        questions: [
+          { id: 'q15', num: 15, label: 'Onde a criança dorme? Tem seu próprio quarto?', type: 'textarea', required: true },
+          { id: 'q16', num: 16, label: 'Tem o costume de dormir na cama dos pais? Quanto tempo?', type: 'textarea', required: true },
+          { id: 'q17', num: 17, label: 'Como é o sono da criança:', type: 'checkbox', required: true, options: ['Tranquilo', 'Agitado', 'Range os dentes', 'Apresenta terror noturno', 'Sonambulismo', 'Fala dormindo', 'Enurese (urina na cama)'], allowOther: true },
+          { id: 'q18', num: 18, label: 'Hábitos especiais (presença de alguém, objetos, embalo, chupeta, chupa dedo, etc)', type: 'textarea', required: true },
+        ]
+      },
+      {
+        title: 'Informações gerais',
+        questions: [
+          { id: 'q19', num: 19, label: 'Identifica que tenha alguma dificuldade motora?', type: 'textarea', required: true },
+          { id: 'q20', num: 20, label: 'Ao brincar, dá função aos objetos?', type: 'textarea', required: true },
+          { id: 'q21', num: 21, label: 'Brinca quanto tempo com 1 objeto?', type: 'textarea', required: true },
+          { id: 'q22', num: 22, label: 'Usa fralda? Apresenta sinais ao fazer xixi e coco?', type: 'textarea', required: true },
+          { id: 'q23', num: 23, label: 'Compreende instruções?', type: 'textarea', required: true },
+          { id: 'q24', num: 24, label: 'Como a criança se comunica?', type: 'textarea', required: true },
+          { id: 'q25', num: 25, label: 'Qual seu humor habitual?', type: 'textarea', required: true },
+          { id: 'q26', num: 26, label: 'Prefere brincar sozinho ou em grupos?', type: 'textarea', required: true },
+          { id: 'q27', num: 27, label: 'Estranha mudança de ambiente ou adapta-se facilmente ao meio?', type: 'textarea', required: true },
+          { id: 'q28', num: 28, label: 'Tem horários bem estabelecidos (rotinas de casa)?', type: 'textarea', required: true },
+          { id: 'q29', num: 29, label: 'Aceita bem as ordens e os "não"s?', type: 'textarea', required: true },
+          { id: 'q30', num: 30, label: 'Apresenta agressividade, apatia ou teimosia?', type: 'textarea', required: true },
+          { id: 'q31', num: 31, label: 'Percebe quando muda alguma coisa em casa ou quando há um objeto novo?', type: 'textarea', required: true },
+          { id: 'q32', num: 32, label: 'Tem algum medo? Como os pais reagem nesses momentos?', type: 'textarea', required: true },
+          { id: 'q33', num: 33, label: 'Quais as brincadeiras e brinquedos infantis preferidos?', type: 'textarea', required: true },
+          { id: 'q34', num: 34, label: 'Como a criança se comporta quando está sozinha:', type: 'textarea', required: true },
+          { id: 'q35', num: 35, label: 'Como a criança se comporta quando está em família:', type: 'textarea', required: true },
+          { id: 'q36', num: 36, label: 'Em que horários os pais brincam ou fazem alguma atividade de lazer com a criança?', type: 'textarea', required: true },
+          { id: 'q37', num: 37, label: 'Veste-se sozinha?', type: 'textarea', required: true },
+          { id: 'q38', num: 38, label: 'Marque aquilo que a criança consegue fazer com independência:', type: 'checkbox', required: true, options: ['Abotoar', 'Fechar', 'Tomar banho', 'Pentear o cabelo', 'Comer', 'Amarrar os cadarços', 'Calçar o sapato', 'Escovar os dentes'], allowOther: true },
+        ]
+      },
+      {
+        title: 'Comunicação e comportamento',
+        questions: [
+          { id: 'q39', num: 39, label: 'Qual é o principal método de comunicação do(a) seu(sua) filho(a) (linguagem de sinais, gestos, imagens, verbalizações – em caso afirmativo, quantas palavras nas frases)? Descreva sucintamente como ele(a) consegue que suas necessidades sejam atendidas.', type: 'textarea', required: true },
+          { id: 'q40', num: 40, label: 'Seu filho(a) tem algum comportamento disruptivo com o qual você está preocupado (exemplos: agressão, birra etc.)? Por favor descreva.', type: 'textarea', required: true },
+        ]
+      },
+      {
+        title: 'Reforçamento',
+        questions: [
+          { id: 'q41', num: 41, label: 'Liste algumas das preferências do(a) seu(sua) filho(a):', type: 'textarea', required: true },
+          { id: 'q42', num: 42, label: 'Liste algumas das aversões do(a) seu(sua) filho(a):', type: 'textarea', required: true },
+        ]
+      },
+      {
+        title: 'Atitudes predominantes',
+        questions: [
+          { id: 'q43', num: 43, label: 'Como você descreveria seu filho?', type: 'checkbox', required: true, options: ['Obediente', 'Independente', 'Comunicativo', 'Agressivo', 'Cooperativo', 'Amoroso'], allowOther: false },
+          { id: 'q44', num: 44, label: 'Faz algum acompanhamento com outros especialistas? Quais?', type: 'textarea', required: true },
+          { id: 'q45', num: 45, label: 'Quais são suas expectativas em relação ao processo de intervenção? O que é de extrema importância para você?', type: 'textarea', required: false },
+        ]
+      },
+      {
+        title: 'Observações finais',
+        questions: [
+          { id: 'q46', num: 46, label: 'Outros: use esta seção para escrever qualquer informação adicional que você queira que saibamos.', type: 'textarea', required: false },
+        ]
+      }
+    ];
+
+    const ANAMNESE_TOTAL_QUESTIONS = ANAMNESE_SCHEMA.reduce((sum, s) => sum + s.questions.length, 0);
 
     const state = {
       tokenClient: null,
@@ -700,6 +888,7 @@
       patients: [],
       folderId: null,
       evolutionsFolderId: null,
+      anamnesesFolderId: null,
       dataFileId: null,
       searchQuery: '',
       statusFilter: '',
@@ -711,13 +900,18 @@
       gisReady: false,
 
       // Evoluções
-      evolutions: [],              // do paciente atualmente aberto
-      evolutionsFileId: null,      // id do arquivo json do paciente atual
+      evolutions: [],
+      evolutionsFileId: null,
       evolutionsLoading: false,
       editingEvolutionId: null,
       evolutionSearch: '',
-      selectedTagFilters: [],      // tags ativas no filtro
-      currentTags: [],             // tags da evolução sendo editada
+      selectedTagFilters: [],
+      currentTags: [],
+
+      // Anamnese
+      anamnese: null,              // objeto com respostas do paciente atual
+      anamneseFileId: null,        // id do arquivo json no Drive
+      anamneseLoading: false,
     };
 
     const $ = (id) => document.getElementById(id);
@@ -850,6 +1044,9 @@
       state.folderId = null;
       state.dataFileId = null;
       state.evolutionsFolderId = null;
+      state.anamnesesFolderId = null;
+      state.anamnese = null;
+      state.anamneseFileId = null;
       $('app').classList.remove('active');
       $('loginScreen').style.display = 'flex';
     }
@@ -872,6 +1069,14 @@
         });
         state.evolutionsFolderId = res.result.files.length ? res.result.files[0].id
           : (await gapi.client.drive.files.create({ resource: { name: EVOLUTIONS_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder', parents: [state.folderId] }, fields: 'id' })).result.id;
+
+        // subpasta de anamneses
+        res = await gapi.client.drive.files.list({
+          q: `name='${ANAMNESES_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and '${state.folderId}' in parents and trashed=false`,
+          fields: 'files(id, name)',
+        });
+        state.anamnesesFolderId = res.result.files.length ? res.result.files[0].id
+          : (await gapi.client.drive.files.create({ resource: { name: ANAMNESES_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder', parents: [state.folderId] }, fields: 'id' })).result.id;
 
         // arquivo de pacientes
         res = await gapi.client.drive.files.list({
@@ -918,6 +1123,292 @@
       if (!fileId && onCreated) onCreated(res.result.id);
       return res.result.id || fileId;
     }
+
+    // ============================================================
+    // ANAMNESE — carregar/salvar
+    // ============================================================
+    function anamneseFilenameFor(patientId) {
+      return `anamnese_${patientId}.json`;
+    }
+
+    async function loadPatientAnamnese(patientId) {
+      state.anamneseLoading = true;
+      state.anamnese = null;
+      state.anamneseFileId = null;
+      try {
+        const filename = anamneseFilenameFor(patientId);
+        const res = await gapi.client.drive.files.list({
+          q: `name='${filename}' and '${state.anamnesesFolderId}' in parents and trashed=false`,
+          fields: 'files(id, name)',
+        });
+        if (res.result.files.length) {
+          state.anamneseFileId = res.result.files[0].id;
+          const data = await gapi.client.drive.files.get({ fileId: state.anamneseFileId, alt: 'media' });
+          try { state.anamnese = JSON.parse(data.body); } catch { state.anamnese = null; }
+        }
+      } catch (e) {
+        console.error(e);
+        toast('Erro ao carregar anamnese', 'error');
+      } finally {
+        state.anamneseLoading = false;
+      }
+    }
+
+    async function savePatientAnamnese(patientId) {
+      setSyncState('syncing');
+      try {
+        const filename = anamneseFilenameFor(patientId);
+        const newId = await uploadJsonFile(state.anamneseFileId, filename, state.anamnese, state.anamnesesFolderId, (id) => { state.anamneseFileId = id; });
+        state.anamneseFileId = newId || state.anamneseFileId;
+        setSyncState('ok');
+      } catch (e) { console.error(e); setSyncState('error'); toast('Erro ao salvar anamnese', 'error'); throw e; }
+    }
+
+    // Conta respostas preenchidas
+    function countAnamneseAnswered(respostas) {
+      if (!respostas) return 0;
+      let n = 0;
+      ANAMNESE_SCHEMA.forEach(section => {
+        section.questions.forEach(q => {
+          const v = respostas[q.id];
+          if (q.type === 'checkbox') {
+            if (v && v.options && v.options.length) n++;
+            else if (v && v.other && v.other.trim()) n++;
+          } else {
+            if (v && String(v).trim()) n++;
+          }
+        });
+      });
+      return n;
+    }
+
+    // ============================================================
+    // ANAMNESE — render da aba (modo visualização)
+    // ============================================================
+    function renderAnamneseTab() {
+      const wrap = $('anamneseContent');
+
+      if (state.anamneseLoading) {
+        wrap.innerHTML = `<div class="loading-box"><div class="spinner"></div><p>carregando anamnese...</p></div>`;
+        return;
+      }
+
+      // Se não tem anamnese, estado vazio
+      if (!state.anamnese) {
+        wrap.innerHTML = `
+          <div class="anamnese-header">
+            <div>
+              <h3>Anamnese <em>— comportamental</em></h3>
+              <div class="anamnese-status">ficha inicial de anamnese do paciente</div>
+            </div>
+          </div>
+          <div class="anamnese-empty"><div class="anamnese-empty-content">
+            <h3>Ainda não preenchida<em>.</em></h3>
+            <p>a anamnese ajuda a conhecer a criança e planejar o processo terapêutico. pode ser preenchida agora ou depois.</p>
+            <button class="btn btn-gold" onclick="openAnamneseModal()">Preencher anamnese</button>
+          </div></div>
+        `;
+        return;
+      }
+
+      // Tem anamnese — mostrar visualização
+      const respostas = state.anamnese.respostas || {};
+      const atualizadoEm = state.anamnese.atualizado_em
+        ? new Date(state.anamnese.atualizado_em).toLocaleDateString('pt-BR') + ' às ' + new Date(state.anamnese.atualizado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+        : '—';
+
+      let html = `
+        <div class="anamnese-header">
+          <div>
+            <h3>Anamnese <em>— comportamental</em></h3>
+            <div class="anamnese-status">última atualização: ${atualizadoEm}</div>
+          </div>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" onclick="openAnamneseModal()">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteAnamnese()">Excluir</button>
+          </div>
+        </div>
+      `;
+
+      ANAMNESE_SCHEMA.forEach(section => {
+        html += `<div class="anamnese-view-section"><h4>${escapeHtml(section.title)}</h4>`;
+        section.questions.forEach(q => {
+          const v = respostas[q.id];
+          let answerHtml = '';
+          let isEmpty = false;
+          if (q.type === 'checkbox') {
+            const opts = (v && v.options) || [];
+            const other = (v && v.other) || '';
+            if (!opts.length && !other) {
+              isEmpty = true;
+              answerHtml = 'não preenchido';
+            } else {
+              answerHtml = '<div class="a chips">' + opts.map(o => `<span class="chip">${escapeHtml(o)}</span>`).join('') +
+                (other ? `<span class="chip">Outro: ${escapeHtml(other)}</span>` : '') + '</div>';
+            }
+          } else if (q.type === 'date') {
+            isEmpty = !v;
+            answerHtml = v ? formatDate(v) : 'não preenchido';
+          } else {
+            isEmpty = !v || !String(v).trim();
+            answerHtml = isEmpty ? 'não preenchido' : escapeHtml(String(v));
+          }
+          if (q.type === 'checkbox' && !isEmpty) {
+            html += `<div class="anamnese-answer"><div class="q">${q.num}. ${escapeHtml(q.label)}</div>${answerHtml}</div>`;
+          } else {
+            html += `<div class="anamnese-answer"><div class="q">${q.num}. ${escapeHtml(q.label)}</div><div class="a ${isEmpty ? 'empty' : ''}">${answerHtml}</div></div>`;
+          }
+        });
+        html += `</div>`;
+      });
+
+      wrap.innerHTML = html;
+    }
+
+    // ============================================================
+    // ANAMNESE — modal de preenchimento
+    // ============================================================
+    function openAnamneseModal() {
+      if (!state.selectedPatientId) return;
+
+      const p = state.patients.find(x => x.id === state.selectedPatientId);
+      $('anamneseModalSubtitle').textContent = p ? `paciente: ${p.nome}` : 'preenchimento da anamnese';
+
+      // Pré-carrega respostas se já existirem
+      const respostas = (state.anamnese && state.anamnese.respostas) || {};
+      // Se é nova, pré-preenche nome e nascimento do paciente
+      if (!state.anamnese && p) {
+        if (!respostas.q01 && p.nome) respostas.q01 = p.nome;
+        if (!respostas.q02 && p.nascimento) respostas.q02 = p.nascimento;
+      }
+
+      renderAnamneseForm(respostas);
+      updateAnamneseProgress();
+      $('anamneseModal').classList.add('active');
+      // reset scroll do modal
+      const modal = document.querySelector('#anamneseModal .modal');
+      if (modal) modal.scrollTop = 0;
+    }
+
+    function renderAnamneseForm(respostas) {
+      const cont = $('anamneseFormFields');
+      let html = '';
+      let sectionIdx = 0;
+      ANAMNESE_SCHEMA.forEach(section => {
+        sectionIdx++;
+        html += `<div class="anamnese-form-section">
+          <div class="anamnese-form-section-header">${escapeHtml(section.title)}<span class="section-idx">parte ${sectionIdx} / ${ANAMNESE_SCHEMA.length}</span></div>`;
+        section.questions.forEach(q => {
+          const v = respostas[q.id];
+          const reqMark = q.required ? ' <span class="required">*</span>' : '';
+          const hint = q.hint ? ` <span style="color:var(--ink-faint); font-size:0.78rem; font-style:italic;">(${escapeHtml(q.hint)})</span>` : '';
+          html += `<div class="anamnese-form-q">
+            <label for="${q.id}"><span class="q-num">${q.num}.</span>${escapeHtml(q.label)}${reqMark}${hint}</label>`;
+          if (q.type === 'text') {
+            html += `<input type="text" id="${q.id}" name="${q.id}" value="${escapeHtml(v || '')}" ${q.required ? 'required' : ''} />`;
+          } else if (q.type === 'date') {
+            html += `<input type="date" id="${q.id}" name="${q.id}" value="${escapeHtml(v || '')}" ${q.required ? 'required' : ''} />`;
+          } else if (q.type === 'textarea') {
+            html += `<textarea id="${q.id}" name="${q.id}" ${q.required ? 'required' : ''}>${escapeHtml(v || '')}</textarea>`;
+          } else if (q.type === 'checkbox') {
+            const selected = (v && v.options) || [];
+            const otherVal = (v && v.other) || '';
+            html += '<div class="checkbox-group">';
+            q.options.forEach(opt => {
+              const checked = selected.includes(opt) ? 'checked' : '';
+              html += `<label class="checkbox-item"><input type="checkbox" name="${q.id}_opt" value="${escapeHtml(opt)}" ${checked} /><span>${escapeHtml(opt)}</span></label>`;
+            });
+            if (q.allowOther) {
+              html += `<label class="checkbox-item other-wrap"><input type="checkbox" name="${q.id}_other_cb" ${otherVal ? 'checked' : ''} /><input type="text" name="${q.id}_other" value="${escapeHtml(otherVal)}" placeholder="Outro..." /></label>`;
+            }
+            html += '</div>';
+          }
+          html += `</div>`;
+        });
+        html += `</div>`;
+      });
+      cont.innerHTML = html;
+
+      // Atualiza progresso quando qualquer campo mudar
+      cont.querySelectorAll('input, textarea').forEach(el => {
+        el.addEventListener('input', updateAnamneseProgress);
+        el.addEventListener('change', updateAnamneseProgress);
+      });
+    }
+
+    function collectAnamneseFormData() {
+      const respostas = {};
+      ANAMNESE_SCHEMA.forEach(section => {
+        section.questions.forEach(q => {
+          if (q.type === 'checkbox') {
+            const checked = [];
+            document.querySelectorAll(`input[name="${q.id}_opt"]:checked`).forEach(cb => checked.push(cb.value));
+            const otherCb = document.querySelector(`input[name="${q.id}_other_cb"]`);
+            const otherInput = document.querySelector(`input[name="${q.id}_other"]`);
+            const otherVal = (otherCb && otherCb.checked && otherInput) ? otherInput.value.trim() : '';
+            respostas[q.id] = { options: checked, other: otherVal };
+          } else {
+            const el = document.getElementById(q.id);
+            respostas[q.id] = el ? el.value.trim() : '';
+          }
+        });
+      });
+      return respostas;
+    }
+
+    function updateAnamneseProgress() {
+      const respostas = collectAnamneseFormData();
+      const count = countAnamneseAnswered(respostas);
+      $('anamneseProgress').innerHTML = `preenchidas: <strong>${count}</strong> de <strong>${ANAMNESE_TOTAL_QUESTIONS}</strong>`;
+    }
+
+    function closeAnamneseModal() { $('anamneseModal').classList.remove('active'); }
+
+    async function saveAnamnese(e) {
+      e.preventDefault();
+      const respostas = collectAnamneseFormData();
+      const now = new Date().toISOString();
+      const isNew = !state.anamnese;
+
+      state.anamnese = {
+        id: state.anamnese?.id || uid('an'),
+        paciente_id: state.selectedPatientId,
+        respostas,
+        criado_em: state.anamnese?.criado_em || now,
+        atualizado_em: now,
+      };
+
+      $('btnSaveAnamnese').innerHTML = '<span class="spinner"></span><span>Salvando...</span>';
+      try {
+        await savePatientAnamnese(state.selectedPatientId);
+        closeAnamneseModal();
+        renderAnamneseTab();
+        toast(isNew ? 'Anamnese registrada' : 'Anamnese atualizada', 'success');
+      } catch (e) {
+        toast('Erro ao salvar anamnese', 'error');
+      } finally {
+        $('btnSaveAnamnese').innerHTML = '<span>Salvar anamnese</span>';
+      }
+    }
+
+    async function deleteAnamnese() {
+      if (!state.anamnese) return;
+      if (!confirm('Excluir a anamnese deste paciente? Esta ação não pode ser desfeita.')) return;
+      try {
+        if (state.anamneseFileId) {
+          await gapi.client.drive.files.delete({ fileId: state.anamneseFileId });
+        }
+        state.anamnese = null;
+        state.anamneseFileId = null;
+        renderAnamneseTab();
+        toast('Anamnese excluída', 'success');
+      } catch {
+        toast('Erro ao excluir anamnese', 'error');
+      }
+    }
+
+    window.openAnamneseModal = openAnamneseModal;
+    window.deleteAnamnese = deleteAnamnese;
 
     // ============================================================
     // EVOLUÇÕES — carregar/salvar
@@ -1317,17 +1808,23 @@
       state.evolutionsFileId = null;
       state.evolutionSearch = '';
       state.selectedTagFilters = [];
+      state.anamnese = null;
+      state.anamneseFileId = null;
 
       // Switch tab UI
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === 'info'));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tabInfo'));
 
       renderAll();
-      // Carrega evoluções em background
-      await loadPatientEvolutions(id);
+      // Carrega evoluções + anamnese em paralelo
+      await Promise.all([
+        loadPatientEvolutions(id),
+        loadPatientAnamnese(id)
+      ]);
       $('evolutionCount').textContent = state.evolutions.length;
-      // Se estiver na aba evoluções, renderiza
+      // Se aba ativa for evolutions ou anamnese, renderiza
       if (state.activeTab === 'evolutions') renderEvolutions();
+      if (state.activeTab === 'anamnese') renderAnamneseTab();
     }
 
     async function savePatient(e) {
@@ -1356,7 +1853,7 @@
       if (!state.selectedPatientId) return;
       const p = state.patients.find(x => x.id === state.selectedPatientId);
       if (!p) return;
-      if (!confirm(`Excluir o paciente "${p.nome}"? Esta ação também excluirá todas as evoluções e não pode ser desfeita.`)) return;
+      if (!confirm(`Excluir o paciente "${p.nome}"? Esta ação também excluirá todas as evoluções e a anamnese. Não pode ser desfeita.`)) return;
       state.patients = state.patients.filter(x => x.id !== state.selectedPatientId);
       try {
         await savePatients();
@@ -1364,10 +1861,16 @@
         if (state.evolutionsFileId) {
           try { await gapi.client.drive.files.delete({ fileId: state.evolutionsFileId }); } catch {}
         }
+        // Remove arquivo de anamnese do Drive (se existir)
+        if (state.anamneseFileId) {
+          try { await gapi.client.drive.files.delete({ fileId: state.anamneseFileId }); } catch {}
+        }
         state.view = 'list';
         state.selectedPatientId = null;
         state.evolutions = [];
         state.evolutionsFileId = null;
+        state.anamnese = null;
+        state.anamneseFileId = null;
         renderAll();
         toast('Paciente excluído', 'success');
       } catch { toast('Erro ao excluir', 'error'); }
@@ -1495,6 +1998,7 @@
         document.querySelectorAll('.tab-btn').forEach(x => x.classList.toggle('active', x.dataset.tab === tab));
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === ('tab' + tab.charAt(0).toUpperCase() + tab.slice(1))));
         if (tab === 'evolutions') renderEvolutions();
+        if (tab === 'anamnese') renderAnamneseTab();
       });
     });
 
@@ -1503,6 +2007,10 @@
     $('btnCancelEvolution').addEventListener('click', closeEvolutionModal);
     $('evolutionForm').addEventListener('submit', saveEvolution);
     $('evolutionSearch').addEventListener('input', (e) => { state.evolutionSearch = e.target.value; renderEvolutions(); });
+
+    // Anamnese
+    $('btnCancelAnamnese').addEventListener('click', closeAnamneseModal);
+    $('anamneseForm').addEventListener('submit', saveAnamnese);
 
     // Tag input — adicionar / remover
     $('tagInput').addEventListener('keydown', (e) => {
@@ -1533,9 +2041,11 @@
     // Fecha modais
     $('patientModal').addEventListener('click', (e) => { if (e.target.id === 'patientModal') closePatientModal(); });
     $('evolutionModal').addEventListener('click', (e) => { if (e.target.id === 'evolutionModal') closeEvolutionModal(); });
+    $('anamneseModal').addEventListener('click', (e) => { if (e.target.id === 'anamneseModal') closeAnamneseModal(); });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        if ($('evolutionModal').classList.contains('active')) closeEvolutionModal();
+        if ($('anamneseModal').classList.contains('active')) closeAnamneseModal();
+        else if ($('evolutionModal').classList.contains('active')) closeEvolutionModal();
         else if ($('patientModal').classList.contains('active')) closePatientModal();
       }
     });
