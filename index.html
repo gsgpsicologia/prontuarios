@@ -402,15 +402,19 @@
     /* Dropdown de exportação */
     .export-wrap { position: relative; display: inline-block; }
     .export-menu { position: absolute; top: calc(100% + 6px); right: 0; background: var(--cream-soft); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); min-width: 220px; overflow: hidden; z-index: 50; display: none; }
+    .export-menu.wide { min-width: 300px; max-height: 75vh; overflow-y: auto; }
     .export-menu.active { display: block; animation: fadeIn 0.15s ease; }
-    .export-menu-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.1s; border-bottom: 1px solid var(--border-soft); }
+    .export-menu-group { border-bottom: 1px solid var(--border-soft); }
+    .export-menu-group:last-child { border-bottom: none; }
+    .export-menu-group-title { padding: 0.55rem 1rem 0.35rem; font-family: var(--font-display); font-style: italic; font-size: 0.8rem; color: var(--gold-deep); background: var(--cream); border-bottom: 1px solid var(--border-soft); }
+    .export-menu-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 1rem; cursor: pointer; transition: all 0.1s; border-bottom: 1px solid var(--border-soft); }
     .export-menu-item:last-child { border-bottom: none; }
     .export-menu-item:hover { background: var(--cream); }
-    .export-menu-item .icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); flex-shrink: 0; }
+    .export-menu-item .icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); flex-shrink: 0; font-size: 0.75rem; }
     .export-menu-item.elegant .icon { background: var(--gold-wash); color: var(--gold-deep); }
     .export-menu-item.sober .icon { background: #e8e8e8; color: #333; }
-    .export-menu-item .title { font-size: 0.88rem; font-weight: 500; color: var(--ink); line-height: 1.2; }
-    .export-menu-item .desc { font-size: 0.72rem; color: var(--ink-soft); margin-top: 0.15rem; }
+    .export-menu-item .title { font-size: 0.85rem; font-weight: 500; color: var(--ink); line-height: 1.2; }
+    .export-menu-item .desc { font-size: 0.7rem; color: var(--ink-soft); margin-top: 0.1rem; }
 
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
@@ -551,6 +555,58 @@
             <div class="meta" id="detailMeta">—</div>
           </div>
           <div class="detail-actions">
+            <div class="export-wrap">
+              <button class="btn btn-secondary btn-sm" onclick="toggleExportMenu('patient', event)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Exportar PDF
+              </button>
+              <div class="export-menu wide" id="exportMenuPatient">
+                <div class="export-menu-group">
+                  <div class="export-menu-group-title">Ficha do paciente</div>
+                  <div class="export-menu-item elegant" onclick="exportFichaPdf('elegant')">
+                    <div class="icon">✦</div>
+                    <div><div class="title">PDF elegante</div><div class="desc">com papel timbrado</div></div>
+                  </div>
+                  <div class="export-menu-item sober" onclick="exportFichaPdf('sober')">
+                    <div class="icon">▪</div>
+                    <div><div class="title">PDF sóbrio</div><div class="desc">documento oficial</div></div>
+                  </div>
+                </div>
+                <div class="export-menu-group">
+                  <div class="export-menu-group-title">Anamnese</div>
+                  <div class="export-menu-item elegant" onclick="exportAnamnesePdf('elegant'); closeAllExportMenus()">
+                    <div class="icon">✦</div>
+                    <div><div class="title">PDF elegante</div><div class="desc">com papel timbrado</div></div>
+                  </div>
+                  <div class="export-menu-item sober" onclick="exportAnamnesePdf('sober'); closeAllExportMenus()">
+                    <div class="icon">▪</div>
+                    <div><div class="title">PDF sóbrio</div><div class="desc">documento oficial</div></div>
+                  </div>
+                </div>
+                <div class="export-menu-group">
+                  <div class="export-menu-group-title">Evoluções de sessão</div>
+                  <div class="export-menu-item elegant" onclick="exportEvolucoesPdf('elegant')">
+                    <div class="icon">✦</div>
+                    <div><div class="title">PDF elegante</div><div class="desc">com papel timbrado</div></div>
+                  </div>
+                  <div class="export-menu-item sober" onclick="exportEvolucoesPdf('sober')">
+                    <div class="icon">▪</div>
+                    <div><div class="title">PDF sóbrio</div><div class="desc">documento oficial</div></div>
+                  </div>
+                </div>
+                <div class="export-menu-group">
+                  <div class="export-menu-group-title">Prontuário completo ✦</div>
+                  <div class="export-menu-item elegant" onclick="exportProntuarioPdf('elegant')">
+                    <div class="icon">✦</div>
+                    <div><div class="title">PDF elegante</div><div class="desc">ficha + anamnese + evoluções</div></div>
+                  </div>
+                  <div class="export-menu-item sober" onclick="exportProntuarioPdf('sober')">
+                    <div class="icon">▪</div>
+                    <div><div class="title">PDF sóbrio</div><div class="desc">ficha + anamnese + evoluções</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <button class="btn btn-secondary btn-sm" id="btnEdit">Editar ficha</button>
             <button class="btn btn-danger btn-sm" id="btnDelete">Excluir</button>
           </div>
@@ -1935,6 +1991,411 @@
     }
 
     window.exportAnamnesePdf = exportAnamnesePdf;
+
+    function closeAllExportMenus() {
+      document.querySelectorAll('.export-menu').forEach(m => m.classList.remove('active'));
+    }
+    window.closeAllExportMenus = closeAllExportMenus;
+
+    // ============================================================
+    // EXPORTAÇÃO PDF — FICHA DO PACIENTE
+    // ============================================================
+    function exportFichaPdf(style) {
+      closeAllExportMenus();
+      const patient = state.patients.find(p => p.id === state.selectedPatientId);
+      if (!patient) { toast('Paciente não encontrado', 'error'); return; }
+      if (!window.jspdf) { toast('Biblioteca de PDF não carregada. Aguarde.', 'error'); return; }
+
+      try {
+        const pdf = createPdfHelper(style);
+
+        pdf.writeMainTitle('Ficha do paciente');
+        pdf.writeSubtitle('dados cadastrais');
+        pdf.y += 4;
+        pdf.writePatientHeader(patient, 'FICHA CADASTRAL');
+        pdf.writeEmissionDate();
+        pdf.y += 6;
+
+        // Identificação
+        pdf.writeSection('Identificação');
+        pdf.writeQA('Nome completo', patient.nome);
+        if (patient.nascimento) {
+          const age = calcAge(patient.nascimento);
+          pdf.writeQA('Data de nascimento', `${formatDate(patient.nascimento)}${age !== null ? ` (${age} anos)` : ''}`);
+        } else {
+          pdf.writeQA('Data de nascimento', '');
+        }
+        pdf.writeQA('CPF', patient.cpf);
+        pdf.writeQA('RG', patient.rg);
+        pdf.writeQA('Gênero', patient.genero);
+
+        // Contato
+        pdf.writeSection('Contato');
+        pdf.writeQA('Telefone / WhatsApp', patient.telefone);
+        pdf.writeQA('E-mail', patient.email);
+        pdf.writeQA('Endereço', patient.endereco);
+
+        // Responsável (se houver)
+        if (patient.responsavel_nome || patient.responsavel_parentesco || patient.responsavel_contato) {
+          pdf.writeSection('Responsável');
+          pdf.writeQA('Nome do responsável', patient.responsavel_nome);
+          pdf.writeQA('Parentesco', patient.responsavel_parentesco);
+          pdf.writeQA('Contato do responsável', patient.responsavel_contato);
+          pdf.writeQA('CPF do responsável', patient.responsavel_cpf);
+        }
+
+        // Emergência
+        if (patient.emergencia_nome || patient.emergencia_telefone) {
+          pdf.writeSection('Contato de emergência');
+          pdf.writeQA('Nome', patient.emergencia_nome);
+          pdf.writeQA('Telefone', patient.emergencia_telefone);
+        }
+
+        // Acompanhamento
+        pdf.writeSection('Acompanhamento clínico');
+        const statusLabel = ({ ativo: 'Ativo', pausa: 'Em pausa', alta: 'Alta', transferido: 'Transferido' })[patient.status] || patient.status;
+        pdf.writeQA('Status', statusLabel);
+        pdf.writeQA('Início do acompanhamento', patient.inicio ? formatDate(patient.inicio) : '');
+        const pagLabel = ({ particular: 'Particular', convenio: 'Convênio' })[patient.tipo_pagamento] || '';
+        pdf.writeQA('Tipo de pagamento', pagLabel);
+        pdf.writeQA('Convênio', patient.convenio);
+        pdf.writeQA('Queixa inicial / motivo da procura', patient.queixa);
+
+        pdf.finalize();
+        const filename = `ficha_${sanitizeFilename(patient.nome)}_${new Date().toISOString().slice(0,10)}.pdf`;
+        pdf.doc.save(filename);
+        toast('Ficha exportada', 'success');
+      } catch (e) {
+        console.error(e);
+        toast('Erro ao gerar PDF da ficha', 'error');
+      }
+    }
+
+    window.exportFichaPdf = exportFichaPdf;
+
+    // ============================================================
+    // EXPORTAÇÃO PDF — EVOLUÇÕES
+    // ============================================================
+    function renderEvolutionToPdf(pdf, ev, style) {
+      const { doc } = pdf;
+      const palette = pdf.palette;
+      const font = style === 'elegant' ? 'times' : 'helvetica';
+      const pageW = 210, marginX = style === 'elegant' ? 22 : 20;
+
+      // Cabeçalho da evolução: Sessão nº X · data · modalidade
+      pdf.ensureSpace(18);
+      doc.setFont(font, style === 'elegant' ? 'italic' : 'bold');
+      doc.setFontSize(13);
+      doc.setTextColor(style === 'elegant' ? palette.goldDeep[0] : palette.ink[0],
+                       style === 'elegant' ? palette.goldDeep[1] : palette.ink[1],
+                       style === 'elegant' ? palette.goldDeep[2] : palette.ink[2]);
+      const numText = `Sessão nº ${ev.numero || '—'}`;
+      doc.text(numText, marginX, pdf.y);
+
+      // Data + modalidade à direita
+      doc.setFont(font, 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(palette.sub[0], palette.sub[1], palette.sub[2]);
+      const modalidadeLabel = ev.modalidade === 'online' ? 'Online' : 'Presencial';
+      const horario = ev.hora ? ` às ${ev.hora}` : '';
+      const dateInfo = `${formatDate(ev.data)}${horario}  ·  ${modalidadeLabel}`;
+      doc.text(dateInfo, pageW - marginX, pdf.y, { align: 'right' });
+      pdf.y += 4;
+
+      // Linha fina abaixo do cabeçalho
+      doc.setDrawColor(palette.rule[0], palette.rule[1], palette.rule[2]);
+      doc.setLineWidth(0.3);
+      doc.line(marginX, pdf.y, pageW - marginX, pdf.y);
+      pdf.y += 5;
+
+      // Tags (se houver)
+      if (ev.tags && ev.tags.length) {
+        pdf.writeChips(ev.tags.map(t => '#' + t));
+      }
+
+      // Seções da evolução
+      const sections = [
+        ['Relato da sessão', ev.relato],
+        ['Observações técnicas', ev.observacoes],
+        ['Hipóteses / intervenções', ev.hipoteses],
+        ['Plano para próxima sessão', ev.plano],
+      ];
+
+      sections.forEach(([title, content]) => {
+        const plainText = htmlToPlainText(content);
+        if (!plainText) return; // pula seções vazias
+
+        pdf.ensureSpace(12);
+        doc.setFont(font, style === 'elegant' ? 'italic' : 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(style === 'elegant' ? palette.goldDeep[0] : palette.ink[0],
+                         style === 'elegant' ? palette.goldDeep[1] : palette.ink[1],
+                         style === 'elegant' ? palette.goldDeep[2] : palette.ink[2]);
+        doc.text(title, marginX, pdf.y);
+        pdf.y += 5;
+
+        doc.setFont(font, 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+        const lines = doc.splitTextToSize(plainText, pageW - 2 * marginX);
+        lines.forEach(l => { pdf.ensureSpace(5); doc.text(l, marginX, pdf.y); pdf.y += 5; });
+        pdf.y += 2;
+      });
+
+      // Espaço entre evoluções
+      pdf.y += 6;
+      doc.setDrawColor(palette.rule[0], palette.rule[1], palette.rule[2]);
+      doc.setLineWidth(0.2);
+      doc.line(marginX + 40, pdf.y, pageW - marginX - 40, pdf.y);
+      pdf.y += 8;
+    }
+
+    function exportEvolucoesPdf(style) {
+      closeAllExportMenus();
+      const patient = state.patients.find(p => p.id === state.selectedPatientId);
+      if (!patient) { toast('Paciente não encontrado', 'error'); return; }
+      if (!state.evolutions || !state.evolutions.length) {
+        toast('Não há evoluções registradas', 'error'); return;
+      }
+      if (!window.jspdf) { toast('Biblioteca de PDF não carregada.', 'error'); return; }
+
+      try {
+        const pdf = createPdfHelper(style);
+
+        pdf.writeMainTitle('Evoluções de sessão');
+        pdf.writeSubtitle(`${state.evolutions.length} ${state.evolutions.length === 1 ? 'registro' : 'registros'} · em ordem cronológica`);
+        pdf.y += 4;
+        pdf.writePatientHeader(patient, 'REGISTRO DE ATENDIMENTOS');
+        pdf.writeEmissionDate();
+        pdf.y += 6;
+
+        // Ordenar por data crescente (1ª sessão primeiro, mais natural pro prontuário)
+        const sorted = [...state.evolutions].sort((a, b) => (a.data || '').localeCompare(b.data || ''));
+
+        sorted.forEach(ev => renderEvolutionToPdf(pdf, ev, style));
+
+        pdf.finalize();
+        const filename = `evolucoes_${sanitizeFilename(patient.nome)}_${new Date().toISOString().slice(0,10)}.pdf`;
+        pdf.doc.save(filename);
+        toast('Evoluções exportadas', 'success');
+      } catch (e) {
+        console.error(e);
+        toast('Erro ao gerar PDF de evoluções', 'error');
+      }
+    }
+
+    window.exportEvolucoesPdf = exportEvolucoesPdf;
+
+    // ============================================================
+    // EXPORTAÇÃO PDF — PRONTUÁRIO COMPLETO
+    // ============================================================
+    function exportProntuarioPdf(style) {
+      closeAllExportMenus();
+      const patient = state.patients.find(p => p.id === state.selectedPatientId);
+      if (!patient) { toast('Paciente não encontrado', 'error'); return; }
+      if (!window.jspdf) { toast('Biblioteca de PDF não carregada.', 'error'); return; }
+
+      try {
+        const pdf = createPdfHelper(style);
+        const { doc } = pdf;
+        const palette = pdf.palette;
+        const font = style === 'elegant' ? 'times' : 'helvetica';
+        const pageW = 210, marginX = style === 'elegant' ? 22 : 20;
+
+        // ===== CAPA =====
+        pdf.y = 70;
+        // "PRONTUÁRIO CLÍNICO" em cima
+        doc.setFont(font, style === 'elegant' ? 'italic' : 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(palette.faint[0], palette.faint[1], palette.faint[2]);
+        doc.text('PRONTUÁRIO CLÍNICO', pageW / 2, pdf.y, { align: 'center' });
+        pdf.y += 15;
+
+        // Nome do paciente grande
+        doc.setFont(font, 'normal');
+        doc.setFontSize(style === 'elegant' ? 32 : 26);
+        doc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+        const nameLines = doc.splitTextToSize(patient.nome, pageW - 40);
+        nameLines.forEach(l => { doc.text(l, pageW / 2, pdf.y, { align: 'center' }); pdf.y += 12; });
+
+        pdf.y += 4;
+        // Linha dourada
+        doc.setDrawColor(palette.gold[0], palette.gold[1], palette.gold[2]);
+        doc.setLineWidth(0.8);
+        doc.line(pageW / 2 - 25, pdf.y, pageW / 2 + 25, pdf.y);
+        pdf.y += 10;
+
+        // Meta info
+        doc.setFont(font, style === 'elegant' ? 'italic' : 'normal');
+        doc.setFontSize(11);
+        doc.setTextColor(palette.sub[0], palette.sub[1], palette.sub[2]);
+        if (patient.nascimento) {
+          const age = calcAge(patient.nascimento);
+          doc.text(`${formatDate(patient.nascimento)}${age !== null ? ` · ${age} anos` : ''}`, pageW / 2, pdf.y, { align: 'center' });
+          pdf.y += 6;
+        }
+        if (patient.cpf) {
+          doc.text(`CPF ${patient.cpf}`, pageW / 2, pdf.y, { align: 'center' });
+          pdf.y += 6;
+        }
+
+        // "documento completo" e data de emissão
+        pdf.y += 20;
+        doc.setFont(font, style === 'elegant' ? 'italic' : 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(palette.faint[0], palette.faint[1], palette.faint[2]);
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+        doc.text(`documento emitido em ${dateStr}`, pageW / 2, pdf.y, { align: 'center' });
+        pdf.y += 5;
+        doc.text('Gabrielly Guandalino · Psicóloga · CRP-PR 08/38673', pageW / 2, pdf.y, { align: 'center' });
+
+        // ===== SUMÁRIO =====
+        pdf.newPage();
+        pdf.writeMainTitle('Sumário');
+        pdf.y += 8;
+
+        const hasAnamnese = !!state.anamnese;
+        const hasEvolucoes = state.evolutions && state.evolutions.length > 0;
+
+        // Lista
+        doc.setFont(font, 'normal');
+        doc.setFontSize(12);
+        doc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+        const summaryItems = [
+          '1.  Ficha do paciente',
+          hasAnamnese ? '2.  Anamnese comportamental' : '2.  Anamnese comportamental (não preenchida)',
+          hasEvolucoes ? `3.  Evoluções de sessão (${state.evolutions.length})` : '3.  Evoluções de sessão (não registradas)',
+        ];
+        summaryItems.forEach(item => {
+          pdf.ensureSpace(10);
+          doc.text(item, marginX + 8, pdf.y);
+          pdf.y += 9;
+        });
+
+        // ===== SEÇÃO 1: FICHA =====
+        pdf.newPage();
+        pdf.writeMainTitle('Ficha do paciente');
+        pdf.writeSubtitle('dados cadastrais');
+        pdf.y += 6;
+
+        pdf.writeSection('Identificação');
+        pdf.writeQA('Nome completo', patient.nome);
+        if (patient.nascimento) {
+          const age = calcAge(patient.nascimento);
+          pdf.writeQA('Data de nascimento', `${formatDate(patient.nascimento)}${age !== null ? ` (${age} anos)` : ''}`);
+        }
+        pdf.writeQA('CPF', patient.cpf);
+        pdf.writeQA('RG', patient.rg);
+        pdf.writeQA('Gênero', patient.genero);
+
+        pdf.writeSection('Contato');
+        pdf.writeQA('Telefone / WhatsApp', patient.telefone);
+        pdf.writeQA('E-mail', patient.email);
+        pdf.writeQA('Endereço', patient.endereco);
+
+        if (patient.responsavel_nome || patient.responsavel_parentesco || patient.responsavel_contato) {
+          pdf.writeSection('Responsável');
+          pdf.writeQA('Nome do responsável', patient.responsavel_nome);
+          pdf.writeQA('Parentesco', patient.responsavel_parentesco);
+          pdf.writeQA('Contato do responsável', patient.responsavel_contato);
+          pdf.writeQA('CPF do responsável', patient.responsavel_cpf);
+        }
+
+        if (patient.emergencia_nome || patient.emergencia_telefone) {
+          pdf.writeSection('Contato de emergência');
+          pdf.writeQA('Nome', patient.emergencia_nome);
+          pdf.writeQA('Telefone', patient.emergencia_telefone);
+        }
+
+        pdf.writeSection('Acompanhamento clínico');
+        const statusLabel = ({ ativo: 'Ativo', pausa: 'Em pausa', alta: 'Alta', transferido: 'Transferido' })[patient.status] || patient.status;
+        pdf.writeQA('Status', statusLabel);
+        pdf.writeQA('Início do acompanhamento', patient.inicio ? formatDate(patient.inicio) : '');
+        pdf.writeQA('Tipo de pagamento', ({ particular: 'Particular', convenio: 'Convênio' })[patient.tipo_pagamento] || '');
+        pdf.writeQA('Convênio', patient.convenio);
+        pdf.writeQA('Queixa inicial / motivo da procura', patient.queixa);
+
+        // ===== SEÇÃO 2: ANAMNESE =====
+        pdf.newPage();
+        pdf.writeMainTitle('Anamnese');
+        pdf.writeSubtitle('comportamental');
+        pdf.y += 6;
+
+        if (!hasAnamnese) {
+          doc.setFont(font, style === 'elegant' ? 'italic' : 'normal');
+          doc.setFontSize(11);
+          doc.setTextColor(palette.faint[0], palette.faint[1], palette.faint[2]);
+          doc.text('Anamnese ainda não preenchida.', pageW / 2, pdf.y + 20, { align: 'center' });
+        } else {
+          const respostas = state.anamnese.respostas || {};
+          ANAMNESE_SCHEMA.forEach(section => {
+            pdf.writeSection(section.title);
+            section.questions.forEach(q => {
+              const v = respostas[q.id];
+              const qLabel = `${q.num}. ${q.label}`;
+              if (q.type === 'checkbox') {
+                const opts = (v && v.options) || [];
+                const other = (v && v.other) || '';
+                doc.setFont(font, 'normal');
+                doc.setFontSize(9);
+                doc.setTextColor(palette.sub[0], palette.sub[1], palette.sub[2]);
+                const qLines = doc.splitTextToSize(qLabel, pageW - 2 * marginX);
+                pdf.ensureSpace(qLines.length * 4 + 12);
+                qLines.forEach(l => { doc.text(l, marginX, pdf.y); pdf.y += 4; });
+                pdf.y += 2;
+                if (!opts.length && !other) {
+                  doc.setFont(font, 'italic');
+                  doc.setFontSize(9.5);
+                  doc.setTextColor(palette.faint[0], palette.faint[1], palette.faint[2]);
+                  doc.text('não preenchido', marginX, pdf.y);
+                  pdf.y += 5;
+                } else {
+                  const allItems = [...opts];
+                  if (other) allItems.push(`Outro: ${other}`);
+                  pdf.writeChips(allItems);
+                }
+                pdf.y += 1;
+                doc.setDrawColor(palette.rule[0], palette.rule[1], palette.rule[2]);
+                doc.setLineWidth(0.15);
+                doc.line(marginX, pdf.y, pageW - marginX, pdf.y);
+                pdf.y += 3;
+              } else if (q.type === 'date') {
+                pdf.writeQA(qLabel, v ? formatDate(v) : '');
+              } else {
+                pdf.writeQA(qLabel, v || '');
+              }
+            });
+          });
+        }
+
+        // ===== SEÇÃO 3: EVOLUÇÕES =====
+        pdf.newPage();
+        pdf.writeMainTitle('Evoluções de sessão');
+        pdf.writeSubtitle(hasEvolucoes ? `${state.evolutions.length} ${state.evolutions.length === 1 ? 'registro' : 'registros'} · em ordem cronológica` : 'sem registros');
+        pdf.y += 6;
+
+        if (!hasEvolucoes) {
+          doc.setFont(font, style === 'elegant' ? 'italic' : 'normal');
+          doc.setFontSize(11);
+          doc.setTextColor(palette.faint[0], palette.faint[1], palette.faint[2]);
+          doc.text('Nenhuma evolução registrada até o momento.', pageW / 2, pdf.y + 20, { align: 'center' });
+        } else {
+          const sorted = [...state.evolutions].sort((a, b) => (a.data || '').localeCompare(b.data || ''));
+          sorted.forEach(ev => renderEvolutionToPdf(pdf, ev, style));
+        }
+
+        pdf.finalize();
+        const filename = `prontuario_${sanitizeFilename(patient.nome)}_${new Date().toISOString().slice(0,10)}.pdf`;
+        pdf.doc.save(filename);
+        toast('Prontuário completo exportado', 'success');
+      } catch (e) {
+        console.error(e);
+        toast('Erro ao gerar prontuário completo', 'error');
+      }
+    }
+
+    window.exportProntuarioPdf = exportProntuarioPdf;
 
     // ============================================================
     // EVOLUÇÕES — carregar/salvar
