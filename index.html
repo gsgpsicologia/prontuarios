@@ -447,7 +447,7 @@
     .apt-card.type-sessao { background: #e8d6ac; border-left-color: #b8944a; color: #5e4a1e; }
     .apt-card.type-avaliacao { background: #d9e0cc; border-left-color: #6d7f5c; color: #3d4934; }
     .apt-card.type-devolutiva { background: #e8d0ca; border-left-color: #a64e3d; color: #5a2820; }
-    .apt-card.type-primeira { background: #d6dde8; border-left-color: #4a6d8e; color: #1e3a5a; }
+    .apt-card.type-anamnese { background: #d6dde8; border-left-color: #4a6d8e; color: #1e3a5a; }
     .apt-card.type-retorno { background: #eae2d3; border-left-color: #8c7552; color: #493b24; }
 
     /* Modificadores de status */
@@ -471,7 +471,7 @@
     .legend-sessao { background: #b8944a; }
     .legend-avaliacao { background: #6d7f5c; }
     .legend-devolutiva { background: #a64e3d; }
-    .legend-primeira { background: #4a6d8e; }
+    .legend-anamnese { background: #4a6d8e; }
     .legend-retorno { background: #8c7552; }
 
     /* Dropdown de busca de paciente (modal de atendimento) */
@@ -486,6 +486,98 @@
     .patient-picker-item .pp-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--gold-soft), var(--gold)); color: var(--cream-soft); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 0.8rem; font-weight: 500; flex-shrink: 0; }
     .patient-picker-item .pp-name { font-size: 0.9rem; color: var(--ink); }
     .patient-picker-empty { padding: 1rem; text-align: center; font-size: 0.85rem; color: var(--ink-faint); font-style: italic; }
+
+    /* Toggle de visão (Semana / Mês / Resumo) */
+    .view-toggle { display: inline-flex; background: var(--cream-soft); border: 1px solid var(--border); border-radius: 50px; padding: 3px; gap: 2px; }
+    .view-toggle button { padding: 0.45rem 1rem; border-radius: 50px; font-size: 0.82rem; font-weight: 500; color: var(--ink-soft); transition: all 0.15s; letter-spacing: 0.02em; }
+    .view-toggle button:hover { color: var(--ink); }
+    .view-toggle button.active { background: var(--ink); color: var(--cream-soft); }
+
+    /* Subpáginas dentro da agenda */
+    .agenda-view { display: none; }
+    .agenda-view.active { display: block; }
+
+    /* MÊS — calendário tradicional */
+    .month-grid-wrap { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); overflow: hidden; }
+    .month-grid-header { display: grid; grid-template-columns: repeat(7, 1fr); border-bottom: 1px solid var(--border); background: var(--cream); }
+    .month-day-header { padding: 0.65rem 0.5rem; text-align: center; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-faint); font-weight: 500; border-right: 1px solid var(--border-soft); }
+    .month-day-header:last-child { border-right: none; }
+    .month-day-header.weekend { color: var(--gold-deep); }
+
+    .month-grid-body { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .month-cell { min-height: 100px; padding: 0.4rem; border-right: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft); cursor: pointer; transition: background 0.12s; position: relative; }
+    .month-cell:nth-child(7n) { border-right: none; }
+    .month-cell:hover { background: var(--cream); }
+    .month-cell.other-month { background: var(--cream); opacity: 0.55; }
+    .month-cell.today { background: var(--gold-wash); }
+    .month-cell.today:hover { background: #ddc887; }
+    .month-cell .day-number { font-family: var(--font-display); font-size: 1.05rem; color: var(--ink); line-height: 1; margin-bottom: 0.3rem; font-weight: 500; }
+    .month-cell.today .day-number { color: var(--gold-deep); font-weight: 600; }
+    .month-cell .month-events { display: flex; flex-direction: column; gap: 2px; }
+    .month-event { font-size: 0.66rem; padding: 1px 5px; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; border-left: 2px solid; cursor: pointer; transition: all 0.12s; }
+    .month-event:hover { transform: translateX(1px); }
+    .month-event.type-sessao { background: #e8d6ac; border-left-color: #b8944a; color: #5e4a1e; }
+    .month-event.type-avaliacao { background: #d9e0cc; border-left-color: #6d7f5c; color: #3d4934; }
+    .month-event.type-devolutiva { background: #e8d0ca; border-left-color: #a64e3d; color: #5a2820; }
+    .month-event.type-anamnese { background: #d6dde8; border-left-color: #4a6d8e; color: #1e3a5a; }
+    .month-event.type-retorno { background: #eae2d3; border-left-color: #8c7552; color: #493b24; }
+    .month-event.status-cancelado, .month-event.status-faltou { opacity: 0.5; text-decoration: line-through; }
+    .month-event-more { font-size: 0.65rem; color: var(--gold-deep); padding: 1px 5px; font-style: italic; cursor: pointer; }
+    .month-event-more:hover { text-decoration: underline; }
+
+    /* RESUMO — cards estatísticos */
+    .summary-grid-main { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .summary-card { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: 1.3rem 1.5rem; position: relative; overflow: hidden; }
+    .summary-card.featured { background: linear-gradient(135deg, var(--cream-soft), var(--gold-wash)); border-color: var(--gold-soft); }
+    .summary-card .label { font-family: var(--font-display); font-style: italic; font-size: 0.85rem; color: var(--ink-faint); margin-bottom: 0.4rem; }
+    .summary-card .value { font-family: var(--font-display); font-size: 2.2rem; font-weight: 500; color: var(--ink); line-height: 1; }
+    .summary-card .value.small { font-size: 1.5rem; }
+    .summary-card .value.money { color: var(--gold-deep); }
+    .summary-card .hint { font-size: 0.72rem; color: var(--ink-soft); margin-top: 0.4rem; letter-spacing: 0.05em; text-transform: uppercase; }
+    .summary-card .compare { font-size: 0.78rem; color: var(--sage-deep); margin-top: 0.5rem; font-style: italic; font-family: var(--font-display); }
+    .summary-card .compare.negative { color: var(--danger); }
+
+    /* Seções com gráficos */
+    .summary-section { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: 1.5rem 1.75rem; margin-bottom: 1.5rem; }
+    .summary-section h3 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 500; margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border-soft); }
+    .summary-section h3 em { font-style: italic; color: var(--gold-deep); font-weight: 400; font-size: 0.9rem; }
+
+    /* Gráfico de barras horizontal simples */
+    .bar-chart { display: flex; flex-direction: column; gap: 0.6rem; }
+    .bar-row { display: grid; grid-template-columns: 140px 1fr auto; gap: 0.75rem; align-items: center; font-size: 0.85rem; }
+    .bar-row .bar-label { color: var(--ink); }
+    .bar-row .bar-track { height: 18px; background: var(--cream); border-radius: 50px; overflow: hidden; position: relative; border: 1px solid var(--border-soft); }
+    .bar-row .bar-fill { height: 100%; border-radius: 50px; transition: width 0.3s ease; }
+    .bar-row .bar-value { font-family: var(--font-display); font-weight: 500; color: var(--ink); min-width: 40px; text-align: right; }
+    .bar-fill.color-sessao { background: linear-gradient(90deg, #d4b47a, #b8944a); }
+    .bar-fill.color-avaliacao { background: linear-gradient(90deg, #aebd97, #6d7f5c); }
+    .bar-fill.color-devolutiva { background: linear-gradient(90deg, #c47e6e, #a64e3d); }
+    .bar-fill.color-anamnese { background: linear-gradient(90deg, #7796b3, #4a6d8e); }
+    .bar-fill.color-retorno { background: linear-gradient(90deg, #b8a17f, #8c7552); }
+    .bar-fill.color-default { background: linear-gradient(90deg, var(--gold-soft), var(--gold)); }
+
+    /* Gráfico de colunas (semana / dias) */
+    .col-chart { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 0.5rem; align-items: end; min-height: 160px; padding-top: 1rem; }
+    .col-row { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+    .col-row .col-bar { width: 100%; max-width: 50px; background: linear-gradient(180deg, var(--gold-soft), var(--gold)); border-radius: var(--radius-sm) var(--radius-sm) 0 0; min-height: 2px; transition: all 0.3s; position: relative; }
+    .col-row .col-bar:hover { background: linear-gradient(180deg, var(--gold), var(--gold-deep)); }
+    .col-row .col-value { font-family: var(--font-display); font-size: 0.95rem; font-weight: 500; color: var(--ink); }
+    .col-row .col-label { font-size: 0.7rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* Lista top pacientes */
+    .top-list { display: flex; flex-direction: column; gap: 0.4rem; }
+    .top-list-item { display: grid; grid-template-columns: 28px 32px 1fr auto; align-items: center; gap: 0.7rem; padding: 0.5rem 0.7rem; border-radius: var(--radius-md); transition: background 0.12s; cursor: pointer; }
+    .top-list-item:hover { background: var(--cream); }
+    .top-list-item .rank { font-family: var(--font-display); font-style: italic; color: var(--gold-deep); font-size: 1rem; text-align: center; }
+    .top-list-item .pp-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--gold-soft), var(--gold)); color: var(--cream-soft); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 0.85rem; font-weight: 500; }
+    .top-list-item .pp-name { font-size: 0.92rem; color: var(--ink); }
+    .top-list-item .pp-count { font-family: var(--font-display); font-weight: 500; color: var(--gold-deep); font-size: 0.95rem; }
+
+    .summary-empty { text-align: center; padding: 2rem 1rem; color: var(--ink-faint); font-family: var(--font-display); font-style: italic; }
+
+    /* Grid duplo (gráfico + lista lado a lado) */
+    .summary-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) { .summary-row-2 { grid-template-columns: 1fr; } }
 
     /* Dropdown de exportação */
     .export-wrap { position: relative; display: inline-block; }
@@ -596,7 +688,7 @@
         <div class="page-header">
           <div>
             <h1 class="page-title">Agenda</h1>
-            <p class="page-subtitle">atendimentos da semana</p>
+            <p class="page-subtitle" id="agendaSubtitle">atendimentos da semana</p>
           </div>
           <div style="display:flex; gap:0.75rem; align-items:center;">
             <button class="btn btn-gold" id="btnNewAppointment">
@@ -608,32 +700,60 @@
 
         <div class="agenda-toolbar">
           <div class="agenda-nav">
-            <button class="btn btn-secondary btn-sm" id="btnPrevWeek" title="Semana anterior">
+            <button class="btn btn-secondary btn-sm" id="btnPrevPeriod" title="Anterior">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
-            <button class="btn btn-ghost btn-sm" id="btnTodayWeek">Hoje</button>
-            <button class="btn btn-secondary btn-sm" id="btnNextWeek" title="Próxima semana">
+            <button class="btn btn-ghost btn-sm" id="btnTodayPeriod">Hoje</button>
+            <button class="btn btn-secondary btn-sm" id="btnNextPeriod" title="Próximo">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
-            <div class="agenda-week-label" id="weekLabel">—</div>
+            <div class="agenda-week-label" id="periodLabel">—</div>
+          </div>
+          <div class="view-toggle">
+            <button data-view="week" class="active">Semana</button>
+            <button data-view="month">Mês</button>
+            <button data-view="summary">Resumo</button>
           </div>
         </div>
 
-        <div class="agenda-stats" id="agendaStats"></div>
-
-        <div class="agenda-grid-wrap">
-          <div class="agenda-grid-header" id="agendaGridHeader"></div>
-          <div class="agenda-grid-body" id="agendaGridBody"></div>
+        <!-- VIEW: SEMANA -->
+        <div class="agenda-view active" id="viewWeek">
+          <div class="agenda-stats" id="agendaStats"></div>
+          <div class="agenda-grid-wrap">
+            <div class="agenda-grid-header" id="agendaGridHeader"></div>
+            <div class="agenda-grid-body" id="agendaGridBody"></div>
+          </div>
+          <div class="agenda-legend">
+            <span class="legend-title">tipos:</span>
+            <span class="agenda-legend-item"><span class="agenda-legend-dot legend-sessao"></span>Sessão</span>
+            <span class="agenda-legend-item"><span class="agenda-legend-dot legend-avaliacao"></span>Avaliação</span>
+            <span class="agenda-legend-item"><span class="agenda-legend-dot legend-devolutiva"></span>Devolutiva</span>
+            <span class="agenda-legend-item"><span class="agenda-legend-dot legend-anamnese"></span>Anamnese</span>
+            <span class="agenda-legend-item"><span class="agenda-legend-dot legend-retorno"></span>Retorno</span>
+          </div>
         </div>
 
-        <div class="agenda-legend">
-          <span class="legend-title">tipos:</span>
-          <span class="agenda-legend-item"><span class="agenda-legend-dot legend-sessao"></span>Sessão</span>
-          <span class="agenda-legend-item"><span class="agenda-legend-dot legend-avaliacao"></span>Avaliação</span>
-          <span class="agenda-legend-item"><span class="agenda-legend-dot legend-devolutiva"></span>Devolutiva</span>
-          <span class="agenda-legend-item"><span class="agenda-legend-dot legend-primeira"></span>Primeira consulta</span>
-          <span class="agenda-legend-item"><span class="agenda-legend-dot legend-retorno"></span>Retorno</span>
+        <!-- VIEW: MÊS -->
+        <div class="agenda-view" id="viewMonth">
+          <div class="month-grid-wrap">
+            <div class="month-grid-header" id="monthGridHeader"></div>
+            <div class="month-grid-body" id="monthGridBody"></div>
+          </div>
+          <div class="agenda-legend">
+            <span class="legend-title">tipos:</span>
+            <span class="agenda-legend-item"><span class="agenda-legend-dot legend-sessao"></span>Sessão</span>
+            <span class="agenda-legend-item"><span class="agenda-legend-dot legend-avaliacao"></span>Avaliação</span>
+            <span class="agenda-legend-item"><span class="agenda-legend-dot legend-devolutiva"></span>Devolutiva</span>
+            <span class="agenda-legend-item"><span class="agenda-legend-dot legend-anamnese"></span>Anamnese</span>
+            <span class="agenda-legend-item"><span class="agenda-legend-dot legend-retorno"></span>Retorno</span>
+          </div>
         </div>
+
+        <!-- VIEW: RESUMO -->
+        <div class="agenda-view" id="viewSummary">
+          <div id="summaryContent"></div>
+        </div>
+
       </div>
 
       <div id="listView">
@@ -861,7 +981,7 @@
                 <option value="sessao">Sessão</option>
                 <option value="avaliacao">Avaliação</option>
                 <option value="devolutiva">Devolutiva</option>
-                <option value="primeira">Primeira consulta</option>
+                <option value="anamnese">Anamnese</option>
                 <option value="retorno">Retorno</option>
               </select>
             </div>
@@ -1226,6 +1346,8 @@
       appointments: [],            // todos os atendimentos
       agendaFileId: null,
       currentWeekStart: null,      // data (Date) da segunda-feira da semana visível
+      currentMonthStart: null,     // data (Date) do dia 1 do mês visível
+      agendaView: 'week',          // week | month | summary
       editingApptId: null,
       currentPage: 'patients',     // patients | agenda
     };
@@ -2652,7 +2774,7 @@
       sessao: 'Sessão',
       avaliacao: 'Avaliação',
       devolutiva: 'Devolutiva',
-      primeira: 'Primeira consulta',
+      anamnese: 'Anamnese',
       retorno: 'Retorno',
     };
     const APPT_STATUS = {
@@ -2668,6 +2790,12 @@
       try {
         const res = await gapi.client.drive.files.get({ fileId: state.agendaFileId, alt: 'media' });
         state.appointments = JSON.parse(res.body) || [];
+        // Migração: tipo 'primeira' (versão antiga) vira 'anamnese'
+        let migrated = false;
+        state.appointments.forEach(a => {
+          if (a.tipo === 'primeira') { a.tipo = 'anamnese'; migrated = true; }
+        });
+        if (migrated) { try { await saveAppointments(); } catch {} }
       } catch (e) {
         console.error(e);
         state.appointments = [];
@@ -2739,7 +2867,7 @@
     }
 
     // ============================================================
-    // AGENDA — renderização
+    // AGENDA — renderização (roteador de visões)
     // ============================================================
     const AGENDA_START_HOUR = 7;
     const AGENDA_END_HOUR = 21;
@@ -2748,15 +2876,39 @@
 
     function renderAgendaPage() {
       if (!state.currentWeekStart) state.currentWeekStart = startOfWeek(new Date());
-      renderAgendaHeader();
-      renderAgendaStats();
-      renderAgendaGrid();
+      if (!state.currentMonthStart) state.currentMonthStart = startOfMonth(new Date());
+      if (!state.agendaView) state.agendaView = 'week';
+
+      // Toggle de visão
+      document.querySelectorAll('.view-toggle button').forEach(b =>
+        b.classList.toggle('active', b.dataset.view === state.agendaView)
+      );
+      document.querySelectorAll('.agenda-view').forEach(v =>
+        v.classList.toggle('active', v.id === 'view' + state.agendaView.charAt(0).toUpperCase() + state.agendaView.slice(1))
+      );
+
+      // Subtítulo
+      const subtitleMap = { week: 'atendimentos da semana', month: 'visão mensal', summary: 'resumo do mês' };
+      $('agendaSubtitle').textContent = subtitleMap[state.agendaView] || '';
+
+      // Renderiza visão atual
+      if (state.agendaView === 'week') {
+        renderAgendaHeader();
+        renderAgendaStats();
+        renderAgendaGrid();
+      } else if (state.agendaView === 'month') {
+        renderMonthLabel();
+        renderMonthGrid();
+      } else if (state.agendaView === 'summary') {
+        renderMonthLabel();
+        renderSummary();
+      }
     }
 
     function renderAgendaHeader() {
       const weekStart = state.currentWeekStart;
       const { startStr, endStr, year } = formatWeekRange(weekStart);
-      $('weekLabel').innerHTML = `<em>${startStr}</em> até <em>${endStr}</em> de ${year}`;
+      $('periodLabel').innerHTML = `<em>${startStr}</em> até <em>${endStr}</em> de ${year}`;
 
       // Cabeçalho das colunas
       const header = $('agendaGridHeader');
@@ -2891,6 +3043,329 @@
           openNewAppointment({ data: slot.dataset.date, hora: slot.dataset.hour });
         });
       });
+    }
+
+    // ============================================================
+    // AGENDA — VISÃO MÊS (calendário tradicional)
+    // ============================================================
+    function startOfMonth(date) {
+      const d = new Date(date);
+      d.setHours(0, 0, 0, 0);
+      d.setDate(1);
+      return d;
+    }
+
+    function addMonths(date, n) {
+      const d = new Date(date);
+      d.setMonth(d.getMonth() + n);
+      return d;
+    }
+
+    function renderMonthLabel() {
+      const d = state.currentMonthStart || startOfMonth(new Date());
+      const monthStr = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      // Capitaliza primeira letra
+      const cap = monthStr.charAt(0).toUpperCase() + monthStr.slice(1);
+      $('periodLabel').innerHTML = `<em>${cap}</em>`;
+    }
+
+    function renderMonthGrid() {
+      const monthStart = state.currentMonthStart;
+      const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0); // último dia do mês
+
+      // Cabeçalho de dias da semana (dom a sáb)
+      const dowNames = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+      $('monthGridHeader').innerHTML = dowNames.map((n, i) => {
+        const isWeekend = (i === 0 || i === 6);
+        return `<div class="month-day-header ${isWeekend ? 'weekend' : ''}">${n}</div>`;
+      }).join('');
+
+      // Calcular o domingo da semana do dia 1
+      const firstDow = monthStart.getDay(); // 0=dom...
+      const gridStart = addDays(monthStart, -firstDow);
+
+      // 6 semanas × 7 dias = 42 células
+      const today = new Date();
+      const todayIso = toIsoDate(today);
+      let html = '';
+
+      for (let i = 0; i < 42; i++) {
+        const cellDate = addDays(gridStart, i);
+        const cellIso = toIsoDate(cellDate);
+        const isOtherMonth = cellDate.getMonth() !== monthStart.getMonth();
+        const isToday = cellIso === todayIso;
+
+        const dayAppts = state.appointments
+          .filter(a => a.data === cellIso)
+          .sort((a, b) => (a.horaInicio || '').localeCompare(b.horaInicio || ''));
+
+        const cellClasses = ['month-cell'];
+        if (isOtherMonth) cellClasses.push('other-month');
+        if (isToday) cellClasses.push('today');
+
+        // Mostra até 3 atendimentos, depois "+ X mais"
+        const visibleAppts = dayAppts.slice(0, 3);
+        const moreCount = Math.max(0, dayAppts.length - 3);
+
+        const eventsHtml = visibleAppts.map(apt => {
+          const patient = state.patients.find(p => p.id === apt.patientId);
+          const name = patient ? patient.nome : '(?)';
+          const firstName = name.split(' ')[0];
+          return `<div class="month-event type-${apt.tipo || 'sessao'} status-${apt.status || 'agendado'}" onclick="event.stopPropagation(); openEditAppointment('${apt.id}')" title="${escapeHtml(name)} — ${apt.horaInicio} ${APPT_TYPES[apt.tipo] || ''}">${apt.horaInicio} ${escapeHtml(firstName)}</div>`;
+        }).join('');
+
+        const moreHtml = moreCount > 0
+          ? `<div class="month-event-more" onclick="event.stopPropagation(); openDayAppointments('${cellIso}')">+${moreCount} mais</div>`
+          : '';
+
+        html += `<div class="${cellClasses.join(' ')}" onclick="openNewAppointment({data:'${cellIso}', hora:'08:00'})">
+          <div class="day-number">${cellDate.getDate()}</div>
+          <div class="month-events">${eventsHtml}${moreHtml}</div>
+        </div>`;
+      }
+
+      $('monthGridBody').innerHTML = html;
+    }
+
+    // Quando clica em "+X mais": abre o primeiro atendimento "extra" do dia (simples)
+    function openDayAppointments(isoDate) {
+      const dayAppts = state.appointments
+        .filter(a => a.data === isoDate)
+        .sort((a, b) => (a.horaInicio || '').localeCompare(b.horaInicio || ''));
+      if (dayAppts.length > 3) {
+        // Abre o 4º atendimento (primeiro "escondido"). Solução simples por ora.
+        openEditAppointment(dayAppts[3].id);
+      }
+    }
+    window.openDayAppointments = openDayAppointments;
+
+    // ============================================================
+    // AGENDA — VISÃO RESUMO
+    // ============================================================
+    function renderSummary() {
+      const monthStart = state.currentMonthStart;
+      const year = monthStart.getFullYear();
+      const month = monthStart.getMonth();
+      const monthEnd = new Date(year, month + 1, 0);
+      const startIso = toIsoDate(monthStart);
+      const endIso = toIsoDate(monthEnd);
+
+      // Filtro: atendimentos do mês
+      const monthAppts = state.appointments.filter(a => a.data >= startIso && a.data <= endIso);
+
+      // Atendimentos do mês anterior (pra comparar)
+      const prevStart = startOfMonth(addMonths(monthStart, -1));
+      const prevEnd = new Date(prevStart.getFullYear(), prevStart.getMonth() + 1, 0);
+      const prevStartIso = toIsoDate(prevStart);
+      const prevEndIso = toIsoDate(prevEnd);
+      const prevAppts = state.appointments.filter(a => a.data >= prevStartIso && a.data <= prevEndIso);
+
+      const cont = $('summaryContent');
+
+      if (!monthAppts.length) {
+        cont.innerHTML = `<div class="empty-state"><div class="empty-state-content">
+          <h3>Sem atendimentos<em>.</em></h3>
+          <p>nenhum atendimento registrado neste mês. registre um para começar a ver os números aqui.</p>
+        </div></div>`;
+        return;
+      }
+
+      // === CARDS DE NÚMEROS PRINCIPAIS ===
+      const total = monthAppts.length;
+      const realizados = monthAppts.filter(a => a.status === 'realizado').length;
+      const cancelados = monthAppts.filter(a => a.status === 'cancelado').length;
+      const faltas = monthAppts.filter(a => a.status === 'faltou').length;
+      const agendados = monthAppts.filter(a => ['agendado', 'confirmado'].includes(a.status)).length;
+      const compareciveis = realizados + faltas; // só conta os que tinham que comparecer
+      const taxaComparecimento = compareciveis > 0 ? Math.round((realizados / compareciveis) * 100) : null;
+
+      const fmtReal = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+      const receitaPrevista = monthAppts
+        .filter(a => !['cancelado', 'faltou'].includes(a.status))
+        .reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+      const receitaRealizada = monthAppts
+        .filter(a => a.status === 'realizado')
+        .reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+      const receitaPerdida = monthAppts
+        .filter(a => ['cancelado', 'faltou'].includes(a.status))
+        .reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+      const ticketMedio = realizados > 0 ? receitaRealizada / realizados : 0;
+
+      // Comparação com mês anterior
+      const prevTotal = prevAppts.length;
+      const prevRealizados = prevAppts.filter(a => a.status === 'realizado').length;
+      const prevReceita = prevAppts.filter(a => a.status === 'realizado').reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+
+      const compareLabel = (cur, prev, suffix = '') => {
+        if (prev === 0 && cur === 0) return '';
+        if (prev === 0) return `<div class="compare">novo</div>`;
+        const diff = cur - prev;
+        const pct = Math.round((diff / prev) * 100);
+        const arrow = diff >= 0 ? '↑' : '↓';
+        const cls = diff >= 0 ? '' : 'negative';
+        return `<div class="compare ${cls}">${arrow} ${Math.abs(pct)}% vs mês anterior</div>`;
+      };
+
+      let html = `
+        <div class="summary-grid-main">
+          <div class="summary-card featured">
+            <div class="label">Atendimentos no mês</div>
+            <div class="value">${total}</div>
+            <div class="hint">total agendados</div>
+            ${compareLabel(total, prevTotal)}
+          </div>
+          <div class="summary-card">
+            <div class="label">Realizados</div>
+            <div class="value">${realizados}</div>
+            <div class="hint">${taxaComparecimento !== null ? taxaComparecimento + '% de comparecimento' : 'concluídos'}</div>
+            ${compareLabel(realizados, prevRealizados)}
+          </div>
+          <div class="summary-card">
+            <div class="label">Receita realizada</div>
+            <div class="value money">${fmtReal(receitaRealizada)}</div>
+            <div class="hint">de atendimentos concluídos</div>
+            ${compareLabel(Math.round(receitaRealizada), Math.round(prevReceita))}
+          </div>
+          <div class="summary-card">
+            <div class="label">Receita prevista</div>
+            <div class="value money small">${fmtReal(receitaPrevista)}</div>
+            <div class="hint">total esperado no mês</div>
+          </div>
+        </div>
+
+        <div class="summary-grid-main">
+          <div class="summary-card">
+            <div class="label">Agendados</div>
+            <div class="value small">${agendados}</div>
+            <div class="hint">por confirmar</div>
+          </div>
+          <div class="summary-card">
+            <div class="label">Cancelados</div>
+            <div class="value small">${cancelados}</div>
+            <div class="hint">no mês</div>
+          </div>
+          <div class="summary-card">
+            <div class="label">Faltas</div>
+            <div class="value small">${faltas}</div>
+            <div class="hint">paciente não compareceu</div>
+          </div>
+          <div class="summary-card">
+            <div class="label">Receita perdida</div>
+            <div class="value money small">${fmtReal(receitaPerdida)}</div>
+            <div class="hint">cancelamentos + faltas</div>
+          </div>
+        </div>
+      `;
+
+      // === GRÁFICO POR TIPO ===
+      const byType = {};
+      Object.keys(APPT_TYPES).forEach(t => byType[t] = 0);
+      monthAppts.forEach(a => { if (byType[a.tipo] !== undefined) byType[a.tipo]++; });
+      const maxType = Math.max(1, ...Object.values(byType));
+
+      let typeBars = '';
+      Object.entries(APPT_TYPES).forEach(([key, label]) => {
+        const count = byType[key];
+        const pct = (count / maxType) * 100;
+        typeBars += `<div class="bar-row">
+          <div class="bar-label">${label}</div>
+          <div class="bar-track"><div class="bar-fill color-${key}" style="width: ${pct}%"></div></div>
+          <div class="bar-value">${count}</div>
+        </div>`;
+      });
+
+      // === GRÁFICO POR DIA DA SEMANA ===
+      const byDow = [0, 0, 0, 0, 0, 0, 0]; // dom-sáb
+      monthAppts.forEach(a => {
+        const d = new Date(a.data + 'T00:00:00');
+        byDow[d.getDay()]++;
+      });
+      const maxDow = Math.max(1, ...byDow);
+      const dowLabels = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+      let dowBars = '';
+      for (let i = 0; i < 7; i++) {
+        const h = (byDow[i] / maxDow) * 130;
+        dowBars += `<div class="col-row">
+          <div class="col-value">${byDow[i]}</div>
+          <div class="col-bar" style="height: ${Math.max(h, 2)}px" title="${byDow[i]} atendimentos"></div>
+          <div class="col-label">${dowLabels[i]}</div>
+        </div>`;
+      }
+
+      // === TOP PACIENTES ===
+      const byPatient = {};
+      monthAppts.forEach(a => {
+        if (!a.patientId) return;
+        byPatient[a.patientId] = (byPatient[a.patientId] || 0) + 1;
+      });
+      const topPatients = Object.entries(byPatient)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10)
+        .map(([id, count], idx) => {
+          const p = state.patients.find(x => x.id === id);
+          if (!p) return null;
+          return { id, count, name: p.nome, rank: idx + 1 };
+        })
+        .filter(Boolean);
+
+      const topListHtml = topPatients.length
+        ? topPatients.map(p => `
+          <div class="top-list-item" onclick="closeAppointmentModal(); switchPage('patients'); openPatient('${p.id}');">
+            <div class="rank">${p.rank}º</div>
+            <div class="pp-avatar">${initials(p.name)}</div>
+            <div class="pp-name">${escapeHtml(p.name)}</div>
+            <div class="pp-count">${p.count} ${p.count === 1 ? 'sessão' : 'sessões'}</div>
+          </div>
+        `).join('')
+        : `<div class="summary-empty">nenhum paciente neste mês</div>`;
+
+      // === MODALIDADE ===
+      const presencial = monthAppts.filter(a => a.modalidade === 'presencial').length;
+      const online = monthAppts.filter(a => a.modalidade === 'online').length;
+      const totalMod = presencial + online;
+      const pctPres = totalMod > 0 ? Math.round((presencial / totalMod) * 100) : 0;
+      const pctOnline = totalMod > 0 ? 100 - pctPres : 0;
+
+      html += `
+        <div class="summary-row-2">
+          <div class="summary-section">
+            <h3>Por tipo <em>— de atendimento</em></h3>
+            <div class="bar-chart">${typeBars}</div>
+          </div>
+          <div class="summary-section">
+            <h3>Por dia da semana <em>— qual dia ela trabalha mais</em></h3>
+            <div class="col-chart">${dowBars}</div>
+          </div>
+        </div>
+
+        <div class="summary-row-2">
+          <div class="summary-section">
+            <h3>Top pacientes <em>— mais atendimentos</em></h3>
+            <div class="top-list">${topListHtml}</div>
+          </div>
+          <div class="summary-section">
+            <h3>Modalidade <em>— como atendeu</em></h3>
+            <div style="margin-top: 1rem;">
+              <div class="bar-row">
+                <div class="bar-label">Presencial</div>
+                <div class="bar-track"><div class="bar-fill color-default" style="width: ${pctPres}%"></div></div>
+                <div class="bar-value">${presencial}</div>
+              </div>
+              <div class="bar-row" style="margin-top: 0.6rem;">
+                <div class="bar-label">Online</div>
+                <div class="bar-track"><div class="bar-fill color-default" style="width: ${pctOnline}%"></div></div>
+                <div class="bar-value">${online}</div>
+              </div>
+            </div>
+            <div class="hint" style="margin-top: 1rem; font-size: 0.78rem; color: var(--ink-faint); font-family: var(--font-display); font-style: italic;">
+              ticket médio: ${fmtReal(ticketMedio)} por sessão realizada
+            </div>
+          </div>
+        </div>
+      `;
+
+      cont.innerHTML = html;
     }
 
     // ============================================================
@@ -3676,18 +4151,35 @@
       });
     });
 
-    // Agenda — botões de navegação semanal
-    $('btnPrevWeek').addEventListener('click', () => {
-      state.currentWeekStart = addDays(state.currentWeekStart, -7);
+    // Agenda — botões de navegação (semana ou mês conforme visão)
+    $('btnPrevPeriod').addEventListener('click', () => {
+      if (state.agendaView === 'week') {
+        state.currentWeekStart = addDays(state.currentWeekStart, -7);
+      } else {
+        state.currentMonthStart = addMonths(state.currentMonthStart, -1);
+      }
       renderAgendaPage();
     });
-    $('btnNextWeek').addEventListener('click', () => {
-      state.currentWeekStart = addDays(state.currentWeekStart, 7);
+    $('btnNextPeriod').addEventListener('click', () => {
+      if (state.agendaView === 'week') {
+        state.currentWeekStart = addDays(state.currentWeekStart, 7);
+      } else {
+        state.currentMonthStart = addMonths(state.currentMonthStart, 1);
+      }
       renderAgendaPage();
     });
-    $('btnTodayWeek').addEventListener('click', () => {
+    $('btnTodayPeriod').addEventListener('click', () => {
       state.currentWeekStart = startOfWeek(new Date());
+      state.currentMonthStart = startOfMonth(new Date());
       renderAgendaPage();
+    });
+
+    // Toggle de visão
+    document.querySelectorAll('.view-toggle button').forEach(b => {
+      b.addEventListener('click', () => {
+        state.agendaView = b.dataset.view;
+        renderAgendaPage();
+      });
     });
 
     // Agenda — novo atendimento
