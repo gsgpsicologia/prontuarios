@@ -579,6 +579,87 @@
     .summary-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     @media (max-width: 900px) { .summary-row-2 { grid-template-columns: 1fr; } }
 
+    /* ============================================================
+       FINANCEIRO
+       ============================================================ */
+    .financeiro-page { display: none; }
+    .financeiro-page.active { display: block; }
+
+    /* Toolbar de filtros */
+    .fin-toolbar { display: flex; gap: 0.75rem; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .fin-month-nav { display: flex; align-items: center; gap: 0.5rem; }
+    .fin-month-label { font-family: var(--font-display); font-size: 1.2rem; color: var(--ink); min-width: 200px; text-align: center; font-style: italic; }
+    .fin-month-label em { color: var(--gold-deep); font-weight: 500; font-style: normal; }
+
+    /* Lista de pendências */
+    .pendency-list { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1.5rem; }
+    .pendency-section-header { padding: 0.85rem 1.25rem; background: var(--cream); border-bottom: 1px solid var(--border-soft); font-family: var(--font-display); font-style: italic; color: var(--ink); display: flex; justify-content: space-between; align-items: center; }
+    .pendency-section-header .total { font-family: var(--font-body); font-style: normal; color: var(--gold-deep); font-weight: 500; font-size: 0.9rem; }
+    .pendency-item { display: grid; grid-template-columns: auto 1fr auto auto auto; align-items: center; gap: 1rem; padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--border-soft); cursor: pointer; transition: all 0.15s; }
+    .pendency-item:last-child { border-bottom: none; }
+    .pendency-item:hover { background: var(--cream); padding-left: 1.5rem; }
+    .pendency-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--gold-soft), var(--gold)); color: var(--cream-soft); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 0.95rem; font-weight: 500; flex-shrink: 0; }
+    .pendency-info .name { font-family: var(--font-display); font-weight: 500; font-size: 1.05rem; color: var(--ink); margin-bottom: 0.1rem; }
+    .pendency-info .meta { font-size: 0.78rem; color: var(--ink-soft); }
+    .pendency-amount { font-family: var(--font-display); font-size: 1.15rem; font-weight: 500; color: var(--ink); text-align: right; min-width: 90px; }
+    .pendency-aging { font-size: 0.7rem; padding: 0.25rem 0.6rem; border-radius: 50px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; min-width: 95px; text-align: center; }
+    .pendency-aging.fresh { background: var(--sage-wash); color: var(--sage-deep); }
+    .pendency-aging.medium { background: var(--gold-wash); color: var(--gold-deep); }
+    .pendency-aging.old { background: var(--danger-soft); color: var(--danger); }
+    .pendency-chevron { color: var(--ink-faint); transition: all 0.2s; }
+    .pendency-item:hover .pendency-chevron { color: var(--gold); transform: translateX(4px); }
+
+    /* Histórico de recebimentos */
+    .receipts-list { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); overflow: hidden; }
+    .receipt-item { display: grid; grid-template-columns: auto 1fr auto auto auto; gap: 1rem; padding: 0.85rem 1.25rem; border-bottom: 1px solid var(--border-soft); align-items: center; }
+    .receipt-item:last-child { border-bottom: none; }
+    .receipt-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .receipt-icon.pix { background: #d6e8df; color: #2c6e49; }
+    .receipt-icon.cartao_credito, .receipt-icon.cartao_debito { background: #d6dde8; color: #1e3a5a; }
+    .receipt-icon.dinheiro { background: #e8d6ac; color: #5e4a1e; }
+    .receipt-icon.transferencia { background: #d9e0cc; color: #3d4934; }
+    .receipt-icon.outro { background: var(--border); color: var(--ink-soft); }
+    .receipt-info .name { font-family: var(--font-display); font-weight: 500; font-size: 1rem; color: var(--ink); }
+    .receipt-info .meta { font-size: 0.76rem; color: var(--ink-soft); margin-top: 0.1rem; }
+    .receipt-amount { font-family: var(--font-display); font-size: 1.05rem; font-weight: 500; color: var(--sage-deep); text-align: right; }
+    .receipt-form { font-size: 0.7rem; padding: 0.2rem 0.55rem; border-radius: 50px; background: var(--cream); color: var(--ink-soft); border: 1px solid var(--border); letter-spacing: 0.04em; text-transform: uppercase; min-width: 75px; text-align: center; }
+    .receipt-actions { display: flex; gap: 0.3rem; }
+    .receipt-empty { text-align: center; padding: 3rem 1.5rem; color: var(--ink-faint); font-family: var(--font-display); font-style: italic; }
+
+    /* Seção do modal de pagamento (dentro do modal de atendimento) */
+    .payment-section { background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem 1.2rem; margin-top: 0.5rem; grid-column: 1 / -1; }
+    .payment-toggle { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .payment-toggle .ptitle { display: flex; align-items: center; gap: 0.5rem; font-weight: 500; color: var(--ink); }
+    .payment-toggle .ptitle svg { width: 16px; height: 16px; color: var(--gold-deep); }
+    .toggle-switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-track { position: absolute; cursor: pointer; inset: 0; background: var(--border); border-radius: 24px; transition: 0.2s; }
+    .toggle-track::before { content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background: var(--cream-soft); border-radius: 50%; transition: 0.2s; }
+    .toggle-switch input:checked + .toggle-track { background: var(--sage-deep); }
+    .toggle-switch input:checked + .toggle-track::before { transform: translateX(18px); }
+    .payment-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-soft); }
+    .payment-fields.hidden { display: none; }
+
+    /* Aba Financeiro dentro do paciente */
+    .patient-fin-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .patient-fin-card { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-md); padding: 1rem 1.25rem; }
+    .patient-fin-card .label { font-family: var(--font-display); font-style: italic; font-size: 0.78rem; color: var(--ink-faint); }
+    .patient-fin-card .value { font-family: var(--font-display); font-size: 1.6rem; font-weight: 500; color: var(--ink); line-height: 1.2; margin-top: 0.2rem; }
+    .patient-fin-card .value.devendo { color: var(--danger); }
+    .patient-fin-card .value.pago { color: var(--sage-deep); }
+
+    .patient-fin-list { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); overflow: hidden; }
+    .patient-fin-row { display: grid; grid-template-columns: auto 1fr auto auto auto; align-items: center; gap: 1rem; padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--border-soft); }
+    .patient-fin-row:last-child { border-bottom: none; }
+    .patient-fin-row .data-info { display: flex; flex-direction: column; gap: 0.1rem; }
+    .patient-fin-row .data-info .data { font-family: var(--font-display); font-size: 0.95rem; color: var(--ink); }
+    .patient-fin-row .data-info .tipo { font-size: 0.72rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; }
+    .patient-fin-row .valor { font-family: var(--font-display); font-size: 1rem; font-weight: 500; color: var(--ink); text-align: right; min-width: 80px; }
+    .pay-status { font-size: 0.7rem; padding: 0.25rem 0.6rem; border-radius: 50px; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; }
+    .pay-status.pago { background: var(--sage-wash); color: var(--sage-deep); }
+    .pay-status.pendente { background: var(--danger-soft); color: var(--danger); }
+    .pay-status.cancelado { background: var(--border); color: var(--ink-soft); }
+
     /* Dropdown de exportação */
     .export-wrap { position: relative; display: inline-block; }
     .export-menu { position: absolute; top: calc(100% + 6px); right: 0; background: var(--cream-soft); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); min-width: 220px; overflow: hidden; z-index: 50; display: none; }
@@ -664,9 +745,9 @@
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           Agenda
         </button>
-        <button class="nav-item" disabled>
+        <button class="nav-item" data-page="financeiro">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          Financeiro <span class="badge">em breve</span>
+          Financeiro
         </button>
       </nav>
       <div class="user-footer">
@@ -754,6 +835,34 @@
           <div id="summaryContent"></div>
         </div>
 
+      </div>
+
+      <!-- FINANCEIRO -->
+      <div id="financeiroPage" class="financeiro-page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Financeiro</h1>
+            <p class="page-subtitle">recebimentos e pendências</p>
+          </div>
+        </div>
+
+        <div class="fin-toolbar">
+          <div class="fin-month-nav">
+            <button class="btn btn-secondary btn-sm" id="btnFinPrevMonth" title="Mês anterior">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="btn btn-ghost btn-sm" id="btnFinThisMonth">Este mês</button>
+            <button class="btn btn-secondary btn-sm" id="btnFinNextMonth" title="Próximo mês">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <div class="fin-month-label" id="finMonthLabel">—</div>
+          </div>
+        </div>
+
+        <div id="finStats" class="summary-grid-main"></div>
+
+        <div id="finPendencyContainer"></div>
+        <div id="finReceiptsContainer"></div>
       </div>
 
       <div id="listView">
@@ -869,6 +978,7 @@
           <button class="tab-btn active" data-tab="info">Ficha</button>
           <button class="tab-btn" data-tab="anamnese">Anamnese</button>
           <button class="tab-btn" data-tab="evolutions">Evoluções <span class="count" id="evolutionCount">0</span></button>
+          <button class="tab-btn" data-tab="financeiro">Financeiro</button>
         </div>
 
         <!-- TAB: INFO -->
@@ -900,6 +1010,11 @@
         <!-- TAB: ANAMNESE -->
         <div class="tab-panel" id="tabAnamnese">
           <div id="anamneseContent"></div>
+        </div>
+
+        <!-- TAB: FINANCEIRO -->
+        <div class="tab-panel" id="tabFinanceiro">
+          <div id="patientFinContent"></div>
         </div>
 
         <!-- TAB: EVOLUÇÕES -->
@@ -1009,6 +1124,46 @@
             <div class="form-group full">
               <label class="form-label">Observações</label>
               <textarea class="form-textarea" id="apptObservacoes" rows="2"></textarea>
+            </div>
+
+            <div class="payment-section">
+              <div class="payment-toggle">
+                <div class="ptitle">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  <span>Pagamento</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="apptPago" />
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div class="payment-fields hidden" id="paymentFields">
+                <div class="form-group">
+                  <label class="form-label">Forma de pagamento</label>
+                  <select class="form-select" id="apptFormaPagamento">
+                    <option value="pix">PIX</option>
+                    <option value="cartao_credito">Cartão de crédito</option>
+                    <option value="cartao_debito">Cartão de débito</option>
+                    <option value="dinheiro">Dinheiro</option>
+                    <option value="transferencia">Transferência</option>
+                    <option value="outro">Outro</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Data do pagamento</label>
+                  <input type="date" class="form-input" id="apptDataPagamento" />
+                </div>
+                <div class="form-group full">
+                  <label class="form-label">Observações do pagamento</label>
+                  <input type="text" class="form-input" id="apptObsPagamento" placeholder="ex: PIX banco do brasil, parcelado em 3x..." />
+                </div>
+                <div class="form-group full" id="receiptBtnWrap" style="display:none;">
+                  <button type="button" class="btn btn-secondary btn-sm" id="btnGerarRecibo">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    Gerar recibo PDF
+                  </button>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -1349,7 +1504,10 @@
       currentMonthStart: null,     // data (Date) do dia 1 do mês visível
       agendaView: 'week',          // week | month | summary
       editingApptId: null,
-      currentPage: 'patients',     // patients | agenda
+      currentPage: 'patients',     // patients | agenda | financeiro
+
+      // Financeiro
+      currentFinMonth: null,       // mês visível no financeiro
     };
 
     const $ = (id) => document.getElementById(id);
@@ -3382,12 +3540,19 @@
       $('apptPatientSearch').value = '';
       $('apptData').value = prefill.data || toIsoDate(new Date());
       $('apptHoraInicio').value = prefill.hora || '08:00';
-      // Hora fim padrão = início + 50min
       const endMin = timeToMinutes(prefill.hora || '08:00') + 50;
       $('apptHoraFim').value = minutesToTime(endMin);
       $('apptModalidade').value = 'presencial';
       $('apptTipo').value = 'sessao';
       $('apptStatus').value = 'agendado';
+      // Reseta pagamento
+      $('apptPago').checked = false;
+      $('apptFormaPagamento').value = 'pix';
+      $('apptDataPagamento').value = '';
+      $('apptObsPagamento').value = '';
+      $('paymentFields').classList.add('hidden');
+      $('receiptBtnWrap').style.display = 'none';
+      setupPaymentToggle();
 
       $('appointmentModal').classList.add('active');
       setTimeout(() => $('apptPatientSearch').focus(), 150);
@@ -3417,6 +3582,14 @@
       $('apptStatus').value = apt.status || 'agendado';
       $('apptObservacoes').value = apt.observacoes || '';
 
+      // Pagamento
+      const pag = apt.pagamento || {};
+      $('apptPago').checked = !!pag.pago;
+      $('apptFormaPagamento').value = pag.formaPagamento || 'pix';
+      $('apptDataPagamento').value = pag.dataPagamento || (pag.pago ? '' : '');
+      $('apptObsPagamento').value = pag.observacoes || '';
+      setupPaymentToggle();
+
       $('appointmentModal').classList.add('active');
     }
 
@@ -3437,6 +3610,7 @@
       const patientId = $('apptPatientId').value;
       if (!patientId) { toast('Selecione um paciente', 'error'); $('apptPatientSearch').focus(); return; }
 
+      const pago = $('apptPago').checked;
       const data = {
         patientId,
         data: $('apptData').value,
@@ -3447,6 +3621,12 @@
         valor: $('apptValor').value ? parseFloat($('apptValor').value) : null,
         status: $('apptStatus').value,
         observacoes: $('apptObservacoes').value.trim(),
+        pagamento: {
+          pago,
+          formaPagamento: pago ? $('apptFormaPagamento').value : null,
+          dataPagamento: pago ? ($('apptDataPagamento').value || toIsoDate(new Date())) : null,
+          observacoes: pago ? $('apptObsPagamento').value.trim() : '',
+        },
       };
 
       if (!data.data || !data.horaInicio) { toast('Data e hora são obrigatórias', 'error'); return; }
@@ -3466,7 +3646,10 @@
         }
         await saveAppointments();
         closeAppointmentModal();
-        renderAgendaPage();
+        // Re-renderiza a tela atual
+        if (state.currentPage === 'agenda') renderAgendaPage();
+        else if (state.currentPage === 'financeiro') renderFinanceiroPage();
+        if (state.activeTab === 'financeiro' && state.selectedPatientId) renderPatientFinanceiroTab();
         toast(state.editingApptId ? 'Atendimento atualizado' : 'Atendimento agendado', 'success');
       } catch {
         toast('Erro ao salvar', 'error');
@@ -3529,17 +3712,523 @@
     function switchPage(page) {
       state.currentPage = page;
       document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
+      $('listView').style.display = 'none';
+      $('detailView').classList.remove('active');
+      $('agendaPage').classList.remove('active');
+      $('financeiroPage').classList.remove('active');
       if (page === 'agenda') {
-        $('listView').style.display = 'none';
-        $('detailView').classList.remove('active');
         $('agendaPage').classList.add('active');
         renderAgendaPage();
+      } else if (page === 'financeiro') {
+        $('financeiroPage').classList.add('active');
+        renderFinanceiroPage();
       } else {
-        $('agendaPage').classList.remove('active');
         renderAll();
       }
     }
     window.switchPage = switchPage;
+
+    // ============================================================
+    // FINANCEIRO — utilitários
+    // ============================================================
+    const FORMA_PAGAMENTO_LABEL = {
+      pix: 'PIX',
+      cartao_credito: 'Cartão crédito',
+      cartao_debito: 'Cartão débito',
+      dinheiro: 'Dinheiro',
+      transferencia: 'Transferência',
+      outro: 'Outro',
+    };
+
+    const FORMA_PAGAMENTO_ICONS = {
+      pix: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M12 2L2 12l10 10 10-10z"/></svg>',
+      cartao_credito: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="2" y="6" width="20" height="13" rx="2"/><line x1="2" y1="11" x2="22" y2="11"/></svg>',
+      cartao_debito: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="2" y="6" width="20" height="13" rx="2"/><line x1="2" y1="11" x2="22" y2="11"/></svg>',
+      dinheiro: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="2" y="6" width="20" height="13" rx="2"/><circle cx="12" cy="12.5" r="2"/></svg>',
+      transferencia: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>',
+      outro: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+    };
+
+    function fmtBRL(v) {
+      const n = Number(v) || 0;
+      return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // Diferença em dias entre 2 datas ISO (positivo = a > b)
+    function daysBetween(isoA, isoB) {
+      const a = new Date(isoA + 'T00:00:00');
+      const b = new Date(isoB + 'T00:00:00');
+      return Math.round((a - b) / (1000 * 60 * 60 * 24));
+    }
+
+    // Verifica se atendimento é "pendente" (realizado e não pago)
+    function isPendente(apt) {
+      if (apt.status !== 'realizado') return false;
+      if (!apt.valor || parseFloat(apt.valor) <= 0) return false;
+      return !(apt.pagamento && apt.pagamento.pago);
+    }
+
+    // ============================================================
+    // FINANCEIRO — sidebar (visão global)
+    // ============================================================
+    function renderFinanceiroPage() {
+      if (!state.currentFinMonth) state.currentFinMonth = startOfMonth(new Date());
+      renderFinMonthLabel();
+      renderFinStats();
+      renderFinPendencies();
+      renderFinReceipts();
+    }
+
+    function renderFinMonthLabel() {
+      const d = state.currentFinMonth;
+      const monthStr = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      const cap = monthStr.charAt(0).toUpperCase() + monthStr.slice(1);
+      $('finMonthLabel').innerHTML = `<em>${cap}</em>`;
+    }
+
+    function renderFinStats() {
+      const monthStart = state.currentFinMonth;
+      const year = monthStart.getFullYear();
+      const month = monthStart.getMonth();
+      const monthEnd = new Date(year, month + 1, 0);
+      const startIso = toIsoDate(monthStart);
+      const endIso = toIsoDate(monthEnd);
+
+      // Recebido neste mês: pagamentos cuja dataPagamento está no mês
+      const recebidos = state.appointments.filter(a =>
+        a.pagamento && a.pagamento.pago && a.pagamento.dataPagamento &&
+        a.pagamento.dataPagamento >= startIso && a.pagamento.dataPagamento <= endIso
+      );
+      const totalRecebido = recebidos.reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+
+      // A receber: realizados no mês ainda não pagos
+      const aReceberDoMes = state.appointments.filter(a =>
+        a.data >= startIso && a.data <= endIso && isPendente(a)
+      );
+      const totalAReceber = aReceberDoMes.reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+
+      // Inadimplência total (qualquer mês) — atendimentos pendentes
+      const todasPendentes = state.appointments.filter(isPendente);
+      const totalInadimplencia = todasPendentes.reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+      const inadimplenciaAntiga = todasPendentes.filter(a => daysBetween(toIsoDate(new Date()), a.data) > 30);
+      const totalAntiga = inadimplenciaAntiga.reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+
+      $('finStats').innerHTML = `
+        <div class="summary-card featured">
+          <div class="label">Recebido no mês</div>
+          <div class="value money">${fmtBRL(totalRecebido)}</div>
+          <div class="hint">${recebidos.length} ${recebidos.length === 1 ? 'pagamento' : 'pagamentos'}</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">A receber do mês</div>
+          <div class="value money small">${fmtBRL(totalAReceber)}</div>
+          <div class="hint">${aReceberDoMes.length} ${aReceberDoMes.length === 1 ? 'atendimento' : 'atendimentos'} realizados</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">Inadimplência total</div>
+          <div class="value money small" style="color: ${totalInadimplencia > 0 ? 'var(--danger)' : 'var(--ink)'}">${fmtBRL(totalInadimplencia)}</div>
+          <div class="hint">${todasPendentes.length} ${todasPendentes.length === 1 ? 'pendência' : 'pendências'} em aberto</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">Em aberto há +30 dias</div>
+          <div class="value money small" style="color: ${totalAntiga > 0 ? 'var(--danger)' : 'var(--ink)'}">${fmtBRL(totalAntiga)}</div>
+          <div class="hint">${inadimplenciaAntiga.length} ${inadimplenciaAntiga.length === 1 ? 'pendência' : 'pendências'} antigas</div>
+        </div>
+      `;
+    }
+
+    function renderFinPendencies() {
+      const cont = $('finPendencyContainer');
+
+      // Agrupa pendências por paciente
+      const todasPendentes = state.appointments.filter(isPendente);
+      const porPaciente = {};
+      todasPendentes.forEach(apt => {
+        if (!apt.patientId) return;
+        if (!porPaciente[apt.patientId]) porPaciente[apt.patientId] = [];
+        porPaciente[apt.patientId].push(apt);
+      });
+
+      const lista = Object.entries(porPaciente)
+        .map(([id, appts]) => {
+          const patient = state.patients.find(p => p.id === id);
+          if (!patient) return null;
+          const total = appts.reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+          const oldest = appts.reduce((min, a) => a.data < min ? a.data : min, appts[0].data);
+          const days = daysBetween(toIsoDate(new Date()), oldest);
+          return { patient, appts, total, oldest, days };
+        })
+        .filter(Boolean)
+        .sort((a, b) => b.days - a.days); // mais antigas primeiro
+
+      if (!lista.length) {
+        cont.innerHTML = `
+          <div class="pendency-list">
+            <div class="pendency-section-header">
+              <span><em>Pendências</em> — quem está devendo</span>
+            </div>
+            <div class="receipt-empty">nenhuma pendência. tudo em dia! ✦</div>
+          </div>
+        `;
+        return;
+      }
+
+      const totalGeral = lista.reduce((s, p) => s + p.total, 0);
+
+      cont.innerHTML = `
+        <div class="pendency-list">
+          <div class="pendency-section-header">
+            <span><em>Pendências</em> — quem está devendo</span>
+            <span class="total">${fmtBRL(totalGeral)}</span>
+          </div>
+          ${lista.map(p => {
+            const agingClass = p.days > 30 ? 'old' : (p.days > 14 ? 'medium' : 'fresh');
+            const agingLabel = p.days <= 0 ? 'recente' : (p.days === 1 ? '1 dia' : `${p.days} dias`);
+            return `
+              <div class="pendency-item" onclick="goToPatientFinanceiro('${p.patient.id}')">
+                <div class="pendency-avatar">${initials(p.patient.nome)}</div>
+                <div class="pendency-info">
+                  <div class="name">${escapeHtml(p.patient.nome)}</div>
+                  <div class="meta">${p.appts.length} ${p.appts.length === 1 ? 'atendimento' : 'atendimentos'} · mais antigo: ${formatDate(p.oldest)}</div>
+                </div>
+                <div class="pendency-aging ${agingClass}">${agingLabel}</div>
+                <div class="pendency-amount">${fmtBRL(p.total)}</div>
+                <svg class="pendency-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderFinReceipts() {
+      const cont = $('finReceiptsContainer');
+      const monthStart = state.currentFinMonth;
+      const year = monthStart.getFullYear();
+      const month = monthStart.getMonth();
+      const monthEnd = new Date(year, month + 1, 0);
+      const startIso = toIsoDate(monthStart);
+      const endIso = toIsoDate(monthEnd);
+
+      const recebidos = state.appointments
+        .filter(a => a.pagamento && a.pagamento.pago && a.pagamento.dataPagamento &&
+                     a.pagamento.dataPagamento >= startIso && a.pagamento.dataPagamento <= endIso)
+        .sort((a, b) => (b.pagamento.dataPagamento || '').localeCompare(a.pagamento.dataPagamento || ''));
+
+      if (!recebidos.length) {
+        cont.innerHTML = `
+          <div class="receipts-list">
+            <div class="pendency-section-header">
+              <span><em>Recebimentos</em> — pagamentos do mês</span>
+            </div>
+            <div class="receipt-empty">nenhum recebimento neste mês ainda.</div>
+          </div>
+        `;
+        return;
+      }
+
+      cont.innerHTML = `
+        <div class="receipts-list">
+          <div class="pendency-section-header">
+            <span><em>Recebimentos</em> — pagamentos do mês</span>
+            <span class="total">${recebidos.length} ${recebidos.length === 1 ? 'pagamento' : 'pagamentos'}</span>
+          </div>
+          ${recebidos.map(apt => {
+            const patient = state.patients.find(p => p.id === apt.patientId);
+            const name = patient ? patient.nome : '(paciente excluído)';
+            const forma = apt.pagamento.formaPagamento || 'outro';
+            return `
+              <div class="receipt-item">
+                <div class="receipt-icon ${forma}">${FORMA_PAGAMENTO_ICONS[forma] || ''}</div>
+                <div class="receipt-info">
+                  <div class="name">${escapeHtml(name)}</div>
+                  <div class="meta">${APPT_TYPES[apt.tipo] || apt.tipo} · sessão de ${formatDate(apt.data)} · pago em ${formatDate(apt.pagamento.dataPagamento)}</div>
+                </div>
+                <span class="receipt-form">${FORMA_PAGAMENTO_LABEL[forma] || forma}</span>
+                <div class="receipt-amount">${fmtBRL(apt.valor)}</div>
+                <div class="receipt-actions">
+                  <button class="btn-icon" onclick="exportReciboPdf('${apt.id}')" title="Recibo PDF">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  </button>
+                  <button class="btn-icon" onclick="openEditAppointment('${apt.id}')" title="Editar">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function goToPatientFinanceiro(patientId) {
+      switchPage('patients');
+      openPatient(patientId);
+      // Aguarda o paciente abrir e troca pra aba financeiro
+      setTimeout(() => {
+        state.activeTab = 'financeiro';
+        document.querySelectorAll('.tab-btn').forEach(x => x.classList.toggle('active', x.dataset.tab === 'financeiro'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tabFinanceiro'));
+        renderPatientFinanceiroTab();
+      }, 200);
+    }
+    window.goToPatientFinanceiro = goToPatientFinanceiro;
+
+    // ============================================================
+    // FINANCEIRO — aba dentro do paciente
+    // ============================================================
+    function renderPatientFinanceiroTab() {
+      const cont = $('patientFinContent');
+      const patient = state.patients.find(p => p.id === state.selectedPatientId);
+      if (!patient) { cont.innerHTML = ''; return; }
+
+      const apts = state.appointments
+        .filter(a => a.patientId === patient.id)
+        .sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+
+      const realizados = apts.filter(a => a.status === 'realizado');
+      const pagos = realizados.filter(a => a.pagamento && a.pagamento.pago);
+      const pendentes = realizados.filter(isPendente);
+      const totalPago = pagos.reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+      const totalDevendo = pendentes.reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+      const totalGeral = realizados.reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+
+      let html = `
+        <div class="patient-fin-summary">
+          <div class="patient-fin-card">
+            <div class="label">Total geral</div>
+            <div class="value">${fmtBRL(totalGeral)}</div>
+          </div>
+          <div class="patient-fin-card">
+            <div class="label">Pago</div>
+            <div class="value pago">${fmtBRL(totalPago)}</div>
+          </div>
+          <div class="patient-fin-card">
+            <div class="label">Devendo</div>
+            <div class="value ${totalDevendo > 0 ? 'devendo' : ''}">${fmtBRL(totalDevendo)}</div>
+          </div>
+          <div class="patient-fin-card">
+            <div class="label">Atendimentos</div>
+            <div class="value">${realizados.length}</div>
+          </div>
+        </div>
+      `;
+
+      if (!apts.length) {
+        html += `<div class="empty-state"><div class="empty-state-content">
+          <h3>Sem atendimentos<em>.</em></h3>
+          <p>nenhum atendimento registrado para este paciente.</p>
+        </div></div>`;
+        cont.innerHTML = html;
+        return;
+      }
+
+      html += `<div class="patient-fin-list">
+        <div class="pendency-section-header"><span><em>Histórico</em> — atendimentos do paciente</span></div>
+        ${apts.map(apt => {
+          let payStatus = 'cancelado';
+          let payLabel = 'sem cobrança';
+          if (apt.status === 'cancelado' || apt.status === 'faltou') {
+            payStatus = 'cancelado';
+            payLabel = apt.status === 'cancelado' ? 'cancelado' : 'faltou';
+          } else if (!apt.valor || parseFloat(apt.valor) <= 0) {
+            payStatus = 'cancelado';
+            payLabel = 'sem valor';
+          } else if (apt.pagamento && apt.pagamento.pago) {
+            payStatus = 'pago';
+            payLabel = 'pago';
+          } else if (apt.status === 'realizado') {
+            payStatus = 'pendente';
+            payLabel = 'pendente';
+          } else {
+            payStatus = 'cancelado';
+            payLabel = 'agendado';
+          }
+
+          const recibo = (apt.pagamento && apt.pagamento.pago)
+            ? `<button class="btn-icon" onclick="exportReciboPdf('${apt.id}')" title="Recibo PDF"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></button>`
+            : '';
+
+          return `<div class="patient-fin-row">
+            <div class="data-info">
+              <span class="data">${formatDate(apt.data)}</span>
+              <span class="tipo">${APPT_TYPES[apt.tipo] || apt.tipo}</span>
+            </div>
+            <div></div>
+            <div class="valor">${apt.valor ? fmtBRL(apt.valor) : '—'}</div>
+            <span class="pay-status ${payStatus}">${payLabel}</span>
+            <div style="display:flex; gap:0.3rem;">
+              ${recibo}
+              <button class="btn-icon" onclick="openEditAppointment('${apt.id}')" title="Editar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+
+      cont.innerHTML = html;
+    }
+
+    // ============================================================
+    // FINANCEIRO — modal de pagamento (toggle)
+    // ============================================================
+    function setupPaymentToggle() {
+      const checkbox = $('apptPago');
+      const fields = $('paymentFields');
+      const receiptBtn = $('receiptBtnWrap');
+      const updateUI = () => {
+        if (checkbox.checked) {
+          fields.classList.remove('hidden');
+          receiptBtn.style.display = state.editingApptId ? 'block' : 'none';
+        } else {
+          fields.classList.add('hidden');
+          receiptBtn.style.display = 'none';
+        }
+      };
+      checkbox.addEventListener('change', updateUI);
+      updateUI();
+    }
+
+    // ============================================================
+    // RECIBO — gerar PDF
+    // ============================================================
+    function valorPorExtenso(valor) {
+      // Conversão simples (até centenas de milhares)
+      const n = Math.round(parseFloat(valor) * 100); // em centavos
+      const reais = Math.floor(n / 100);
+      const centavos = n % 100;
+
+      const unidades = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove', 'dez',
+        'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
+      const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
+      const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
+
+      function ate999(num) {
+        if (num === 0) return '';
+        if (num === 100) return 'cem';
+        let res = '';
+        const c = Math.floor(num / 100);
+        const resto = num % 100;
+        if (c > 0) res += centenas[c];
+        if (resto > 0) {
+          if (res) res += ' e ';
+          if (resto < 20) {
+            res += unidades[resto];
+          } else {
+            const d = Math.floor(resto / 10);
+            const u = resto % 10;
+            res += dezenas[d];
+            if (u > 0) res += ' e ' + unidades[u];
+          }
+        }
+        return res;
+      }
+
+      let texto = '';
+      if (reais === 0) texto = 'zero reais';
+      else if (reais === 1) texto = 'um real';
+      else {
+        const milhar = Math.floor(reais / 1000);
+        const resto = reais % 1000;
+        if (milhar > 0) {
+          if (milhar === 1) texto = 'mil';
+          else texto = ate999(milhar) + ' mil';
+          if (resto > 0) texto += (resto < 100 ? ' e ' : ', ') + ate999(resto);
+        } else {
+          texto = ate999(reais);
+        }
+        texto += ' reais';
+      }
+      if (centavos > 0) {
+        texto += ' e ' + ate999(centavos) + (centavos === 1 ? ' centavo' : ' centavos');
+      }
+      return texto;
+    }
+
+    function exportReciboPdf(apptId) {
+      const apt = state.appointments.find(a => a.id === apptId);
+      if (!apt) { toast('Atendimento não encontrado', 'error'); return; }
+      if (!apt.pagamento || !apt.pagamento.pago) { toast('Marque o pagamento como pago primeiro', 'error'); return; }
+      const patient = state.patients.find(p => p.id === apt.patientId);
+      if (!patient) { toast('Paciente não encontrado', 'error'); return; }
+      if (!window.jspdf) { toast('Biblioteca de PDF não carregada', 'error'); return; }
+
+      try {
+        const pdf = createPdfHelper('elegant');
+        const { doc } = pdf;
+        const palette = pdf.palette;
+        const pageW = 210, marginX = 22;
+
+        // Título
+        pdf.writeMainTitle('Recibo');
+        pdf.writeSubtitle('comprovante de pagamento');
+        pdf.y += 10;
+
+        // Número do recibo (baseado no id e data) — só pra ter referência
+        const numero = apt.id.replace(/[^0-9]/g, '').slice(-6).padStart(6, '0');
+        doc.setFont('times', 'italic');
+        doc.setFontSize(9);
+        doc.setTextColor(palette.faint[0], palette.faint[1], palette.faint[2]);
+        doc.text(`Nº ${numero}`, pageW - marginX, pdf.y, { align: 'right' });
+        pdf.y += 8;
+
+        // Texto do recibo
+        const valor = parseFloat(apt.valor) || 0;
+        const valorTexto = valorPorExtenso(valor);
+        const dataPagamento = formatDate(apt.pagamento.dataPagamento || apt.data);
+        const dataSessao = formatDate(apt.data);
+        const tipoLabel = (APPT_TYPES[apt.tipo] || apt.tipo).toLowerCase();
+        const formaPagamento = FORMA_PAGAMENTO_LABEL[apt.pagamento.formaPagamento] || 'não informada';
+
+        doc.setFont('times', 'normal');
+        doc.setFontSize(11);
+        doc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+
+        const corpo = `Recebi de ${patient.nome}${patient.cpf ? ', portador(a) do CPF ' + patient.cpf : ''}, a importância de ${fmtBRL(valor)} (${valorTexto}), referente a serviço de psicologia (${tipoLabel}) realizado em ${dataSessao}, com pagamento efetuado em ${dataPagamento} via ${formaPagamento}.`;
+
+        const lines = doc.splitTextToSize(corpo, pageW - 2 * marginX);
+        lines.forEach(l => {
+          pdf.ensureSpace(7);
+          doc.text(l, marginX, pdf.y, { align: 'left', maxWidth: pageW - 2 * marginX });
+          pdf.y += 7;
+        });
+
+        pdf.y += 6;
+        doc.text('Para clareza e devida comprovação, firmo o presente recibo.', marginX, pdf.y);
+        pdf.y += 25;
+
+        // Local + data
+        const hoje = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+        doc.setFont('times', 'italic');
+        doc.text(`Maringá, ${hoje}`, pageW / 2, pdf.y, { align: 'center' });
+        pdf.y += 30;
+
+        // Linha de assinatura
+        doc.setDrawColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+        doc.setLineWidth(0.3);
+        doc.line(pageW / 2 - 50, pdf.y, pageW / 2 + 50, pdf.y);
+        pdf.y += 5;
+
+        doc.setFont('times', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+        doc.text('Gabrielly Guandalino', pageW / 2, pdf.y, { align: 'center' });
+        pdf.y += 4;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(palette.faint[0], palette.faint[1], palette.faint[2]);
+        doc.text('Psicóloga · CRP-PR 08/38673', pageW / 2, pdf.y, { align: 'center' });
+
+        pdf.finalize();
+        const filename = `recibo_${sanitizeFilename(patient.nome)}_${apt.pagamento.dataPagamento || apt.data}.pdf`;
+        pdf.doc.save(filename);
+        toast('Recibo gerado', 'success');
+      } catch (e) {
+        console.error(e);
+        toast('Erro ao gerar recibo', 'error');
+      }
+    }
+
+    window.exportReciboPdf = exportReciboPdf;
 
     // ============================================================
     // EVOLUÇÕES — carregar/salvar
@@ -4130,6 +4819,7 @@
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === ('tab' + tab.charAt(0).toUpperCase() + tab.slice(1))));
         if (tab === 'evolutions') renderEvolutions();
         if (tab === 'anamnese') renderAnamneseTab();
+        if (tab === 'financeiro') renderPatientFinanceiroTab();
       });
     });
 
@@ -4210,6 +4900,28 @@
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.patient-picker')) {
         $('apptPatientDropdown').classList.remove('active');
+      }
+    });
+
+    // FINANCEIRO — navegação de meses
+    $('btnFinPrevMonth').addEventListener('click', () => {
+      state.currentFinMonth = addMonths(state.currentFinMonth, -1);
+      renderFinanceiroPage();
+    });
+    $('btnFinNextMonth').addEventListener('click', () => {
+      state.currentFinMonth = addMonths(state.currentFinMonth, 1);
+      renderFinanceiroPage();
+    });
+    $('btnFinThisMonth').addEventListener('click', () => {
+      state.currentFinMonth = startOfMonth(new Date());
+      renderFinanceiroPage();
+    });
+
+    // Botão "Gerar recibo PDF" do modal
+    $('btnGerarRecibo').addEventListener('click', () => {
+      if (state.editingApptId) {
+        // Salva primeiro caso tenha mudanças, depois gera
+        exportReciboPdf(state.editingApptId);
       }
     });
 
