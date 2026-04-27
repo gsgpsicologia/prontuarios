@@ -660,6 +660,54 @@
     .pay-status.pendente { background: var(--danger-soft); color: var(--danger); }
     .pay-status.cancelado { background: var(--border); color: var(--ink-soft); }
 
+    /* DOCUMENTOS */
+    .docs-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .docs-header h3 { font-family: var(--font-display); font-size: 1.6rem; font-weight: 400; }
+    .docs-header h3 em { font-style: italic; color: var(--gold-deep); }
+    .docs-header-meta { font-size: 0.78rem; color: var(--ink-faint); font-family: var(--font-display); font-style: italic; margin-top: 0.3rem; }
+
+    .docs-list { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); overflow: hidden; }
+    .doc-item { display: grid; grid-template-columns: auto 1fr auto auto; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-soft); align-items: center; cursor: pointer; transition: all 0.12s; }
+    .doc-item:last-child { border-bottom: none; }
+    .doc-item:hover { background: var(--cream); }
+    .doc-icon { width: 38px; height: 38px; border-radius: 8px; background: var(--gold-wash); color: var(--gold-deep); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .doc-info .title { font-family: var(--font-display); font-weight: 500; font-size: 1rem; color: var(--ink); margin-bottom: 0.15rem; line-height: 1.3; }
+    .doc-info .meta { font-size: 0.78rem; color: var(--ink-soft); }
+    .doc-info .meta .tipo { display: inline-block; background: var(--gold-wash); color: var(--gold-deep); padding: 0.1rem 0.55rem; border-radius: 50px; font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; font-weight: 500; margin-right: 0.4rem; }
+    .doc-date { font-size: 0.8rem; color: var(--ink-soft); font-family: var(--font-display); font-style: italic; min-width: 110px; text-align: right; }
+    .doc-actions { display: flex; gap: 0.3rem; }
+
+    .docs-empty { text-align: center; padding: 4rem 2rem; background: var(--cream-soft); border: 1px dashed var(--border); border-radius: var(--radius-lg); position: relative; }
+    .docs-empty::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 70% 30%, var(--gold-wash) 0%, transparent 40%); opacity: 0.3; border-radius: var(--radius-lg); pointer-events: none; }
+    .docs-empty-content { position: relative; z-index: 1; }
+    .docs-empty h3 { font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 400; }
+    .docs-empty h3 em { font-style: italic; color: var(--gold-deep); }
+    .docs-empty p { color: var(--ink-soft); max-width: 44ch; margin: 0 auto 1.5rem; font-family: var(--font-display); font-style: italic; font-size: 1rem; }
+
+    /* Modal documento (mais largo) */
+    .modal.doc-modal { max-width: 780px; }
+    .doc-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .doc-form-grid .full { grid-column: 1 / -1; }
+
+    .doc-section-title { grid-column: 1 / -1; font-family: var(--font-display); font-style: italic; color: var(--gold-deep); border-bottom: 1px solid var(--border-soft); padding-bottom: 0.5rem; margin-top: 0.4rem; font-size: 1rem; }
+    .doc-section-title:first-child { margin-top: 0; }
+
+    .doc-editor { min-height: 280px; padding: 1rem 1.15rem; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--cream); font-size: 0.95rem; line-height: 1.7; outline: none; transition: all 0.15s; font-family: inherit; }
+    .doc-editor:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-wash); }
+    .doc-editor:empty:before { content: attr(data-placeholder); color: var(--ink-faint); font-style: italic; pointer-events: none; }
+    .doc-editor p { margin-bottom: 0.7em; }
+    .doc-editor p:last-child { margin-bottom: 0; }
+    .doc-editor strong { font-weight: 600; }
+    .doc-editor em { font-style: italic; }
+    .doc-editor ul, .doc-editor ol { margin: 0.5em 0 0.5em 1.5em; }
+    .doc-editor li { margin-bottom: 0.3em; }
+
+    .doc-toolbar { display: flex; gap: 0.3rem; padding: 0.4rem 0.5rem; background: var(--cream); border: 1px solid var(--border); border-bottom: none; border-radius: var(--radius-md) var(--radius-md) 0 0; }
+    .doc-toolbar + .doc-editor { border-radius: 0 0 var(--radius-md) var(--radius-md); border-top: none; }
+    .doc-toolbar button { padding: 0.4rem 0.6rem; background: transparent; border: none; cursor: pointer; border-radius: var(--radius-sm); color: var(--ink-soft); transition: all 0.12s; font-size: 0.85rem; }
+    .doc-toolbar button:hover { background: var(--cream-soft); color: var(--ink); }
+    .doc-toolbar button.active { background: var(--gold-wash); color: var(--gold-deep); }
+
     /* Dropdown de exportação */
     .export-wrap { position: relative; display: inline-block; }
     .export-menu { position: absolute; top: calc(100% + 6px); right: 0; background: var(--cream-soft); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); min-width: 220px; overflow: hidden; z-index: 50; display: none; }
@@ -979,6 +1027,7 @@
           <button class="tab-btn" data-tab="anamnese">Anamnese</button>
           <button class="tab-btn" data-tab="evolutions">Evoluções <span class="count" id="evolutionCount">0</span></button>
           <button class="tab-btn" data-tab="financeiro">Financeiro</button>
+          <button class="tab-btn" data-tab="documentos">Documentos <span class="count" id="documentoCount">0</span></button>
         </div>
 
         <!-- TAB: INFO -->
@@ -1017,6 +1066,11 @@
           <div id="patientFinContent"></div>
         </div>
 
+        <!-- TAB: DOCUMENTOS -->
+        <div class="tab-panel" id="tabDocumentos">
+          <div id="documentosContent"></div>
+        </div>
+
         <!-- TAB: EVOLUÇÕES -->
         <div class="tab-panel" id="tabEvolutions">
           <div class="evolution-header">
@@ -1039,6 +1093,155 @@
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- MODAL DOCUMENTO -->
+  <div class="modal-backdrop" id="documentoModal">
+    <div class="modal doc-modal">
+      <div class="modal-header">
+        <h2 id="docModalTitle">Novo <em>documento</em></h2>
+        <p id="docModalSubtitle">redigir documento profissional</p>
+      </div>
+      <form id="documentoForm">
+        <div class="modal-body">
+          <div class="doc-form-grid">
+
+            <div class="doc-section-title">Tipo e identificação</div>
+
+            <div class="form-group">
+              <label class="form-label">Tipo do documento <span class="required">*</span></label>
+              <select class="form-select" id="docTipo" required>
+                <option value="atestado">Atestado</option>
+                <option value="declaracao">Declaração de comparecimento</option>
+                <option value="relatorio">Relatório psicológico</option>
+                <option value="parecer">Parecer psicológico</option>
+                <option value="encaminhamento">Encaminhamento</option>
+                <option value="carta">Carta</option>
+                <option value="outro">Outro</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Destinatário</label>
+              <input type="text" class="form-input" id="docDestinatario" placeholder="ex: À escola Modelo, Ao Dr. Fulano..." />
+            </div>
+
+            <div class="form-group full">
+              <label class="form-label">Título do documento <span class="required">*</span></label>
+              <input type="text" class="form-input" id="docTitulo" required placeholder="ex: Relatório psicológico — Lucas Silva" />
+            </div>
+
+            <div class="doc-section-title">Dados do paciente <span style="color: var(--ink-faint); font-style: italic; font-size: 0.78rem;">— editáveis para este documento</span></div>
+
+            <div class="form-group">
+              <label class="form-label">Nome completo</label>
+              <input type="text" class="form-input" id="docPacienteNome" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Data de nascimento</label>
+              <input type="date" class="form-input" id="docPacienteNascimento" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">CPF</label>
+              <input type="text" class="form-input" id="docPacienteCpf" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">RG</label>
+              <input type="text" class="form-input" id="docPacienteRg" />
+            </div>
+
+            <div class="form-group full">
+              <label class="form-label">Responsável (se aplicável)</label>
+              <input type="text" class="form-input" id="docPacienteResponsavel" placeholder="nome e parentesco do responsável" />
+            </div>
+
+            <div class="doc-section-title">Conteúdo</div>
+
+            <div class="form-group full">
+              <label class="form-label">Texto do documento <span class="required">*</span></label>
+              <div class="doc-toolbar">
+                <button type="button" onclick="document.execCommand('bold'); return false;" title="Negrito (Ctrl+B)"><b>B</b></button>
+                <button type="button" onclick="document.execCommand('italic'); return false;" title="Itálico (Ctrl+I)"><i>I</i></button>
+                <button type="button" onclick="document.execCommand('underline'); return false;" title="Sublinhado (Ctrl+U)"><u>U</u></button>
+                <button type="button" onclick="document.execCommand('insertUnorderedList'); return false;" title="Lista">•</button>
+                <button type="button" onclick="document.execCommand('insertOrderedList'); return false;" title="Lista numerada">1.</button>
+              </div>
+              <div class="doc-editor" id="docTexto" contenteditable="true" data-placeholder="escreva aqui o conteúdo do documento..."></div>
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger btn-sm" id="btnDeleteDocumento" style="margin-right:auto; display:none;">Excluir</button>
+          <button type="button" class="btn btn-ghost" id="btnCancelDocumento">Cancelar</button>
+          <button type="button" class="btn btn-secondary" id="btnExportDocumento" style="display:none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar PDF
+          </button>
+          <button type="submit" class="btn btn-gold" id="btnSaveDocumento"><span>Salvar</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIRMAÇÃO RECIBO -->
+  <div class="modal-backdrop" id="reciboModal">
+    <div class="modal" style="max-width: 480px;">
+      <div class="modal-header">
+        <h2>Gerar <em>recibo</em></h2>
+        <p>em nome de quem o recibo será emitido?</p>
+      </div>
+      <form id="reciboForm">
+        <div class="modal-body">
+          <div class="form-grid">
+
+            <div class="form-group full" style="margin-bottom: 0.5rem;">
+              <div style="background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.85rem 1rem; font-size: 0.85rem;">
+                <div style="color: var(--ink-faint); font-family: var(--font-display); font-style: italic; font-size: 0.78rem; margin-bottom: 0.3rem;">paciente atendido</div>
+                <div id="reciboPatientName" style="font-family: var(--font-display); font-size: 1rem; color: var(--ink);">—</div>
+                <div id="reciboPatientMeta" style="font-size: 0.78rem; color: var(--ink-soft); margin-top: 0.15rem;">—</div>
+              </div>
+            </div>
+
+            <div class="form-group full">
+              <label class="form-label">Recibo no nome de</label>
+              <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label class="checkbox-item" style="cursor: pointer;">
+                  <input type="radio" name="reciboTipoPagador" value="paciente" id="reciboTipoPaciente" style="appearance:auto; width:auto; height:auto;" />
+                  <span id="reciboLabelPaciente">paciente</span>
+                </label>
+                <label class="checkbox-item" style="cursor: pointer;">
+                  <input type="radio" name="reciboTipoPagador" value="outro" id="reciboTipoOutro" checked style="appearance:auto; width:auto; height:auto;" />
+                  <span>outro pagador (responsável, familiar...)</span>
+                </label>
+              </div>
+            </div>
+
+            <div id="reciboCamposPagador" class="form-grid" style="grid-column: 1 / -1; gap: 1rem;">
+              <div class="form-group full">
+                <label class="form-label">Nome completo do pagador <span class="required">*</span></label>
+                <input type="text" class="form-input" id="reciboPagadorNome" required />
+              </div>
+              <div class="form-group full">
+                <label class="form-label">CPF do pagador</label>
+                <input type="text" class="form-input" id="reciboPagadorCpf" placeholder="opcional, mas recomendado para IR" />
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="btnCancelRecibo">Cancelar</button>
+          <button type="submit" class="btn btn-gold">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Gerar PDF
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- MODAL ATENDIMENTO -->
@@ -1124,6 +1327,38 @@
             <div class="form-group full">
               <label class="form-label">Observações</label>
               <textarea class="form-textarea" id="apptObservacoes" rows="2"></textarea>
+            </div>
+
+            <div class="payment-section" id="repeatSection">
+              <div class="payment-toggle">
+                <div class="ptitle">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                  <span>Repetir atendimento</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="apptRepeat" />
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div class="payment-fields hidden" id="repeatFields">
+                <div class="form-group">
+                  <label class="form-label">Frequência</label>
+                  <select class="form-select" id="apptRepeatFreq">
+                    <option value="semanal">Semanal (toda semana)</option>
+                    <option value="quinzenal">Quinzenal (a cada 15 dias)</option>
+                    <option value="mensal">Mensal (mesmo dia do mês)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Quantas ocorrências</label>
+                  <input type="number" class="form-input" id="apptRepeatCount" min="2" max="52" value="12" />
+                </div>
+                <div class="form-group full">
+                  <div style="font-size: 0.8rem; color: var(--ink-soft); font-family: var(--font-display); font-style: italic; padding: 0.4rem 0;">
+                    <span id="repeatPreview">12 atendimentos serão criados, do dia X até o dia Y</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="payment-section">
@@ -1355,6 +1590,7 @@
     const DRIVE_FOLDER_NAME = 'Consultorio_Dados';
     const EVOLUTIONS_FOLDER_NAME = 'evolucoes';
     const ANAMNESES_FOLDER_NAME = 'anamneses';
+    const DOCUMENTOS_FOLDER_NAME = 'documentos';
     const DATA_FILENAME = 'pacientes.json';
     const AGENDA_FILENAME = 'agenda.json';
     const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
@@ -1468,6 +1704,7 @@
     const state = {
       tokenClient: null,
       accessToken: null,
+      renewalTimer: null,        // timer da auto-renovação do token
       user: { name: '', email: '', picture: '' },
       patients: [],
       folderId: null,
@@ -1508,6 +1745,13 @@
 
       // Financeiro
       currentFinMonth: null,       // mês visível no financeiro
+
+      // Documentos
+      documentos: [],              // documentos do paciente atual
+      documentosFileId: null,
+      documentosFolderId: null,
+      documentosLoading: false,
+      editingDocumentoId: null,
     };
 
     const $ = (id) => document.getElementById(id);
@@ -1609,42 +1853,152 @@
             client_id: GOOGLE_CLIENT_ID, scope: SCOPES, callback: handleAuthResponse,
           });
           state.gisReady = true;
+          // Tenta restaurar sessão salva
+          tryRestoreSession();
         }
       }, 100);
     }
 
+    // Salva token + dados do usuário no localStorage
+    function saveSession(accessToken, expiresIn) {
+      try {
+        const expiresAt = Date.now() + (expiresIn * 1000);
+        localStorage.setItem('gsg_session', JSON.stringify({
+          accessToken,
+          expiresAt,
+          user: state.user,
+        }));
+      } catch (e) { console.warn('localStorage indisponível:', e); }
+    }
+
+    function loadSession() {
+      try {
+        const raw = localStorage.getItem('gsg_session');
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch { return null; }
+    }
+
+    function clearSession() {
+      try { localStorage.removeItem('gsg_session'); } catch {}
+    }
+
+    // Tenta entrar automaticamente usando token salvo, senão tenta renovação silenciosa
+    async function tryRestoreSession() {
+      if (!state.gapiReady || !state.gisReady) {
+        // Se ainda não está pronto, espera um pouco e tenta de novo
+        setTimeout(tryRestoreSession, 200);
+        return;
+      }
+
+      const session = loadSession();
+      if (!session) return; // sem sessão salva, mostra login normal
+
+      const now = Date.now();
+      // Token ainda válido (deixa margem de 60s)
+      if (session.accessToken && session.expiresAt && session.expiresAt > now + 60000) {
+        try {
+          state.accessToken = session.accessToken;
+          state.user = session.user || state.user;
+          gapi.client.setToken({ access_token: session.accessToken });
+          await bootstrapDrive();
+          showApp();
+          // Agenda renovação 5min antes de expirar
+          scheduleTokenRenewal(session.expiresAt - now - 300000);
+        } catch (e) {
+          console.warn('Falha ao restaurar sessão:', e);
+          clearSession();
+          attemptSilentRenewal();
+        }
+        return;
+      }
+
+      // Token expirou — tenta renovação silenciosa
+      attemptSilentRenewal();
+    }
+
+    // Renovação silenciosa: pede novo token sem mostrar popup, usando consentimento prévio
+    function attemptSilentRenewal() {
+      if (!state.tokenClient) return;
+      try {
+        state.tokenClient.requestAccessToken({ prompt: '' });
+      } catch (e) {
+        console.warn('Renovação silenciosa falhou:', e);
+        clearSession();
+      }
+    }
+
+    // Agenda próxima renovação automática
+    function scheduleTokenRenewal(delayMs) {
+      if (state.renewalTimer) clearTimeout(state.renewalTimer);
+      const delay = Math.max(delayMs, 60000); // pelo menos 1 minuto
+      state.renewalTimer = setTimeout(() => {
+        if (state.accessToken) attemptSilentRenewal();
+      }, delay);
+    }
+
     async function handleAuthResponse(resp) {
-      if (resp.error) { toast('Erro no login: ' + resp.error, 'error'); return; }
+      if (resp.error) {
+        // Renovação silenciosa pode falhar — não é erro crítico, só mostra login
+        if (resp.error === 'interaction_required' || resp.error === 'login_required' || resp.error === 'consent_required') {
+          console.log('Renovação silenciosa falhou, login manual necessário');
+          clearSession();
+          return;
+        }
+        toast('Erro no login: ' + resp.error, 'error');
+        return;
+      }
       state.accessToken = resp.access_token;
       gapi.client.setToken({ access_token: resp.access_token });
-      try {
-        const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: 'Bearer ' + resp.access_token }
-        });
-        const data = await r.json();
-        state.user = { name: data.name, email: data.email, picture: data.picture };
-      } catch (e) { console.warn('Não obteve perfil:', e); }
+
+      // Busca dados do perfil (só se ainda não temos)
+      if (!state.user.email) {
+        try {
+          const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { Authorization: 'Bearer ' + resp.access_token }
+          });
+          const data = await r.json();
+          state.user = { name: data.name, email: data.email, picture: data.picture };
+        } catch (e) { console.warn('Não obteve perfil:', e); }
+      }
+
+      // Salva sessão (token Google dura 3600s = 1h)
+      const expiresIn = parseInt(resp.expires_in, 10) || 3600;
+      saveSession(resp.access_token, expiresIn);
+      // Agenda próxima renovação 5min antes de expirar
+      scheduleTokenRenewal((expiresIn - 300) * 1000);
+
+      // Se já está com app aberto (renovação silenciosa), só atualiza token
+      if ($('app').classList.contains('active')) return;
+
       await bootstrapDrive();
       showApp();
     }
 
     function login() {
       if (!state.gapiReady || !state.gisReady) { toast('Aguarde o Google carregar...', 'info'); return; }
+      // No primeiro login, pede consentimento explícito
       state.tokenClient.requestAccessToken({ prompt: 'consent' });
     }
 
     function logout() {
       if (state.accessToken && window.google) google.accounts.oauth2.revoke(state.accessToken, () => {});
+      if (state.renewalTimer) { clearTimeout(state.renewalTimer); state.renewalTimer = null; }
+      clearSession();
       state.accessToken = null;
+      state.user = { name: '', email: '', picture: '' };
       state.patients = [];
       state.folderId = null;
       state.dataFileId = null;
       state.evolutionsFolderId = null;
       state.anamnesesFolderId = null;
+      state.documentosFolderId = null;
       state.anamnese = null;
       state.anamneseFileId = null;
       state.appointments = [];
       state.agendaFileId = null;
+      state.documentos = [];
+      state.documentosFileId = null;
       $('app').classList.remove('active');
       $('loginScreen').style.display = 'flex';
     }
@@ -1675,6 +2029,14 @@
         });
         state.anamnesesFolderId = res.result.files.length ? res.result.files[0].id
           : (await gapi.client.drive.files.create({ resource: { name: ANAMNESES_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder', parents: [state.folderId] }, fields: 'id' })).result.id;
+
+        // subpasta de documentos
+        res = await gapi.client.drive.files.list({
+          q: `name='${DOCUMENTOS_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and '${state.folderId}' in parents and trashed=false`,
+          fields: 'files(id, name)',
+        });
+        state.documentosFolderId = res.result.files.length ? res.result.files[0].id
+          : (await gapi.client.drive.files.create({ resource: { name: DOCUMENTOS_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder', parents: [state.folderId] }, fields: 'id' })).result.id;
 
         // arquivo de pacientes
         res = await gapi.client.drive.files.list({
@@ -3529,6 +3891,65 @@
     // ============================================================
     // AGENDA — CRUD de atendimentos
     // ============================================================
+    // ============================================================
+    // AGENDA — REPETIÇÃO de atendimentos
+    // ============================================================
+    // Calcula a próxima data com base na frequência
+    function nextOccurrenceDate(isoDate, frequencia, indexOcorrencia) {
+      // indexOcorrencia: 1 = primeira repetição (depois da original), 2 = segunda, etc
+      const d = new Date(isoDate + 'T00:00:00');
+      if (frequencia === 'semanal') {
+        d.setDate(d.getDate() + 7 * indexOcorrencia);
+      } else if (frequencia === 'quinzenal') {
+        d.setDate(d.getDate() + 14 * indexOcorrencia);
+      } else if (frequencia === 'mensal') {
+        // Pra mensal, cuida o caso de dia 31 em meses curtos
+        const diaOriginal = d.getDate();
+        d.setDate(1); // evita "rolar" pra próximo mês
+        d.setMonth(d.getMonth() + indexOcorrencia);
+        // Tenta colocar o dia original; se o mês não tiver, usa o último dia do mês
+        const ultimoDia = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+        d.setDate(Math.min(diaOriginal, ultimoDia));
+      }
+      return toIsoDate(d);
+    }
+
+    // Atualiza preview de "X atendimentos do dia Y até dia Z"
+    function updateRepeatPreview() {
+      const checked = $('apptRepeat').checked;
+      if (!checked) return;
+      const count = parseInt($('apptRepeatCount').value, 10) || 0;
+      const freq = $('apptRepeatFreq').value;
+      const dataInicio = $('apptData').value;
+      if (!dataInicio || count < 2) {
+        $('repeatPreview').textContent = 'preencha a data e quantidade';
+        return;
+      }
+      const ultimaData = nextOccurrenceDate(dataInicio, freq, count - 1);
+      const fmtIni = formatDate(dataInicio);
+      const fmtFim = formatDate(ultimaData);
+      const freqLabel = ({ semanal: 'semanal', quinzenal: 'quinzenal', mensal: 'mensal' })[freq];
+      $('repeatPreview').textContent = `${count} atendimentos ${freqLabel}s, de ${fmtIni} até ${fmtFim}`;
+    }
+
+    function setupRepeatToggle() {
+      const checkbox = $('apptRepeat');
+      const fields = $('repeatFields');
+      const updateUI = () => {
+        if (checkbox.checked) {
+          fields.classList.remove('hidden');
+          updateRepeatPreview();
+        } else {
+          fields.classList.add('hidden');
+        }
+      };
+      checkbox.addEventListener('change', updateUI);
+      $('apptRepeatFreq').addEventListener('change', updateRepeatPreview);
+      $('apptRepeatCount').addEventListener('input', updateRepeatPreview);
+      $('apptData').addEventListener('change', updateRepeatPreview);
+      updateUI();
+    }
+
     function openNewAppointment(prefill = {}) {
       state.editingApptId = null;
       $('apptModalTitle').innerHTML = 'Novo <em>atendimento</em>';
@@ -3553,6 +3974,13 @@
       $('paymentFields').classList.add('hidden');
       $('receiptBtnWrap').style.display = 'none';
       setupPaymentToggle();
+      // Reseta repetição (só aparece em novo atendimento)
+      $('repeatSection').style.display = '';
+      $('apptRepeat').checked = false;
+      $('apptRepeatFreq').value = 'semanal';
+      $('apptRepeatCount').value = '12';
+      $('repeatFields').classList.add('hidden');
+      setupRepeatToggle();
 
       $('appointmentModal').classList.add('active');
       setTimeout(() => $('apptPatientSearch').focus(), 150);
@@ -3589,6 +4017,10 @@
       $('apptDataPagamento').value = pag.dataPagamento || (pag.pago ? '' : '');
       $('apptObsPagamento').value = pag.observacoes || '';
       setupPaymentToggle();
+
+      // Esconder seção de repetição (só aparece em novo atendimento)
+      $('repeatSection').style.display = 'none';
+      $('apptRepeat').checked = false;
 
       $('appointmentModal').classList.add('active');
     }
@@ -3631,12 +4063,47 @@
 
       if (!data.data || !data.horaInicio) { toast('Data e hora são obrigatórias', 'error'); return; }
 
+      // Verifica se é repetição (só vale em novo atendimento)
+      const isRepeat = !state.editingApptId && $('apptRepeat').checked;
+      let totalOcorrencias = 1;
+      let frequencia = null;
+      if (isRepeat) {
+        const count = parseInt($('apptRepeatCount').value, 10);
+        if (count < 2 || count > 52) { toast('Quantidade deve ser entre 2 e 52', 'error'); return; }
+        totalOcorrencias = count;
+        frequencia = $('apptRepeatFreq').value;
+      }
+
       $('btnSaveAppt').innerHTML = '<span class="spinner"></span><span>Salvando...</span>';
       try {
         if (state.editingApptId) {
+          // Edição — atualiza um único atendimento
           const idx = state.appointments.findIndex(a => a.id === state.editingApptId);
           if (idx >= 0) state.appointments[idx] = { ...state.appointments[idx], ...data, atualizado_em: new Date().toISOString() };
+        } else if (isRepeat) {
+          // Cria várias ocorrências, cada uma é independente
+          const grupoId = uid('grp'); // marca todas como vindas do mesmo grupo (futuro: editar todos)
+          const now = new Date().toISOString();
+          for (let i = 0; i < totalOcorrencias; i++) {
+            const dataOcorrencia = i === 0 ? data.data : nextOccurrenceDate(data.data, frequencia, i);
+            // Pagamento só na primeira ocorrência (as próximas começam não-pagas)
+            const pagamentoOcorrencia = (i === 0 ? data.pagamento : { pago: false, formaPagamento: null, dataPagamento: null, observacoes: '' });
+            // Status só na primeira (as próximas começam como agendadas)
+            const statusOcorrencia = (i === 0 ? data.status : 'agendado');
+            state.appointments.push({
+              id: uid('ap'),
+              ...data,
+              data: dataOcorrencia,
+              status: statusOcorrencia,
+              pagamento: pagamentoOcorrencia,
+              grupoRepeticao: grupoId,
+              indiceGrupo: i,
+              criado_em: now,
+              atualizado_em: now,
+            });
+          }
         } else {
+          // Atendimento único, sem repetição
           state.appointments.push({
             id: uid('ap'),
             ...data,
@@ -3646,11 +4113,12 @@
         }
         await saveAppointments();
         closeAppointmentModal();
-        // Re-renderiza a tela atual
         if (state.currentPage === 'agenda') renderAgendaPage();
         else if (state.currentPage === 'financeiro') renderFinanceiroPage();
         if (state.activeTab === 'financeiro' && state.selectedPatientId) renderPatientFinanceiroTab();
-        toast(state.editingApptId ? 'Atendimento atualizado' : 'Atendimento agendado', 'success');
+        if (state.editingApptId) toast('Atendimento atualizado', 'success');
+        else if (isRepeat) toast(`${totalOcorrencias} atendimentos agendados ✦`, 'success');
+        else toast('Atendimento agendado', 'success');
       } catch {
         toast('Erro ao salvar', 'error');
       } finally {
@@ -4144,6 +4612,7 @@
       return texto;
     }
 
+    // Abre modal de confirmação do pagador antes de gerar o PDF
     function exportReciboPdf(apptId) {
       const apt = state.appointments.find(a => a.id === apptId);
       if (!apt) { toast('Atendimento não encontrado', 'error'); return; }
@@ -4151,6 +4620,88 @@
       const patient = state.patients.find(p => p.id === apt.patientId);
       if (!patient) { toast('Paciente não encontrado', 'error'); return; }
       if (!window.jspdf) { toast('Biblioteca de PDF não carregada', 'error'); return; }
+
+      // Guarda o ID do atendimento que vai gerar o recibo
+      state.reciboApptId = apptId;
+
+      // Preenche o modal de confirmação
+      $('reciboPatientName').textContent = patient.nome || '(sem nome)';
+      const metaParts = [];
+      if (patient.cpf) metaParts.push('CPF ' + patient.cpf);
+      if (patient.nascimento) metaParts.push(formatDate(patient.nascimento));
+      $('reciboPatientMeta').textContent = metaParts.join(' · ') || 'sem dados complementares';
+
+      // Label do radio "paciente" — inclui nome
+      $('reciboLabelPaciente').textContent = `paciente: ${patient.nome}`;
+
+      // Decide pré-seleção e pré-preenchimento
+      const temResponsavel = patient.responsavel_nome && patient.responsavel_nome.trim();
+      if (temResponsavel) {
+        // Tem responsável — pré-seleciona "outro" e preenche com dados do responsável
+        $('reciboTipoOutro').checked = true;
+        $('reciboPagadorNome').value = patient.responsavel_nome || '';
+        $('reciboPagadorCpf').value = patient.responsavel_cpf || '';
+        $('reciboCamposPagador').style.display = '';
+      } else {
+        // Sem responsável — pré-seleciona "paciente"
+        $('reciboTipoPaciente').checked = true;
+        $('reciboPagadorNome').value = '';
+        $('reciboPagadorCpf').value = '';
+        $('reciboCamposPagador').style.display = 'none';
+      }
+
+      $('reciboModal').classList.add('active');
+      setTimeout(() => {
+        if ($('reciboTipoOutro').checked) $('reciboPagadorNome').focus();
+      }, 150);
+    }
+    window.exportReciboPdf = exportReciboPdf;
+
+    function closeReciboModal() {
+      $('reciboModal').classList.remove('active');
+      state.reciboApptId = null;
+    }
+
+    // Toggle dos campos quando muda radio
+    function setupReciboRadios() {
+      const camposEl = $('reciboCamposPagador');
+      const inputNome = $('reciboPagadorNome');
+      document.querySelectorAll('input[name="reciboTipoPagador"]').forEach(r => {
+        r.addEventListener('change', () => {
+          if ($('reciboTipoOutro').checked) {
+            camposEl.style.display = '';
+            inputNome.focus();
+          } else {
+            camposEl.style.display = 'none';
+          }
+        });
+      });
+    }
+
+    // Gera o PDF de fato (chamado pelo submit do modal)
+    function gerarReciboPdf(e) {
+      e.preventDefault();
+      const apptId = state.reciboApptId;
+      if (!apptId) return;
+
+      const apt = state.appointments.find(a => a.id === apptId);
+      const patient = state.patients.find(p => p.id === apt.patientId);
+      if (!apt || !patient) { toast('Erro ao localizar dados', 'error'); return; }
+
+      // Determina pagador
+      let pagadorNome, pagadorCpf;
+      if ($('reciboTipoPaciente').checked) {
+        pagadorNome = patient.nome;
+        pagadorCpf = patient.cpf || '';
+      } else {
+        pagadorNome = $('reciboPagadorNome').value.trim();
+        pagadorCpf = $('reciboPagadorCpf').value.trim();
+        if (!pagadorNome) { toast('Informe o nome do pagador', 'error'); $('reciboPagadorNome').focus(); return; }
+      }
+
+      // Indica se o pagador é diferente do paciente
+      const pagadorEhPaciente = ($('reciboTipoPaciente').checked) ||
+        (pagadorNome.toLowerCase() === patient.nome.toLowerCase());
 
       try {
         const pdf = createPdfHelper('elegant');
@@ -4163,7 +4714,7 @@
         pdf.writeSubtitle('comprovante de pagamento');
         pdf.y += 10;
 
-        // Número do recibo (baseado no id e data) — só pra ter referência
+        // Número do recibo
         const numero = apt.id.replace(/[^0-9]/g, '').slice(-6).padStart(6, '0');
         doc.setFont('times', 'italic');
         doc.setFontSize(9);
@@ -4183,7 +4734,14 @@
         doc.setFontSize(11);
         doc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
 
-        const corpo = `Recebi de ${patient.nome}${patient.cpf ? ', portador(a) do CPF ' + patient.cpf : ''}, a importância de ${fmtBRL(valor)} (${valorTexto}), referente a serviço de psicologia (${tipoLabel}) realizado em ${dataSessao}, com pagamento efetuado em ${dataPagamento} via ${formaPagamento}.`;
+        // Corpo do recibo — varia se for paciente ou pagador externo
+        let corpo;
+        const cpfPagadorTxt = pagadorCpf ? `, portador(a) do CPF ${pagadorCpf}` : '';
+        if (pagadorEhPaciente) {
+          corpo = `Recebi de ${pagadorNome}${cpfPagadorTxt}, a importância de ${fmtBRL(valor)} (${valorTexto}), referente a serviço de psicologia (${tipoLabel}) realizado em ${dataSessao}, com pagamento efetuado em ${dataPagamento} via ${formaPagamento}.`;
+        } else {
+          corpo = `Recebi de ${pagadorNome}${cpfPagadorTxt}, a importância de ${fmtBRL(valor)} (${valorTexto}), referente a serviço de psicologia (${tipoLabel}) prestado a ${patient.nome} em ${dataSessao}, com pagamento efetuado em ${dataPagamento} via ${formaPagamento}.`;
+        }
 
         const lines = doc.splitTextToSize(corpo, pageW - 2 * marginX);
         lines.forEach(l => {
@@ -4219,16 +4777,449 @@
         doc.text('Psicóloga · CRP-PR 08/38673', pageW / 2, pdf.y, { align: 'center' });
 
         pdf.finalize();
-        const filename = `recibo_${sanitizeFilename(patient.nome)}_${apt.pagamento.dataPagamento || apt.data}.pdf`;
+        const filename = `recibo_${sanitizeFilename(pagadorNome)}_${apt.pagamento.dataPagamento || apt.data}.pdf`;
         pdf.doc.save(filename);
         toast('Recibo gerado', 'success');
+        closeReciboModal();
       } catch (e) {
         console.error(e);
         toast('Erro ao gerar recibo', 'error');
       }
     }
 
-    window.exportReciboPdf = exportReciboPdf;
+    // ============================================================
+    // DOCUMENTOS — tipos e utilitários
+    // ============================================================
+    const DOCUMENTO_TIPOS = {
+      atestado: 'Atestado',
+      declaracao: 'Declaração de comparecimento',
+      relatorio: 'Relatório psicológico',
+      parecer: 'Parecer psicológico',
+      encaminhamento: 'Encaminhamento',
+      carta: 'Carta',
+      outro: 'Documento',
+    };
+
+    function documentoFilenameFor(patientId) {
+      return `documentos_${patientId}.json`;
+    }
+
+    async function loadPatientDocumentos(patientId) {
+      state.documentosLoading = true;
+      state.documentos = [];
+      state.documentosFileId = null;
+      try {
+        const filename = documentoFilenameFor(patientId);
+        const res = await gapi.client.drive.files.list({
+          q: `name='${filename}' and '${state.documentosFolderId}' in parents and trashed=false`,
+          fields: 'files(id, name)',
+        });
+        if (res.result.files.length) {
+          state.documentosFileId = res.result.files[0].id;
+          const data = await gapi.client.drive.files.get({ fileId: state.documentosFileId, alt: 'media' });
+          try { state.documentos = JSON.parse(data.body) || []; } catch { state.documentos = []; }
+        }
+      } catch (e) {
+        console.error(e);
+        toast('Erro ao carregar documentos', 'error');
+      } finally {
+        state.documentosLoading = false;
+      }
+    }
+
+    async function savePatientDocumentos(patientId) {
+      setSyncState('syncing');
+      try {
+        const filename = documentoFilenameFor(patientId);
+        const newId = await uploadJsonFile(state.documentosFileId, filename, state.documentos, state.documentosFolderId, (id) => { state.documentosFileId = id; });
+        state.documentosFileId = newId || state.documentosFileId;
+        setSyncState('ok');
+      } catch (e) { console.error(e); setSyncState('error'); toast('Erro ao salvar documento', 'error'); throw e; }
+    }
+
+    // ============================================================
+    // DOCUMENTOS — render da aba (lista)
+    // ============================================================
+    function renderDocumentosTab() {
+      const wrap = $('documentosContent');
+
+      if (state.documentosLoading) {
+        wrap.innerHTML = `<div class="loading-box"><div class="spinner"></div><p>carregando documentos...</p></div>`;
+        return;
+      }
+
+      $('documentoCount').textContent = state.documentos.length;
+
+      if (!state.documentos.length) {
+        wrap.innerHTML = `
+          <div class="docs-header">
+            <div>
+              <h3>Documentos <em>— do paciente</em></h3>
+              <div class="docs-header-meta">atestados, relatórios, declarações, pareceres...</div>
+            </div>
+            <button class="btn btn-gold" onclick="openNewDocumento()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Novo documento
+            </button>
+          </div>
+          <div class="docs-empty"><div class="docs-empty-content">
+            <h3>Nenhum documento<em>.</em></h3>
+            <p>crie atestados, relatórios, declarações e outros documentos profissionais — todos com a identidade visual do consultório.</p>
+            <button class="btn btn-gold" onclick="openNewDocumento()">Criar primeiro documento</button>
+          </div></div>
+        `;
+        return;
+      }
+
+      const sorted = [...state.documentos].sort((a, b) => (b.criado_em || '').localeCompare(a.criado_em || ''));
+
+      let html = `
+        <div class="docs-header">
+          <div>
+            <h3>Documentos <em>— do paciente</em></h3>
+            <div class="docs-header-meta">${state.documentos.length} ${state.documentos.length === 1 ? 'documento' : 'documentos'} salvos</div>
+          </div>
+          <button class="btn btn-gold" onclick="openNewDocumento()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo documento
+          </button>
+        </div>
+        <div class="docs-list">
+      `;
+
+      sorted.forEach(doc => {
+        const tipoLabel = DOCUMENTO_TIPOS[doc.tipo] || doc.tipo;
+        const dataCriado = doc.criado_em ? new Date(doc.criado_em).toLocaleDateString('pt-BR') : '—';
+        html += `
+          <div class="doc-item" onclick="openEditDocumento('${doc.id}')">
+            <div class="doc-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <div class="doc-info">
+              <div class="title">${escapeHtml(doc.titulo || tipoLabel)}</div>
+              <div class="meta"><span class="tipo">${escapeHtml(tipoLabel)}</span>${doc.destinatario ? 'para: ' + escapeHtml(doc.destinatario) : ''}</div>
+            </div>
+            <div class="doc-date">${dataCriado}</div>
+            <div class="doc-actions" onclick="event.stopPropagation();">
+              <button class="btn-icon" onclick="exportDocumentoPdf('${doc.id}')" title="Exportar PDF">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </button>
+              <button class="btn-icon" onclick="duplicarDocumento('${doc.id}')" title="Duplicar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      html += '</div>';
+      wrap.innerHTML = html;
+    }
+
+    function openNewDocumento() {
+      if (!state.selectedPatientId) return;
+      const patient = state.patients.find(p => p.id === state.selectedPatientId);
+      if (!patient) return;
+
+      state.editingDocumentoId = null;
+      $('docModalTitle').innerHTML = 'Novo <em>documento</em>';
+      $('docModalSubtitle').textContent = `paciente: ${patient.nome}`;
+      $('btnDeleteDocumento').style.display = 'none';
+      $('btnExportDocumento').style.display = 'none';
+
+      $('docTipo').value = 'atestado';
+      $('docTitulo').value = '';
+      $('docDestinatario').value = '';
+
+      $('docPacienteNome').value = patient.nome || '';
+      $('docPacienteNascimento').value = patient.nascimento || '';
+      $('docPacienteCpf').value = patient.cpf || '';
+      $('docPacienteRg').value = patient.rg || '';
+      $('docPacienteResponsavel').value = patient.responsavel_nome
+        ? `${patient.responsavel_nome}${patient.responsavel_parentesco ? ' (' + patient.responsavel_parentesco + ')' : ''}`
+        : '';
+
+      $('docTexto').innerHTML = '';
+
+      $('documentoModal').classList.add('active');
+      setTimeout(() => $('docTitulo').focus(), 150);
+    }
+    window.openNewDocumento = openNewDocumento;
+
+    function openEditDocumento(id) {
+      const doc = state.documentos.find(d => d.id === id);
+      if (!doc) return;
+      const patient = state.patients.find(p => p.id === state.selectedPatientId);
+
+      state.editingDocumentoId = id;
+      $('docModalTitle').innerHTML = 'Editar <em>documento</em>';
+      $('docModalSubtitle').textContent = `paciente: ${patient ? patient.nome : '—'}`;
+      $('btnDeleteDocumento').style.display = 'inline-flex';
+      $('btnExportDocumento').style.display = 'inline-flex';
+
+      $('docTipo').value = doc.tipo || 'atestado';
+      $('docTitulo').value = doc.titulo || '';
+      $('docDestinatario').value = doc.destinatario || '';
+
+      const dados = doc.dadosPaciente || {};
+      $('docPacienteNome').value = dados.nome ?? (patient ? patient.nome : '') ?? '';
+      $('docPacienteNascimento').value = dados.nascimento ?? (patient ? patient.nascimento : '') ?? '';
+      $('docPacienteCpf').value = dados.cpf ?? (patient ? patient.cpf : '') ?? '';
+      $('docPacienteRg').value = dados.rg ?? (patient ? patient.rg : '') ?? '';
+      $('docPacienteResponsavel').value = dados.responsavel ?? '';
+
+      $('docTexto').innerHTML = doc.texto || '';
+
+      $('documentoModal').classList.add('active');
+    }
+    window.openEditDocumento = openEditDocumento;
+
+    function closeDocumentoModal() {
+      $('documentoModal').classList.remove('active');
+    }
+
+    function collectDocumentoFormData() {
+      return {
+        tipo: $('docTipo').value,
+        titulo: $('docTitulo').value.trim(),
+        destinatario: $('docDestinatario').value.trim(),
+        dadosPaciente: {
+          nome: $('docPacienteNome').value.trim(),
+          nascimento: $('docPacienteNascimento').value,
+          cpf: $('docPacienteCpf').value.trim(),
+          rg: $('docPacienteRg').value.trim(),
+          responsavel: $('docPacienteResponsavel').value.trim(),
+        },
+        texto: $('docTexto').innerHTML,
+      };
+    }
+
+    async function saveDocumento(e) {
+      e.preventDefault();
+      if (!state.selectedPatientId) return;
+      const data = collectDocumentoFormData();
+      if (!data.titulo) { toast('Informe o título', 'error'); $('docTitulo').focus(); return; }
+
+      const now = new Date().toISOString();
+      const isNew = !state.editingDocumentoId;
+
+      if (isNew) {
+        state.documentos.push({
+          id: uid('doc'),
+          paciente_id: state.selectedPatientId,
+          ...data,
+          criado_em: now,
+          atualizado_em: now,
+        });
+      } else {
+        const idx = state.documentos.findIndex(d => d.id === state.editingDocumentoId);
+        if (idx >= 0) {
+          state.documentos[idx] = { ...state.documentos[idx], ...data, atualizado_em: now };
+        }
+      }
+
+      $('btnSaveDocumento').innerHTML = '<span class="spinner"></span><span>Salvando...</span>';
+      try {
+        await savePatientDocumentos(state.selectedPatientId);
+        closeDocumentoModal();
+        renderDocumentosTab();
+        toast(isNew ? 'Documento criado' : 'Documento atualizado', 'success');
+      } catch {
+        toast('Erro ao salvar documento', 'error');
+      } finally {
+        $('btnSaveDocumento').innerHTML = '<span>Salvar</span>';
+      }
+    }
+
+    async function deleteDocumento() {
+      if (!state.editingDocumentoId) return;
+      if (!confirm('Excluir este documento? Esta ação não pode ser desfeita.')) return;
+      state.documentos = state.documentos.filter(d => d.id !== state.editingDocumentoId);
+      try {
+        await savePatientDocumentos(state.selectedPatientId);
+        closeDocumentoModal();
+        renderDocumentosTab();
+        toast('Documento excluído', 'success');
+      } catch {
+        toast('Erro ao excluir', 'error');
+      }
+    }
+
+    async function duplicarDocumento(id) {
+      const doc = state.documentos.find(d => d.id === id);
+      if (!doc) return;
+      const novoDoc = {
+        ...JSON.parse(JSON.stringify(doc)),
+        id: uid('doc'),
+        titulo: doc.titulo + ' (cópia)',
+        criado_em: new Date().toISOString(),
+        atualizado_em: new Date().toISOString(),
+      };
+      state.documentos.push(novoDoc);
+      try {
+        await savePatientDocumentos(state.selectedPatientId);
+        renderDocumentosTab();
+        toast('Documento duplicado', 'success');
+      } catch {
+        toast('Erro ao duplicar', 'error');
+      }
+    }
+    window.duplicarDocumento = duplicarDocumento;
+
+    function exportDocumentoPdf(id) {
+      const doc = state.documentos.find(d => d.id === id);
+      if (!doc) { toast('Documento não encontrado', 'error'); return; }
+      if (!window.jspdf) { toast('Biblioteca de PDF não carregada', 'error'); return; }
+      gerarDocumentoPdf(doc);
+    }
+    window.exportDocumentoPdf = exportDocumentoPdf;
+
+    // Exporta o documento em edição (do modal) sem precisar salvar
+    function exportDocumentoFromModal() {
+      const data = collectDocumentoFormData();
+      if (!data.titulo) { toast('Informe o título', 'error'); $('docTitulo').focus(); return; }
+      gerarDocumentoPdf(data);
+    }
+
+    function gerarDocumentoPdf(docData) {
+      try {
+        const pdf = createPdfHelper('elegant');
+        const { doc: pdoc } = pdf;
+        const palette = pdf.palette;
+        const pageW = 210, marginX = 22;
+        const tipoLabel = DOCUMENTO_TIPOS[docData.tipo] || docData.tipo;
+
+        // Título principal (tipo do documento)
+        pdf.writeMainTitle(tipoLabel);
+        if (docData.titulo && docData.titulo !== tipoLabel) {
+          pdf.writeSubtitle(docData.titulo);
+        }
+        pdf.y += 6;
+
+        // Destinatário (se houver)
+        if (docData.destinatario && docData.destinatario.trim()) {
+          pdoc.setFont('times', 'italic');
+          pdoc.setFontSize(11);
+          pdoc.setTextColor(palette.sub[0], palette.sub[1], palette.sub[2]);
+          pdf.ensureSpace(8);
+          pdoc.text(docData.destinatario, marginX, pdf.y);
+          pdf.y += 8;
+        }
+
+        // Box com dados do paciente
+        const dados = docData.dadosPaciente || {};
+        if (dados.nome || dados.nascimento || dados.cpf || dados.responsavel) {
+          pdf.ensureSpace(28);
+          let boxLines = 0;
+          if (dados.nome) boxLines++;
+          if (dados.nascimento || dados.cpf || dados.rg) boxLines++;
+          if (dados.responsavel) boxLines++;
+          const boxHeight = 6 + boxLines * 5.5;
+          const boxStartY = pdf.y;
+
+          pdoc.setFillColor(palette.paperFill[0], palette.paperFill[1], palette.paperFill[2]);
+          pdoc.setDrawColor(palette.gold[0], palette.gold[1], palette.gold[2]);
+          pdoc.setLineWidth(0.3);
+          pdoc.roundedRect(marginX, boxStartY, pageW - 2 * marginX, boxHeight, 1.5, 1.5, 'FD');
+
+          pdf.y += 5;
+          if (dados.nome) {
+            pdoc.setFont('times', 'italic');
+            pdoc.setFontSize(8.5);
+            pdoc.setTextColor(palette.faint[0], palette.faint[1], palette.faint[2]);
+            pdoc.text('paciente:', marginX + 4, pdf.y);
+            pdoc.setFont('times', 'normal');
+            pdoc.setFontSize(11);
+            pdoc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+            pdoc.text(dados.nome, marginX + 24, pdf.y);
+            pdf.y += 5.5;
+          }
+          const linhaIdent = [];
+          if (dados.nascimento) {
+            const idade = calcAge(dados.nascimento);
+            linhaIdent.push(`nasc.: ${formatDate(dados.nascimento)}${idade !== null ? ` (${idade} anos)` : ''}`);
+          }
+          if (dados.cpf) linhaIdent.push(`CPF ${dados.cpf}`);
+          if (dados.rg) linhaIdent.push(`RG ${dados.rg}`);
+          if (linhaIdent.length) {
+            pdoc.setFont('times', 'normal');
+            pdoc.setFontSize(9);
+            pdoc.setTextColor(palette.sub[0], palette.sub[1], palette.sub[2]);
+            pdoc.text(linhaIdent.join('  ·  '), marginX + 4, pdf.y);
+            pdf.y += 5.5;
+          }
+          if (dados.responsavel) {
+            pdoc.setFont('times', 'italic');
+            pdoc.setFontSize(8.5);
+            pdoc.setTextColor(palette.faint[0], palette.faint[1], palette.faint[2]);
+            pdoc.text('responsável:', marginX + 4, pdf.y);
+            pdoc.setFont('times', 'normal');
+            pdoc.setFontSize(9.5);
+            pdoc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+            pdoc.text(dados.responsavel, marginX + 30, pdf.y);
+            pdf.y += 5.5;
+          }
+          pdf.y = boxStartY + boxHeight + 8;
+        }
+
+        // Conteúdo do documento (texto)
+        if (docData.texto && docData.texto.trim()) {
+          const plainText = htmlToPlainText(docData.texto);
+          if (plainText.trim()) {
+            pdf.ensureSpace(10);
+            pdoc.setFont('times', 'normal');
+            pdoc.setFontSize(11);
+            pdoc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+            const paragraphs = plainText.split(/\n\n+/);
+            paragraphs.forEach(par => {
+              if (!par.trim()) return;
+              const lines = pdoc.splitTextToSize(par.trim(), pageW - 2 * marginX);
+              lines.forEach(l => {
+                pdf.ensureSpace(6);
+                pdoc.text(l, marginX, pdf.y);
+                pdf.y += 5.5;
+              });
+              pdf.y += 3;
+            });
+          }
+        }
+
+        // Local + data
+        pdf.y += 12;
+        pdf.ensureSpace(40);
+        const hoje = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+        pdoc.setFont('times', 'italic');
+        pdoc.setFontSize(11);
+        pdoc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+        pdoc.text(`Maringá, ${hoje}`, pageW / 2, pdf.y, { align: 'center' });
+
+        // Linha de assinatura
+        pdf.y += 25;
+        pdf.ensureSpace(20);
+        pdoc.setDrawColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+        pdoc.setLineWidth(0.3);
+        pdoc.line(pageW / 2 - 50, pdf.y, pageW / 2 + 50, pdf.y);
+        pdf.y += 5;
+
+        pdoc.setFont('times', 'normal');
+        pdoc.setFontSize(10);
+        pdoc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+        pdoc.text('Gabrielly Guandalino', pageW / 2, pdf.y, { align: 'center' });
+        pdf.y += 4;
+        pdoc.setFont('helvetica', 'normal');
+        pdoc.setFontSize(8);
+        pdoc.setTextColor(palette.faint[0], palette.faint[1], palette.faint[2]);
+        pdoc.text('Psicóloga · CRP-PR 08/38673', pageW / 2, pdf.y, { align: 'center' });
+
+        pdf.finalize();
+        const filename = `${docData.tipo || 'documento'}_${sanitizeFilename(dados.nome || 'paciente')}_${new Date().toISOString().slice(0, 10)}.pdf`;
+        pdf.doc.save(filename);
+        toast('Documento exportado', 'success');
+      } catch (e) {
+        console.error(e);
+        toast('Erro ao gerar PDF', 'error');
+      }
+    }
 
     // ============================================================
     // EVOLUÇÕES — carregar/salvar
@@ -4630,21 +5621,26 @@
       state.selectedTagFilters = [];
       state.anamnese = null;
       state.anamneseFileId = null;
+      state.documentos = [];
+      state.documentosFileId = null;
 
       // Switch tab UI
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === 'info'));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tabInfo'));
 
       renderAll();
-      // Carrega evoluções + anamnese em paralelo
+      // Carrega evoluções + anamnese + documentos em paralelo
       await Promise.all([
         loadPatientEvolutions(id),
-        loadPatientAnamnese(id)
+        loadPatientAnamnese(id),
+        loadPatientDocumentos(id),
       ]);
       $('evolutionCount').textContent = state.evolutions.length;
-      // Se aba ativa for evolutions ou anamnese, renderiza
+      $('documentoCount').textContent = state.documentos.length;
+      // Se aba ativa, renderiza
       if (state.activeTab === 'evolutions') renderEvolutions();
       if (state.activeTab === 'anamnese') renderAnamneseTab();
+      if (state.activeTab === 'documentos') renderDocumentosTab();
     }
 
     async function savePatient(e) {
@@ -4673,17 +5669,18 @@
       if (!state.selectedPatientId) return;
       const p = state.patients.find(x => x.id === state.selectedPatientId);
       if (!p) return;
-      if (!confirm(`Excluir o paciente "${p.nome}"? Esta ação também excluirá todas as evoluções e a anamnese. Não pode ser desfeita.`)) return;
+      if (!confirm(`Excluir o paciente "${p.nome}"? Esta ação também excluirá todas as evoluções, anamnese e documentos. Não pode ser desfeita.`)) return;
       state.patients = state.patients.filter(x => x.id !== state.selectedPatientId);
       try {
         await savePatients();
-        // Remove arquivo de evoluções do Drive (se existir)
         if (state.evolutionsFileId) {
           try { await gapi.client.drive.files.delete({ fileId: state.evolutionsFileId }); } catch {}
         }
-        // Remove arquivo de anamnese do Drive (se existir)
         if (state.anamneseFileId) {
           try { await gapi.client.drive.files.delete({ fileId: state.anamneseFileId }); } catch {}
+        }
+        if (state.documentosFileId) {
+          try { await gapi.client.drive.files.delete({ fileId: state.documentosFileId }); } catch {}
         }
         state.view = 'list';
         state.selectedPatientId = null;
@@ -4691,6 +5688,8 @@
         state.evolutionsFileId = null;
         state.anamnese = null;
         state.anamneseFileId = null;
+        state.documentos = [];
+        state.documentosFileId = null;
         renderAll();
         toast('Paciente excluído', 'success');
       } catch { toast('Erro ao excluir', 'error'); }
@@ -4820,6 +5819,7 @@
         if (tab === 'evolutions') renderEvolutions();
         if (tab === 'anamnese') renderAnamneseTab();
         if (tab === 'financeiro') renderPatientFinanceiroTab();
+        if (tab === 'documentos') renderDocumentosTab();
       });
     });
 
@@ -4925,6 +5925,19 @@
       }
     });
 
+    // Modal de confirmação do recibo
+    $('btnCancelRecibo').addEventListener('click', closeReciboModal);
+    $('reciboForm').addEventListener('submit', gerarReciboPdf);
+    $('reciboModal').addEventListener('click', (e) => { if (e.target.id === 'reciboModal') closeReciboModal(); });
+    setupReciboRadios();
+
+    // Modal de documento
+    $('btnCancelDocumento').addEventListener('click', closeDocumentoModal);
+    $('btnDeleteDocumento').addEventListener('click', deleteDocumento);
+    $('btnExportDocumento').addEventListener('click', exportDocumentoFromModal);
+    $('documentoForm').addEventListener('submit', saveDocumento);
+    $('documentoModal').addEventListener('click', (e) => { if (e.target.id === 'documentoModal') closeDocumentoModal(); });
+
     // Tag input — adicionar / remover
     $('tagInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ',') {
@@ -4957,7 +5970,9 @@
     $('anamneseModal').addEventListener('click', (e) => { if (e.target.id === 'anamneseModal') closeAnamneseModal(); });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        if ($('anamneseModal').classList.contains('active')) closeAnamneseModal();
+        if ($('reciboModal').classList.contains('active')) closeReciboModal();
+        else if ($('documentoModal').classList.contains('active')) closeDocumentoModal();
+        else if ($('anamneseModal').classList.contains('active')) closeAnamneseModal();
         else if ($('evolutionModal').classList.contains('active')) closeEvolutionModal();
         else if ($('appointmentModal').classList.contains('active')) closeAppointmentModal();
         else if ($('patientModal').classList.contains('active')) closePatientModal();
