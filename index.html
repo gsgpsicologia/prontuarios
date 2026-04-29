@@ -457,6 +457,20 @@
     .apt-card.status-realizado { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08); }
     .apt-card.status-realizado::before { content: '✓'; position: absolute; top: 3px; right: 4px; font-size: 0.7rem; opacity: 0.55; }
 
+    /* Indicador de sincronização com Google Calendar */
+    .apt-card .sync-dot { position: absolute; top: 4px; left: 4px; width: 7px; height: 7px; border-radius: 50%; background: #4a90e2; opacity: 0.7; box-shadow: 0 0 0 1.5px rgba(255,255,255,0.5); }
+    .apt-card .sync-dot.error { background: var(--danger); }
+
+    /* Botão de sincronizar tudo */
+    .gcal-sync-status { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--ink-soft); font-family: var(--font-display); font-style: italic; }
+    .gcal-sync-status svg { width: 13px; height: 13px; }
+    .gcal-sync-status .gcal-icon { color: #4a90e2; }
+    .gcal-sync-modal { background: var(--cream-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem 1.2rem; margin-top: 1rem; }
+    .gcal-sync-modal h4 { font-family: var(--font-display); font-style: italic; color: var(--gold-deep); font-size: 1rem; margin-bottom: 0.4rem; }
+    .gcal-sync-modal p { font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 0.7rem; }
+    .gcal-progress { height: 6px; background: var(--cream); border-radius: 50px; overflow: hidden; margin-top: 0.6rem; }
+    .gcal-progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold-soft), var(--gold)); transition: width 0.3s; border-radius: 50px; }
+
     /* Agenda vazia */
     .agenda-empty { text-align: center; padding: 4rem 2rem; color: var(--ink-soft); }
     .agenda-empty h3 { font-family: var(--font-display); font-size: 1.4rem; color: var(--ink); margin-bottom: 0.5rem; }
@@ -820,6 +834,10 @@
             <p class="page-subtitle" id="agendaSubtitle">atendimentos da semana</p>
           </div>
           <div style="display:flex; gap:0.75rem; align-items:center;">
+            <button class="btn btn-secondary btn-sm" id="btnSyncCalendar" title="Sincronizar atendimentos com Google Calendar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              <span id="syncBtnLabel">Sincronizar Calendar</span>
+            </button>
             <button class="btn btn-gold" id="btnNewAppointment">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Novo atendimento
@@ -1594,7 +1612,8 @@
     const DATA_FILENAME = 'pacientes.json';
     const AGENDA_FILENAME = 'agenda.json';
     const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
-    const SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
+    const CALENDAR_DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
+    const SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar';
 
     // Tags sugeridas
     const SUGGESTED_TAGS = ['ansiedade', 'depressão', 'luto', 'crise', 'progresso', 'família', 'relacionamento', 'autoestima', 'trauma', 'trabalho'];
@@ -1752,6 +1771,10 @@
       documentosFolderId: null,
       documentosLoading: false,
       editingDocumentoId: null,
+
+      // Google Calendar
+      calendarId: null,            // id do calendário "Consultório"
+      calendarSyncing: false,      // bloqueia múltiplas syncs simultâneas
     };
 
     const $ = (id) => document.getElementById(id);
@@ -1840,7 +1863,7 @@
     // ============================================================
     function initGapi() {
       gapi.load('client', async () => {
-        await gapi.client.init({ apiKey: GOOGLE_API_KEY, discoveryDocs: [DISCOVERY_DOC] });
+        await gapi.client.init({ apiKey: GOOGLE_API_KEY, discoveryDocs: [DISCOVERY_DOC, CALENDAR_DISCOVERY_DOC] });
         state.gapiReady = true;
       });
     }
@@ -1999,6 +2022,7 @@
       state.agendaFileId = null;
       state.documentos = [];
       state.documentosFileId = null;
+      state.calendarId = null;
       $('app').classList.remove('active');
       $('loginScreen').style.display = 'flex';
     }
@@ -3335,6 +3359,216 @@
     }
 
     // ============================================================
+    // GOOGLE CALENDAR — sincronização
+    // ============================================================
+    const CALENDAR_NAME = 'Consultório — Atendimentos';
+    const CALENDAR_DESCRIPTION = 'Atendimentos do consultório de psicologia. Gerenciado pelo sistema Prontuários.';
+    const CALENDAR_TIMEZONE = 'America/Sao_Paulo';
+    const CALENDAR_COLOR_ID = '6'; // tangerine/gold-ish — códigos de 1-24
+
+    // Encontra ou cria o calendário "Consultório" e retorna o id
+    async function ensureConsultorioCalendar() {
+      if (state.calendarId) return state.calendarId;
+      try {
+        // Lista calendários existentes
+        const res = await gapi.client.calendar.calendarList.list({ maxResults: 250 });
+        const items = res.result.items || [];
+        const existing = items.find(c => c.summary === CALENDAR_NAME);
+        if (existing) {
+          state.calendarId = existing.id;
+          return existing.id;
+        }
+        // Cria novo calendário
+        const created = await gapi.client.calendar.calendars.insert({
+          resource: {
+            summary: CALENDAR_NAME,
+            description: CALENDAR_DESCRIPTION,
+            timeZone: CALENDAR_TIMEZONE,
+          }
+        });
+        state.calendarId = created.result.id;
+        // Define cor (chamada separada porque calendars.insert não aceita color)
+        try {
+          await gapi.client.calendar.calendarList.update({
+            calendarId: state.calendarId,
+            resource: { colorId: CALENDAR_COLOR_ID }
+          });
+        } catch (e) { console.warn('não setou cor do calendário:', e); }
+        return state.calendarId;
+      } catch (e) {
+        console.error('Erro ao garantir calendário:', e);
+        throw e;
+      }
+    }
+
+    // Constrói o objeto de evento a partir de um atendimento
+    function buildCalendarEvent(apt) {
+      const patient = state.patients.find(p => p.id === apt.patientId);
+      const firstName = (patient ? patient.nome : 'Paciente').trim().split(' ')[0];
+      const tipoLabel = APPT_TYPES[apt.tipo] || 'Atendimento';
+      const modalidade = apt.modalidade === 'online' ? 'Online' : 'Presencial';
+      const valor = apt.valor ? ` · R$ ${parseFloat(apt.valor).toFixed(2).replace('.', ',')}` : '';
+
+      const summary = `${firstName} — ${tipoLabel}`;
+      const horaFim = apt.horaFim || minutesToTime(timeToMinutes(apt.horaInicio || '08:00') + 50);
+
+      // Descrição com info útil
+      let description = `${tipoLabel} · ${modalidade}${valor}\n`;
+      if (patient) {
+        description += `\nPaciente: ${patient.nome}`;
+        if (patient.telefone) description += `\nContato: ${patient.telefone}`;
+      }
+      if (apt.observacoes) description += `\n\nObservações:\n${apt.observacoes}`;
+      description += `\n\n— Sistema Prontuários\n[apt:${apt.id}]`;
+
+      return {
+        summary,
+        description,
+        start: {
+          dateTime: `${apt.data}T${apt.horaInicio}:00`,
+          timeZone: CALENDAR_TIMEZONE,
+        },
+        end: {
+          dateTime: `${apt.data}T${horaFim}:00`,
+          timeZone: CALENDAR_TIMEZONE,
+        },
+        // Lembrete 1 hora antes (padrão do calendário, opcional aqui)
+        reminders: { useDefault: true },
+      };
+    }
+
+    // Cria evento no Calendar pra um atendimento
+    async function createCalendarEvent(apt) {
+      try {
+        const calendarId = await ensureConsultorioCalendar();
+        const eventBody = buildCalendarEvent(apt);
+        const res = await gapi.client.calendar.events.insert({
+          calendarId,
+          resource: eventBody,
+        });
+        return res.result.id;
+      } catch (e) {
+        console.error('Erro ao criar evento:', e);
+        return null;
+      }
+    }
+
+    // Atualiza evento existente
+    async function updateCalendarEvent(apt) {
+      if (!apt.googleEventId) return null;
+      try {
+        const calendarId = await ensureConsultorioCalendar();
+        const eventBody = buildCalendarEvent(apt);
+        const res = await gapi.client.calendar.events.update({
+          calendarId,
+          eventId: apt.googleEventId,
+          resource: eventBody,
+        });
+        return res.result.id;
+      } catch (e) {
+        // Se evento não existe mais (foi excluído manualmente), tenta recriar
+        if (e.status === 404 || e.status === 410) {
+          return await createCalendarEvent(apt);
+        }
+        console.error('Erro ao atualizar evento:', e);
+        return null;
+      }
+    }
+
+    // Remove evento do Calendar
+    async function deleteCalendarEvent(eventId) {
+      if (!eventId) return;
+      try {
+        const calendarId = await ensureConsultorioCalendar();
+        await gapi.client.calendar.events.delete({
+          calendarId,
+          eventId,
+        });
+      } catch (e) {
+        // Se já não existe, tudo bem
+        if (e.status === 404 || e.status === 410) return;
+        console.error('Erro ao deletar evento:', e);
+      }
+    }
+
+    // Sincroniza um atendimento — decide entre criar/atualizar/excluir
+    async function syncAppointmentToCalendar(apt) {
+      try {
+        // Cancelado → exclui evento (se existir) e zera id
+        if (apt.status === 'cancelado') {
+          if (apt.googleEventId) {
+            await deleteCalendarEvent(apt.googleEventId);
+            apt.googleEventId = null;
+          }
+          return apt;
+        }
+        // Sem id ainda → cria
+        if (!apt.googleEventId) {
+          const eventId = await createCalendarEvent(apt);
+          if (eventId) apt.googleEventId = eventId;
+          return apt;
+        }
+        // Já tem id → atualiza
+        const eventId = await updateCalendarEvent(apt);
+        if (eventId) apt.googleEventId = eventId;
+        return apt;
+      } catch (e) {
+        console.error('Erro na sync individual:', e);
+        return apt;
+      }
+    }
+
+    // Sincronização em massa — usado pelo botão "Sincronizar tudo"
+    async function syncAllAppointmentsToCalendar() {
+      if (state.calendarSyncing) {
+        toast('Sincronização já em andamento...', 'info');
+        return;
+      }
+      state.calendarSyncing = true;
+      const btn = $('btnSyncCalendar');
+      const label = $('syncBtnLabel');
+      const originalLabel = label.textContent;
+      btn.disabled = true;
+
+      try {
+        // Garante calendário
+        label.textContent = 'criando calendário...';
+        await ensureConsultorioCalendar();
+
+        // Filtra: só atendimentos não cancelados sem googleEventId, ou que precisam atualizar
+        const aSincronizar = state.appointments.filter(a => a.status !== 'cancelado' && !a.googleEventId);
+        const total = aSincronizar.length;
+
+        if (total === 0) {
+          toast('Tudo sincronizado! ✦', 'success');
+          return;
+        }
+
+        let progresso = 0;
+        for (const apt of aSincronizar) {
+          progresso++;
+          label.textContent = `sincronizando ${progresso}/${total}...`;
+          const eventId = await createCalendarEvent(apt);
+          if (eventId) apt.googleEventId = eventId;
+          // Pequeno delay pra não estourar quota (5 reqs/segundo é tranquilo)
+          await new Promise(r => setTimeout(r, 200));
+        }
+
+        await saveAppointments();
+        toast(`${progresso} atendimentos sincronizados ✦`, 'success');
+      } catch (e) {
+        console.error('Erro sync massa:', e);
+        toast('Erro durante sincronização — alguns eventos podem não ter sido criados', 'error');
+      } finally {
+        state.calendarSyncing = false;
+        btn.disabled = false;
+        label.textContent = originalLabel;
+        renderAgendaPage();
+      }
+    }
+    window.syncAllAppointmentsToCalendar = syncAllAppointmentsToCalendar;
+
+    // ============================================================
     // AGENDA — utilidades de data
     // ============================================================
     function startOfWeek(date) {
@@ -3545,7 +3779,9 @@
         card.style.top = top + 'px';
         card.style.height = height + 'px';
         card.dataset.apptId = apt.id;
+        const syncDot = apt.googleEventId ? '<div class="sync-dot" title="sincronizado com Google Calendar"></div>' : '';
         card.innerHTML = `
+          ${syncDot}
           <div class="apt-time">${apt.horaInicio}${apt.horaFim ? ' – ' + apt.horaFim : ''}</div>
           <div class="apt-patient">${escapeHtml(patientName)}</div>
           <div class="apt-type">${APPT_TYPES[apt.tipo] || apt.tipo}</div>
@@ -4079,18 +4315,21 @@
         if (state.editingApptId) {
           // Edição — atualiza um único atendimento
           const idx = state.appointments.findIndex(a => a.id === state.editingApptId);
-          if (idx >= 0) state.appointments[idx] = { ...state.appointments[idx], ...data, atualizado_em: new Date().toISOString() };
+          if (idx >= 0) {
+            state.appointments[idx] = { ...state.appointments[idx], ...data, atualizado_em: new Date().toISOString() };
+            // Sincroniza com Calendar (em background, não bloqueia)
+            await syncAppointmentToCalendar(state.appointments[idx]);
+          }
         } else if (isRepeat) {
-          // Cria várias ocorrências, cada uma é independente
-          const grupoId = uid('grp'); // marca todas como vindas do mesmo grupo (futuro: editar todos)
+          // Cria várias ocorrências
+          const grupoId = uid('grp');
           const now = new Date().toISOString();
+          const novasOcorrencias = [];
           for (let i = 0; i < totalOcorrencias; i++) {
             const dataOcorrencia = i === 0 ? data.data : nextOccurrenceDate(data.data, frequencia, i);
-            // Pagamento só na primeira ocorrência (as próximas começam não-pagas)
             const pagamentoOcorrencia = (i === 0 ? data.pagamento : { pago: false, formaPagamento: null, dataPagamento: null, observacoes: '' });
-            // Status só na primeira (as próximas começam como agendadas)
             const statusOcorrencia = (i === 0 ? data.status : 'agendado');
-            state.appointments.push({
+            const apt = {
               id: uid('ap'),
               ...data,
               data: dataOcorrencia,
@@ -4100,16 +4339,25 @@
               indiceGrupo: i,
               criado_em: now,
               atualizado_em: now,
-            });
+            };
+            state.appointments.push(apt);
+            novasOcorrencias.push(apt);
+          }
+          // Sincroniza todas em paralelo (com pequeno throttle)
+          for (const apt of novasOcorrencias) {
+            await syncAppointmentToCalendar(apt);
+            await new Promise(r => setTimeout(r, 150));
           }
         } else {
-          // Atendimento único, sem repetição
-          state.appointments.push({
+          // Atendimento único
+          const novoApt = {
             id: uid('ap'),
             ...data,
             criado_em: new Date().toISOString(),
             atualizado_em: new Date().toISOString(),
-          });
+          };
+          state.appointments.push(novoApt);
+          await syncAppointmentToCalendar(novoApt);
         }
         await saveAppointments();
         closeAppointmentModal();
@@ -4129,6 +4377,11 @@
     async function deleteAppointment() {
       if (!state.editingApptId) return;
       if (!confirm('Excluir este atendimento? Esta ação não pode ser desfeita.')) return;
+      const apt = state.appointments.find(a => a.id === state.editingApptId);
+      // Remove do Calendar antes de remover do app
+      if (apt && apt.googleEventId) {
+        try { await deleteCalendarEvent(apt.googleEventId); } catch {}
+      }
       state.appointments = state.appointments.filter(a => a.id !== state.editingApptId);
       try {
         await saveAppointments();
@@ -5874,6 +6127,13 @@
 
     // Agenda — novo atendimento
     $('btnNewAppointment').addEventListener('click', () => openNewAppointment());
+
+    // Agenda — sincronizar Calendar
+    $('btnSyncCalendar').addEventListener('click', () => {
+      if (confirm('Sincronizar todos os atendimentos com o Google Calendar?\n\nIsso vai criar eventos pra todos os atendimentos não sincronizados (não cancelados).\n\nNa primeira vez, será criado um calendário "Consultório — Atendimentos" no seu Google Calendar.')) {
+        syncAllAppointmentsToCalendar();
+      }
+    });
 
     // Modal de atendimento
     $('btnCancelAppt').addEventListener('click', closeAppointmentModal);
