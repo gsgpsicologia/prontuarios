@@ -782,7 +782,7 @@
       position: fixed;
       top: calc(env(safe-area-inset-top) + 0.6rem);
       left: 0.8rem;
-      z-index: 110;
+      z-index: 200;
       width: 44px;
       height: 44px;
       background: var(--cream-soft);
@@ -800,9 +800,8 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(44, 42, 38, 0.4);
-      z-index: 95;
-      backdrop-filter: blur(2px);
+      background: rgba(44, 42, 38, 0.5);
+      z-index: 150;
     }
     .mobile-menu-backdrop.active { display: block; }
 
@@ -832,7 +831,10 @@
         max-width: 320px;
         height: 100vh;
         height: 100dvh;
-        z-index: 100;
+        z-index: 180;
+        background: var(--cream-soft);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
         transform: translateX(-100%);
         transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: var(--shadow-lg);
