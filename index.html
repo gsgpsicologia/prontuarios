@@ -130,7 +130,7 @@
     .app { display: none; position: relative; z-index: 1; min-height: 100vh; grid-template-columns: 280px 1fr; }
     .app.active { display: grid; }
 
-    .sidebar { background: rgba(251, 246, 234, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid var(--border-soft); padding: 2.5rem 1.5rem 2rem; display: flex; flex-direction: column; gap: 2rem; position: sticky; top: 0; height: 100vh; }
+    .sidebar { background: #fbf6ea; border-right: 1px solid var(--border-soft); padding: 2.5rem 1.5rem 2rem; display: flex; flex-direction: column; gap: 2rem; position: sticky; top: 0; height: 100vh; }
     .brand { text-align: center; padding: 0 0.5rem 1.5rem; border-bottom: 1px solid var(--border-soft); }
     .brand-monogram { font-family: var(--font-display); font-style: italic; font-size: 3rem; color: var(--gold); line-height: 1; margin-bottom: 0.3rem; }
     .brand-name { font-family: var(--font-display); font-size: 1.05rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); line-height: 1.2; }
@@ -800,8 +800,9 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(44, 42, 38, 0.5);
+      background-color: rgba(44, 42, 38, 0.45);
       z-index: 150;
+      pointer-events: auto;
     }
     .mobile-menu-backdrop.active { display: block; }
 
@@ -823,27 +824,42 @@
 
       /* Sidebar vira drawer */
       .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 80%;
-        max-width: 320px;
-        height: 100vh;
-        height: 100dvh;
-        z-index: 180;
-        background: var(--cream-soft);
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        width: 80% !important;
+        max-width: 320px !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        z-index: 180 !important;
+        background-color: #fbf6ea !important;
+        background-image: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        opacity: 1 !important;
         transform: translateX(-100%);
         transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: var(--shadow-lg);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
         padding-top: calc(env(safe-area-inset-top) + 1rem);
         padding-bottom: env(safe-area-inset-bottom);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
       }
       .sidebar.mobile-open { transform: translateX(0); }
+
+      /* Garante que TODO conteúdo dentro da sidebar fica clicável e sem opacidade */
+      .sidebar * {
+        pointer-events: auto;
+        opacity: 1 !important;
+      }
+      .sidebar .nav-item,
+      .sidebar button,
+      .sidebar a {
+        pointer-events: auto !important;
+        opacity: 1 !important;
+        cursor: pointer !important;
+      }
 
       /* Main com padding pro hamburger */
       .main {
