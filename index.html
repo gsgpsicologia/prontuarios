@@ -2,10 +2,14 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="color-scheme" content="light only" />
   <meta name="theme-color" content="#f6efe0" />
   <meta name="supported-color-schemes" content="light" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Prontuários" />
+  <meta name="format-detection" content="telephone=no" />
   <title>Prontuários GSG Psicologia</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -48,6 +52,12 @@
       color-scheme: light only;
       -webkit-color-scheme: light only;
       forced-color-adjust: none;
+      /* iOS: previne bounce/scroll lateral */
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100vw;
+      /* iOS: previne pull-to-refresh em alguns casos */
+      overscroll-behavior-x: none;
     }
     @media (prefers-color-scheme: dark) {
       :root { color-scheme: light only !important; }
@@ -56,14 +66,37 @@
 
     body {
       font-family: var(--font-body);
-      font-size: 15px;
+      font-size: 16px; /* iOS: 16px+ evita zoom em inputs */
       line-height: 1.65;
       color: var(--ink);
       background: var(--cream);
       -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: rgba(184, 148, 74, 0.15); /* tap highlight dourado discreto */
       min-height: 100vh;
+      min-height: 100dvh; /* iOS: viewport dinâmico (compensa barra de URL) */
       overflow-x: hidden;
       font-weight: 400;
+      /* iOS: padding pra safe area (notch) */
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+    }
+
+    /* iOS: força tamanho 16px+ em inputs pra não dar zoom */
+    input[type="text"], input[type="email"], input[type="tel"], input[type="number"],
+    input[type="date"], input[type="time"], input[type="search"], input[type="password"],
+    select, textarea {
+      font-size: 16px;
+      -webkit-appearance: none;
+      appearance: none;
+      border-radius: var(--radius-md);
+    }
+
+    /* Touch targets iOS — mínimo 44px */
+    button, a.btn, .btn { min-height: 36px; }
+    @media (max-width: 768px) {
+      button, a.btn, .btn { min-height: 44px; }
+      .btn-icon { min-width: 40px; min-height: 40px; }
+      .btn-sm { min-height: 38px; }
     }
 
     .watercolor-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
@@ -73,9 +106,9 @@
     .wc-blob.gold-1 { width: 400px; height: 400px; top: 30%; left: 20%; background: var(--gold-wash); opacity: 0.25; }
 
     h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 400; line-height: 1.15; color: var(--ink); letter-spacing: 0.005em; }
-    button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
-    input, textarea, select { font-family: inherit; font-size: inherit; color: inherit; }
-    a { color: var(--gold-deep); text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; -webkit-tap-highlight-color: transparent; }
+    input, textarea, select { font-family: inherit; color: inherit; }
+    a { color: var(--gold-deep); text-decoration: none; -webkit-tap-highlight-color: transparent; }
 
     /* LOGIN */
     .login-screen { position: relative; z-index: 1; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
@@ -739,20 +772,407 @@
     .export-menu-item .title { font-size: 0.85rem; font-weight: 500; color: var(--ink); line-height: 1.2; }
     .export-menu-item .desc { font-size: 0.7rem; color: var(--ink-soft); margin-top: 0.1rem; }
 
-    @media (max-width: 900px) {
-      .app { grid-template-columns: 1fr; }
-      .sidebar { position: static; height: auto; }
-      .main { padding: 2rem 1.5rem; }
-      .form-grid { grid-template-columns: 1fr; }
-      .detail-grid { grid-template-columns: 1fr; }
-      .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-      .page-title { font-size: 2.3rem; }
-      .login-card { padding: 2.5rem 1.5rem; }
-      .login-monogram { font-size: 9rem; }
-      .modal-body { padding: 1.2rem 1.5rem; }
-      .modal-header { padding: 1.5rem 1.5rem 1rem; }
-      .evolution-card { padding: 1.25rem; }
+    /* ============================================================
+       MOBILE — adaptação completa pra iPhone Safari e similares
+       ============================================================ */
+
+    /* Botão hamburger (escondido no desktop) */
+    .mobile-menu-toggle {
+      display: none;
+      position: fixed;
+      top: calc(env(safe-area-inset-top) + 0.6rem);
+      left: 0.8rem;
+      z-index: 100;
+      width: 44px;
+      height: 44px;
+      background: var(--cream-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
     }
+    .mobile-menu-toggle svg { width: 22px; height: 22px; }
+
+    /* Backdrop escuro do menu */
+    .mobile-menu-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(44, 42, 38, 0.4);
+      z-index: 90;
+      backdrop-filter: blur(2px);
+    }
+    .mobile-menu-backdrop.active { display: block; }
+
+    /* === Tablet (até 1024px) === */
+    @media (max-width: 1024px) {
+      .agenda-stats { grid-template-columns: repeat(2, 1fr); }
+      .summary-grid-main { grid-template-columns: repeat(2, 1fr); }
+      .patient-fin-summary { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* === Mobile (até 768px) — ataque pesado === */
+    @media (max-width: 768px) {
+      /* Hamburger ativo */
+      .mobile-menu-toggle { display: flex; }
+      body.menu-open { overflow: hidden; }
+
+      /* Layout grid → coluna única */
+      .app { grid-template-columns: 1fr; }
+
+      /* Sidebar vira drawer */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 80%;
+        max-width: 320px;
+        height: 100vh;
+        height: 100dvh;
+        z-index: 95;
+        transform: translateX(-100%);
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: var(--shadow-lg);
+        padding-top: calc(env(safe-area-inset-top) + 1rem);
+        padding-bottom: env(safe-area-inset-bottom);
+        overflow-y: auto;
+      }
+      .sidebar.mobile-open { transform: translateX(0); }
+
+      /* Main com padding pro hamburger */
+      .main {
+        padding: calc(env(safe-area-inset-top) + 4rem) 1rem 2rem;
+        padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+      }
+
+      /* Page header empilhado */
+      .page-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+      }
+      .page-header > div:last-child {
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+      }
+      .page-header .btn { width: 100%; justify-content: center; }
+      .page-title { font-size: 1.9rem; }
+      .page-subtitle { font-size: 0.95rem; }
+
+      /* Form sempre 1 coluna */
+      .form-grid, .detail-grid, .doc-form-grid { grid-template-columns: 1fr; }
+      .form-group.full, .doc-form-grid .full { grid-column: 1; }
+
+      /* Modal vira tela cheia em mobile */
+      .modal-backdrop { padding: 0; align-items: stretch; }
+      .modal {
+        max-width: 100%;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        max-height: 100vh;
+        max-height: 100dvh;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .modal.doc-modal { max-width: 100%; }
+      .modal-header {
+        padding: 1.2rem 1.25rem 0.8rem;
+        position: sticky;
+        top: 0;
+        background: var(--cream-soft);
+        z-index: 5;
+        border-bottom: 1px solid var(--border-soft);
+      }
+      .modal-header h2 { font-size: 1.5rem; }
+      .modal-body {
+        padding: 1rem 1.25rem 5rem;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        flex: 1;
+      }
+      .modal-footer {
+        padding: 0.8rem 1.25rem;
+        position: sticky;
+        bottom: 0;
+        background: var(--cream-soft);
+        border-top: 1px solid var(--border-soft);
+        z-index: 5;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .modal-footer .btn { flex: 1; min-width: 100px; justify-content: center; }
+      .modal-footer .btn-sm[style*="margin-right:auto"] {
+        order: 99;
+        flex-basis: 100%;
+        margin-right: 0 !important;
+      }
+
+      /* === Login mobile === */
+      .login-screen { padding: 1.5rem 1rem; }
+      .login-card { padding: 2.5rem 1rem; }
+      .login-monogram { font-size: 8rem; }
+      .login-name { font-size: 2.3rem; }
+      .login-cta-text { font-size: 0.95rem; }
+
+      /* === Lista de pacientes — vira cards verticais === */
+      .patients-grid {
+        grid-template-columns: 1fr;
+        gap: 0.7rem;
+      }
+      .patient-card {
+        padding: 1rem 1.1rem;
+      }
+      .patient-card-name { font-size: 1.1rem; }
+
+      /* === Detalhe de paciente === */
+      .detail-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        padding: 1.25rem;
+      }
+      .detail-info { text-align: left; }
+      .detail-name { font-size: 1.6rem; }
+      .detail-meta { font-size: 0.85rem; }
+      .detail-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+      }
+      .detail-actions > .btn,
+      .detail-actions > .export-wrap {
+        width: 100%;
+      }
+      .detail-actions .btn { width: 100%; justify-content: center; }
+      .export-menu.wide { right: 0; left: auto; min-width: 280px; max-width: calc(100vw - 2rem); }
+
+      /* === Tabs (no detail) === */
+      .tabs {
+        gap: 0;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -1rem;
+        padding: 0 1rem;
+        scrollbar-width: none;
+      }
+      .tabs::-webkit-scrollbar { display: none; }
+      .tab-btn {
+        font-size: 0.85rem;
+        padding: 0.65rem 1rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      /* === AGENDA mobile === */
+      .agenda-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.8rem;
+      }
+      .agenda-nav {
+        justify-content: space-between;
+      }
+      .agenda-week-label, .fin-month-label {
+        flex: 1;
+        text-align: center;
+        font-size: 0.95rem;
+        min-width: 0;
+      }
+      .view-toggle {
+        width: 100%;
+        justify-content: stretch;
+      }
+      .view-toggle button { flex: 1; padding: 0.55rem 0.4rem; font-size: 0.78rem; }
+
+      .agenda-stats { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+      .agenda-stat { padding: 0.65rem 0.85rem; }
+      .agenda-stat .value { font-size: 1.2rem; }
+
+      /* Agenda SEMANA: vira lista vertical por dia em mobile */
+      .agenda-grid-wrap { display: none; }
+      .agenda-mobile-list { display: block; }
+
+      /* Esconde legenda em mobile (visualização vai dizer o tipo no card) */
+      .agenda-legend { font-size: 0.72rem; padding: 0.6rem 0.8rem; gap: 0.5rem; }
+
+      /* MÊS — calendário compactado */
+      .month-cell { min-height: 65px; padding: 0.25rem; }
+      .month-cell .day-number { font-size: 0.85rem; margin-bottom: 0.15rem; }
+      .month-event { font-size: 0.55rem; padding: 1px 3px; }
+      .month-day-header { padding: 0.4rem 0.2rem; font-size: 0.6rem; letter-spacing: 0.05em; }
+      .month-event-more { font-size: 0.55rem; }
+
+      /* RESUMO — cards 1 coluna */
+      .summary-grid-main { grid-template-columns: 1fr; gap: 0.7rem; }
+      .summary-row-2 { grid-template-columns: 1fr; gap: 1rem; }
+      .summary-card { padding: 1rem 1.2rem; }
+      .summary-card .value { font-size: 1.7rem; }
+      .summary-card .value.small { font-size: 1.25rem; }
+      .summary-section { padding: 1.2rem; }
+      .summary-section h3 { font-size: 1.1rem; }
+      .col-chart { min-height: 130px; }
+      .col-chart .col-bar { max-width: 36px; }
+      .bar-row { grid-template-columns: 90px 1fr auto; gap: 0.5rem; font-size: 0.78rem; }
+
+      /* === FINANCEIRO mobile === */
+      .fin-toolbar { flex-direction: column; align-items: stretch; }
+      .fin-month-nav { justify-content: space-between; }
+      .patient-fin-summary { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+      .patient-fin-card { padding: 0.8rem 1rem; }
+      .patient-fin-card .value { font-size: 1.2rem; }
+
+      /* Pendency item — empilha info+aging+valor */
+      .pendency-item {
+        grid-template-columns: 36px 1fr auto;
+        grid-template-rows: auto auto;
+        gap: 0.5rem 0.7rem;
+        padding: 0.85rem 1rem;
+      }
+      .pendency-info { grid-column: 2; grid-row: 1; }
+      .pendency-aging {
+        grid-column: 2;
+        grid-row: 2;
+        justify-self: start;
+        min-width: 0;
+      }
+      .pendency-amount {
+        grid-column: 3;
+        grid-row: 1 / span 2;
+        align-self: center;
+        font-size: 1.05rem;
+      }
+      .pendency-chevron { display: none; }
+      .pendency-info .name { font-size: 0.95rem; }
+      .pendency-info .meta { font-size: 0.72rem; }
+
+      /* Receipt item — empilha */
+      .receipt-item {
+        grid-template-columns: 32px 1fr auto;
+        grid-template-rows: auto auto;
+        gap: 0.4rem 0.7rem;
+        padding: 0.75rem 1rem;
+      }
+      .receipt-info { grid-column: 2; grid-row: 1; }
+      .receipt-form {
+        grid-column: 2;
+        grid-row: 2;
+        justify-self: start;
+        font-size: 0.65rem;
+      }
+      .receipt-amount {
+        grid-column: 3;
+        grid-row: 1;
+        font-size: 0.95rem;
+      }
+      .receipt-actions {
+        grid-column: 3;
+        grid-row: 2;
+      }
+
+      /* Patient fin row */
+      .patient-fin-row {
+        grid-template-columns: auto 1fr auto;
+        gap: 0.5rem;
+        padding: 0.7rem 1rem;
+      }
+      .patient-fin-row .data-info .data { font-size: 0.85rem; }
+
+      /* === DOCUMENTOS mobile === */
+      .docs-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .doc-item {
+        grid-template-columns: 38px 1fr;
+        grid-template-rows: auto auto;
+        gap: 0.4rem 0.75rem;
+        padding: 0.85rem 1rem;
+      }
+      .doc-icon { grid-column: 1; grid-row: 1 / span 2; }
+      .doc-info { grid-column: 2; grid-row: 1; }
+      .doc-date {
+        grid-column: 2;
+        grid-row: 2;
+        font-size: 0.7rem;
+        text-align: left;
+        min-width: 0;
+      }
+      .doc-actions {
+        grid-column: 1 / -1;
+        justify-self: end;
+        margin-top: 0.3rem;
+      }
+
+      .doc-editor { min-height: 200px; padding: 0.85rem 1rem; font-size: 0.92rem; }
+
+      /* === ANAMNESE mobile === */
+      .anamnese-section { padding: 1.25rem 1rem; }
+      .anamnese-section h3 { font-size: 1.15rem; }
+      .anamnese-progress-bar { height: 4px; }
+
+      /* === EVOLUÇÕES mobile === */
+      .evolution-card { padding: 1rem 1.1rem; }
+      .evolution-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+      }
+
+      /* === Toast (notificação) === */
+      .toast {
+        left: 1rem;
+        right: 1rem;
+        bottom: calc(1rem + env(safe-area-inset-bottom));
+        font-size: 0.9rem;
+      }
+
+      /* Patient picker fica largo */
+      .patient-picker-input { font-size: 16px; }
+    }
+
+    /* === Mobile pequeno (até 380px — iPhone SE etc) === */
+    @media (max-width: 380px) {
+      .main { padding: calc(env(safe-area-inset-top) + 3.5rem) 0.85rem 1.5rem; }
+      .page-title { font-size: 1.6rem; }
+      .agenda-stats { grid-template-columns: 1fr 1fr; }
+      .month-cell { min-height: 55px; }
+      .month-event { font-size: 0.5rem; padding: 0 2px; }
+      .login-name { font-size: 2rem; }
+      .login-monogram { font-size: 6.5rem; }
+    }
+
+    /* === Esconder lista mobile no desktop === */
+    .agenda-mobile-list { display: none; }
+    .agenda-mobile-day { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); margin-bottom: 0.85rem; overflow: hidden; }
+    .agenda-mobile-day-header { padding: 0.7rem 1rem; background: var(--cream); border-bottom: 1px solid var(--border-soft); display: flex; justify-content: space-between; align-items: baseline; }
+    .agenda-mobile-day-header.today { background: var(--gold-wash); }
+    .agenda-mobile-day-header .day-name { font-family: var(--font-display); font-style: italic; color: var(--ink); font-size: 0.95rem; }
+    .agenda-mobile-day-header.today .day-name { color: var(--gold-deep); font-weight: 500; }
+    .agenda-mobile-day-header .day-count { font-size: 0.75rem; color: var(--ink-soft); }
+    .agenda-mobile-day-empty { padding: 0.85rem 1rem; color: var(--ink-faint); font-size: 0.85rem; font-style: italic; font-family: var(--font-display); }
+    .agenda-mobile-apt { display: grid; grid-template-columns: 60px 1fr auto; gap: 0.6rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-soft); cursor: pointer; align-items: center; transition: background 0.12s; position: relative; }
+    .agenda-mobile-apt:last-child { border-bottom: none; }
+    .agenda-mobile-apt:active { background: var(--cream); }
+    .agenda-mobile-apt .time { font-family: var(--font-display); font-weight: 500; font-size: 0.95rem; color: var(--ink); }
+    .agenda-mobile-apt .info { min-width: 0; }
+    .agenda-mobile-apt .name { font-size: 0.95rem; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .agenda-mobile-apt .type { font-size: 0.7rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.1rem; }
+    .agenda-mobile-apt .type-dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 0.4rem; vertical-align: middle; }
+    .agenda-mobile-apt .right-info { text-align: right; font-size: 0.78rem; color: var(--ink-soft); }
+    .agenda-mobile-apt.status-cancelado { opacity: 0.5; }
+    .agenda-mobile-apt.status-cancelado .name { text-decoration: line-through; }
+    .agenda-mobile-apt.status-faltou { opacity: 0.6; }
+    .agenda-mobile-apt.status-realizado { background: rgba(159, 176, 138, 0.06); }
+    .agenda-mobile-apt .sync-dot-mobile { position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: #4a90e2; opacity: 0.7; }
   </style>
 </head>
 <body>
@@ -791,6 +1211,12 @@
   </div>
 
   <!-- APP -->
+  <!-- Mobile menu toggle -->
+  <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Abrir menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="mobile-menu-backdrop" id="mobileMenuBackdrop"></div>
+
   <div class="app" id="app">
     <aside class="sidebar">
       <div class="brand">
@@ -870,6 +1296,7 @@
             <div class="agenda-grid-header" id="agendaGridHeader"></div>
             <div class="agenda-grid-body" id="agendaGridBody"></div>
           </div>
+          <div class="agenda-mobile-list" id="agendaMobileList"></div>
           <div class="agenda-legend">
             <span class="legend-title">tipos:</span>
             <span class="agenda-legend-item"><span class="agenda-legend-dot legend-sessao"></span>Sessão</span>
@@ -3799,7 +4226,72 @@
           openNewAppointment({ data: slot.dataset.date, hora: slot.dataset.hour });
         });
       });
+
+      // Renderiza também a lista mobile (mesma semana)
+      renderAgendaMobileList();
     }
+
+    // Versão mobile: lista vertical agrupada por dia
+    function renderAgendaMobileList() {
+      const container = $('agendaMobileList');
+      if (!container) return;
+      const weekStart = state.currentWeekStart;
+      const weekEndIso = toIsoDate(addDays(weekStart, 5));
+      const weekStartIso = toIsoDate(weekStart);
+      const weekAppts = state.appointments.filter(a =>
+        a.data >= weekStartIso && a.data <= weekEndIso
+      );
+
+      const dowNames = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+      let html = '';
+
+      for (let i = 0; i < 6; i++) {
+        const d = addDays(weekStart, i);
+        const isoDate = toIsoDate(d);
+        const isToday = isSameDay(d, new Date());
+        const dayAppts = weekAppts
+          .filter(a => a.data === isoDate)
+          .sort((a, b) => (a.horaInicio || '').localeCompare(b.horaInicio || ''));
+
+        const dom = String(d.getDate()).padStart(2, '0');
+        const mes = String(d.getMonth() + 1).padStart(2, '0');
+
+        html += `<div class="agenda-mobile-day">
+          <div class="agenda-mobile-day-header ${isToday ? 'today' : ''}">
+            <span class="day-name">${dowNames[i]}, ${dom}/${mes}${isToday ? ' · hoje' : ''}</span>
+            <span class="day-count">${dayAppts.length} ${dayAppts.length === 1 ? 'atendimento' : 'atendimentos'}</span>
+          </div>`;
+
+        if (!dayAppts.length) {
+          html += `<div class="agenda-mobile-day-empty" onclick="openNewAppointment({data:'${isoDate}', hora:'08:00'})">tocar para agendar...</div>`;
+        } else {
+          dayAppts.forEach(apt => {
+            const patient = state.patients.find(p => p.id === apt.patientId);
+            const name = patient ? patient.nome : '(paciente excluído)';
+            const tipoLabel = APPT_TYPES[apt.tipo] || apt.tipo;
+            const valorTxt = apt.valor ? fmtBRL(apt.valor) : '';
+            const modalLabel = apt.modalidade === 'online' ? 'online' : '';
+            const syncDot = apt.googleEventId ? '<div class="sync-dot-mobile" title="sincronizado"></div>' : '';
+            const tipoColor = ({ sessao: '#b8944a', avaliacao: '#6d7f5c', devolutiva: '#a64e3d', anamnese: '#4a6d8e', retorno: '#8c7552' })[apt.tipo] || '#b8944a';
+
+            html += `<div class="agenda-mobile-apt status-${apt.status || 'agendado'}" onclick="openEditAppointment('${apt.id}')">
+              ${syncDot}
+              <div class="time">${apt.horaInicio}</div>
+              <div class="info">
+                <div class="name">${escapeHtml(name)}</div>
+                <div class="type"><span class="type-dot" style="background:${tipoColor}"></span>${tipoLabel}${modalLabel ? ' · ' + modalLabel : ''}</div>
+              </div>
+              <div class="right-info">${valorTxt}</div>
+            </div>`;
+          });
+        }
+
+        html += `</div>`;
+      }
+
+      container.innerHTML = html;
+    }
+
 
     // ============================================================
     // AGENDA — VISÃO MÊS (calendário tradicional)
@@ -4446,6 +4938,14 @@
       } else {
         renderAll();
       }
+      // Fecha menu mobile se aberto
+      if (window.innerWidth <= 768) {
+        document.querySelector('.sidebar').classList.remove('mobile-open');
+        $('mobileMenuBackdrop').classList.remove('active');
+        document.body.classList.remove('menu-open');
+      }
+      // Scroll pro topo (UX em mobile)
+      window.scrollTo(0, 0);
     }
     window.switchPage = switchPage;
 
@@ -6135,6 +6635,28 @@
       }
     });
 
+    // ============================================================
+    // MOBILE — menu hamburger
+    // ============================================================
+    function openMobileMenu() {
+      document.querySelector('.sidebar').classList.add('mobile-open');
+      $('mobileMenuBackdrop').classList.add('active');
+      document.body.classList.add('menu-open');
+    }
+    function closeMobileMenu() {
+      document.querySelector('.sidebar').classList.remove('mobile-open');
+      $('mobileMenuBackdrop').classList.remove('active');
+      document.body.classList.remove('menu-open');
+    }
+    $('mobileMenuToggle').addEventListener('click', openMobileMenu);
+    $('mobileMenuBackdrop').addEventListener('click', closeMobileMenu);
+    // Fecha ao clicar em qualquer item da sidebar (em mobile)
+    document.querySelectorAll('.nav-item, .sidebar .btn').forEach(el => {
+      el.addEventListener('click', () => {
+        if (window.innerWidth <= 768) closeMobileMenu();
+      });
+    });
+
     // Modal de atendimento
     $('btnCancelAppt').addEventListener('click', closeAppointmentModal);
     $('btnDeleteAppt').addEventListener('click', deleteAppointment);
@@ -6230,6 +6752,13 @@
     $('anamneseModal').addEventListener('click', (e) => { if (e.target.id === 'anamneseModal') closeAnamneseModal(); });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        // Primeiro tenta fechar menu mobile se estiver aberto
+        if (document.querySelector('.sidebar').classList.contains('mobile-open')) {
+          document.querySelector('.sidebar').classList.remove('mobile-open');
+          $('mobileMenuBackdrop').classList.remove('active');
+          document.body.classList.remove('menu-open');
+          return;
+        }
         if ($('reciboModal').classList.contains('active')) closeReciboModal();
         else if ($('documentoModal').classList.contains('active')) closeDocumentoModal();
         else if ($('anamneseModal').classList.contains('active')) closeAnamneseModal();
