@@ -386,6 +386,45 @@
     .anamnese-status { font-size: 0.78rem; color: var(--ink-faint); font-family: var(--font-display); font-style: italic; margin-top: 0.3rem; }
 
     .anamnese-empty { text-align: center; padding: 4rem 2rem; background: var(--cream-soft); border: 1px dashed var(--border); border-radius: var(--radius-lg); position: relative; }
+
+    /* Cards de escolha de tipo de anamnese */
+    .anamnese-type-card {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1.1rem 1.3rem;
+      background: var(--cream-soft);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .anamnese-type-card:hover {
+      background: var(--gold-wash);
+      border-color: var(--gold);
+      transform: translateX(4px);
+    }
+    .anamnese-type-card .emoji {
+      font-size: 2rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .anamnese-type-card .info { flex: 1; min-width: 0; }
+    .anamnese-type-card .title {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+    .anamnese-type-card .subtitle {
+      font-size: 0.82rem;
+      color: var(--ink-soft);
+      font-style: italic;
+      font-family: var(--font-display);
+      margin-top: 0.15rem;
+    }
     .anamnese-empty::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 30% 30%, var(--sage-wash) 0%, transparent 40%), radial-gradient(circle at 70% 70%, var(--gold-wash) 0%, transparent 40%); opacity: 0.3; border-radius: var(--radius-lg); pointer-events: none; }
     .anamnese-empty-content { position: relative; z-index: 1; }
     .anamnese-empty h3 { font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 400; }
@@ -1965,6 +2004,44 @@
     </div>
   </div>
 
+  <!-- MODAL ESCOLHA DO TIPO DE ANAMNESE -->
+  <div class="modal-backdrop" id="anamneseTypeModal">
+    <div class="modal" style="max-width: 540px;">
+      <div class="modal-header">
+        <h2>Escolha o tipo de <em>anamnese</em></h2>
+        <p>qual versão se encaixa melhor para esse paciente?</p>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex; flex-direction:column; gap:0.7rem;">
+          <button type="button" class="anamnese-type-card" onclick="selectAnamneseType('crianca')">
+            <span class="emoji">🧒</span>
+            <div class="info">
+              <div class="title">Criança</div>
+              <div class="subtitle">até 11 anos · respondida pelos responsáveis</div>
+            </div>
+          </button>
+          <button type="button" class="anamnese-type-card" onclick="selectAnamneseType('adolescente')">
+            <span class="emoji">🧑‍🎓</span>
+            <div class="info">
+              <div class="title">Adolescente</div>
+              <div class="subtitle">12 a 17 anos · respondida pelos responsáveis</div>
+            </div>
+          </button>
+          <button type="button" class="anamnese-type-card" onclick="selectAnamneseType('adulto')">
+            <span class="emoji">👤</span>
+            <div class="info">
+              <div class="title">Adulto</div>
+              <div class="subtitle">18+ anos · autoaplicada</div>
+            </div>
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeAnamneseTypeModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL ANAMNESE -->
   <div class="modal-backdrop" id="anamneseModal">
     <div class="modal anamnese-modal">
@@ -2112,96 +2189,285 @@
 
     // SCHEMA DA ANAMNESE (baseado no Google Forms da Gabrielly)
     // tipos: 'text' (curto), 'textarea' (parágrafo), 'date', 'checkbox' (múltipla escolha com "outro")
-    const ANAMNESE_SCHEMA = [
-      {
-        title: 'Informações sobre a criança',
-        questions: [
-          { id: 'q01', num: 1, label: 'Nome completo', type: 'text', required: true },
-          { id: 'q02', num: 2, label: 'Data de nascimento', type: 'date', required: true, hint: 'Exemplo: 7 de janeiro de 2019' },
-          { id: 'q03', num: 3, label: 'A criança recebeu diagnóstico formal? Se sim, qual?', type: 'textarea', required: true },
-          { id: 'q04', num: 4, label: 'Quem é o médico que acompanha?', type: 'textarea', required: true },
-          { id: 'q05', num: 5, label: 'Faz uso de alguma medicação? Qual (ou quais)? Qual a dosagem?', type: 'textarea', required: true },
-          { id: 'q06', num: 6, label: 'Possui alguma alergia? Qual?', type: 'textarea', required: true },
-          { id: 'q07', num: 7, label: 'Realiza algum outro tratamento de saúde? Possui alguma comorbidade?', type: 'textarea', required: true },
-          { id: 'q08', num: 8, label: 'Como é a dieta (hábitos alimentares) da criança?', type: 'textarea', required: true },
-          { id: 'q09', num: 9, label: 'Qual escola estuda? Em qual série está?', type: 'textarea', required: true },
-          { id: 'q10', num: 10, label: 'Possui assistente educacional?', type: 'textarea', required: true },
-        ]
-      },
-      {
-        title: 'Informações sobre os pais ou responsáveis',
-        questions: [
-          { id: 'q11', num: 11, label: 'Nome completo e idade dos dois', type: 'textarea', required: true },
-          { id: 'q12', num: 12, label: 'Celular e email para contato', type: 'textarea', required: true },
-          { id: 'q13', num: 13, label: 'Endereço', type: 'textarea', required: true },
-          { id: 'q14', num: 14, label: 'Escolaridade, profissão e ocupação atual', type: 'textarea', required: true },
-        ]
-      },
-      {
-        title: 'Sobre o sono da criança',
-        questions: [
-          { id: 'q15', num: 15, label: 'Onde a criança dorme? Tem seu próprio quarto?', type: 'textarea', required: true },
-          { id: 'q16', num: 16, label: 'Tem o costume de dormir na cama dos pais? Quanto tempo?', type: 'textarea', required: true },
-          { id: 'q17', num: 17, label: 'Como é o sono da criança:', type: 'checkbox', required: true, options: ['Tranquilo', 'Agitado', 'Range os dentes', 'Apresenta terror noturno', 'Sonambulismo', 'Fala dormindo', 'Enurese (urina na cama)'], allowOther: true },
-          { id: 'q18', num: 18, label: 'Hábitos especiais (presença de alguém, objetos, embalo, chupeta, chupa dedo, etc)', type: 'textarea', required: true },
-        ]
-      },
-      {
-        title: 'Informações gerais',
-        questions: [
-          { id: 'q19', num: 19, label: 'Identifica que tenha alguma dificuldade motora?', type: 'textarea', required: true },
-          { id: 'q20', num: 20, label: 'Ao brincar, dá função aos objetos?', type: 'textarea', required: true },
-          { id: 'q21', num: 21, label: 'Brinca quanto tempo com 1 objeto?', type: 'textarea', required: true },
-          { id: 'q22', num: 22, label: 'Usa fralda? Apresenta sinais ao fazer xixi e coco?', type: 'textarea', required: true },
-          { id: 'q23', num: 23, label: 'Compreende instruções?', type: 'textarea', required: true },
-          { id: 'q24', num: 24, label: 'Como a criança se comunica?', type: 'textarea', required: true },
-          { id: 'q25', num: 25, label: 'Qual seu humor habitual?', type: 'textarea', required: true },
-          { id: 'q26', num: 26, label: 'Prefere brincar sozinho ou em grupos?', type: 'textarea', required: true },
-          { id: 'q27', num: 27, label: 'Estranha mudança de ambiente ou adapta-se facilmente ao meio?', type: 'textarea', required: true },
-          { id: 'q28', num: 28, label: 'Tem horários bem estabelecidos (rotinas de casa)?', type: 'textarea', required: true },
-          { id: 'q29', num: 29, label: 'Aceita bem as ordens e os "não"s?', type: 'textarea', required: true },
-          { id: 'q30', num: 30, label: 'Apresenta agressividade, apatia ou teimosia?', type: 'textarea', required: true },
-          { id: 'q31', num: 31, label: 'Percebe quando muda alguma coisa em casa ou quando há um objeto novo?', type: 'textarea', required: true },
-          { id: 'q32', num: 32, label: 'Tem algum medo? Como os pais reagem nesses momentos?', type: 'textarea', required: true },
-          { id: 'q33', num: 33, label: 'Quais as brincadeiras e brinquedos infantis preferidos?', type: 'textarea', required: true },
-          { id: 'q34', num: 34, label: 'Como a criança se comporta quando está sozinha:', type: 'textarea', required: true },
-          { id: 'q35', num: 35, label: 'Como a criança se comporta quando está em família:', type: 'textarea', required: true },
-          { id: 'q36', num: 36, label: 'Em que horários os pais brincam ou fazem alguma atividade de lazer com a criança?', type: 'textarea', required: true },
-          { id: 'q37', num: 37, label: 'Veste-se sozinha?', type: 'textarea', required: true },
-          { id: 'q38', num: 38, label: 'Marque aquilo que a criança consegue fazer com independência:', type: 'checkbox', required: true, options: ['Abotoar', 'Fechar', 'Tomar banho', 'Pentear o cabelo', 'Comer', 'Amarrar os cadarços', 'Calçar o sapato', 'Escovar os dentes'], allowOther: true },
-        ]
-      },
-      {
-        title: 'Comunicação e comportamento',
-        questions: [
-          { id: 'q39', num: 39, label: 'Qual é o principal método de comunicação do(a) seu(sua) filho(a) (linguagem de sinais, gestos, imagens, verbalizações – em caso afirmativo, quantas palavras nas frases)? Descreva sucintamente como ele(a) consegue que suas necessidades sejam atendidas.', type: 'textarea', required: true },
-          { id: 'q40', num: 40, label: 'Seu filho(a) tem algum comportamento disruptivo com o qual você está preocupado (exemplos: agressão, birra etc.)? Por favor descreva.', type: 'textarea', required: true },
-        ]
-      },
-      {
-        title: 'Reforçamento',
-        questions: [
-          { id: 'q41', num: 41, label: 'Liste algumas das preferências do(a) seu(sua) filho(a):', type: 'textarea', required: true },
-          { id: 'q42', num: 42, label: 'Liste algumas das aversões do(a) seu(sua) filho(a):', type: 'textarea', required: true },
-        ]
-      },
-      {
-        title: 'Atitudes predominantes',
-        questions: [
-          { id: 'q43', num: 43, label: 'Como você descreveria seu filho?', type: 'checkbox', required: true, options: ['Obediente', 'Independente', 'Comunicativo', 'Agressivo', 'Cooperativo', 'Amoroso'], allowOther: false },
-          { id: 'q44', num: 44, label: 'Faz algum acompanhamento com outros especialistas? Quais?', type: 'textarea', required: true },
-          { id: 'q45', num: 45, label: 'Quais são suas expectativas em relação ao processo de intervenção? O que é de extrema importância para você?', type: 'textarea', required: false },
-        ]
-      },
-      {
-        title: 'Observações finais',
-        questions: [
-          { id: 'q46', num: 46, label: 'Outros: use esta seção para escrever qualquer informação adicional que você queira que saibamos.', type: 'textarea', required: false },
-        ]
-      }
-    ];
+    // 3 versões de anamnese: criança, adolescente, adulto
+    const ANAMNESE_SCHEMAS = {
+      crianca: [
+        {
+          title: 'Informações sobre a criança',
+          questions: [
+            { id: 'q01', num: 1, label: 'Nome completo', type: 'text', required: true },
+            { id: 'q02', num: 2, label: 'Data de nascimento', type: 'date', required: true, hint: 'Exemplo: 7 de janeiro de 2019' },
+            { id: 'q03', num: 3, label: 'A criança recebeu diagnóstico formal? Se sim, qual?', type: 'textarea', required: true },
+            { id: 'q04', num: 4, label: 'Quem é o médico que acompanha?', type: 'textarea', required: true },
+            { id: 'q05', num: 5, label: 'Faz uso de alguma medicação? Qual (ou quais)? Qual a dosagem?', type: 'textarea', required: true },
+            { id: 'q06', num: 6, label: 'Possui alguma alergia? Qual?', type: 'textarea', required: true },
+            { id: 'q07', num: 7, label: 'Realiza algum outro tratamento de saúde? Possui alguma comorbidade?', type: 'textarea', required: true },
+            { id: 'q08', num: 8, label: 'Como é a dieta (hábitos alimentares) da criança?', type: 'textarea', required: true },
+            { id: 'q09', num: 9, label: 'Qual escola estuda? Em qual série está?', type: 'textarea', required: true },
+            { id: 'q10', num: 10, label: 'Possui assistente educacional?', type: 'textarea', required: true },
+          ]
+        },
+        {
+          title: 'Informações sobre os pais ou responsáveis',
+          questions: [
+            { id: 'q11', num: 11, label: 'Nome completo e idade dos responsáveis legais', type: 'textarea', required: true },
+            { id: 'q12', num: 12, label: 'Celular e email para contato', type: 'textarea', required: true },
+            { id: 'q13', num: 13, label: 'Endereço', type: 'textarea', required: true },
+            { id: 'q14', num: 14, label: 'Escolaridade, profissão e ocupação atual', type: 'textarea', required: true },
+          ]
+        },
+        {
+          title: 'Sobre o sono da criança',
+          questions: [
+            { id: 'q15', num: 15, label: 'Onde a criança dorme? Tem seu próprio quarto?', type: 'textarea', required: true },
+            { id: 'q16', num: 16, label: 'Tem o costume de dormir na cama dos pais? Quanto tempo?', type: 'textarea', required: true },
+            { id: 'q17', num: 17, label: 'Como é o sono da criança:', type: 'checkbox', required: true, options: ['Tranquilo', 'Agitado', 'Range os dentes', 'Apresenta terror noturno', 'Sonambulismo', 'Fala dormindo', 'Enurese (urina na cama)'], allowOther: true },
+            { id: 'q18', num: 18, label: 'Hábitos especiais (presença de alguém, objetos, embalo, chupeta, chupa dedo, etc)', type: 'textarea', required: true },
+          ]
+        },
+        {
+          title: 'Informações gerais',
+          questions: [
+            { id: 'q19', num: 19, label: 'Identifica que tenha alguma dificuldade motora?', type: 'textarea', required: true },
+            { id: 'q20', num: 20, label: 'Ao brincar, dá função aos objetos?', type: 'textarea', required: true },
+            { id: 'q21', num: 21, label: 'Brinca quanto tempo com 1 objeto?', type: 'textarea', required: true },
+            { id: 'q22', num: 22, label: 'Usa fralda? Apresenta sinais ao fazer xixi e cocô?', type: 'textarea', required: true },
+            { id: 'q23', num: 23, label: 'Compreende instruções?', type: 'textarea', required: true },
+            { id: 'q24', num: 24, label: 'Como a criança se comunica?', type: 'textarea', required: true },
+            { id: 'q25', num: 25, label: 'Qual seu humor habitual?', type: 'textarea', required: true },
+            { id: 'q26', num: 26, label: 'Prefere brincar sozinho ou em grupos?', type: 'textarea', required: true },
+            { id: 'q27', num: 27, label: 'Estranha mudança de ambiente ou adapta-se facilmente ao meio?', type: 'textarea', required: true },
+            { id: 'q28', num: 28, label: 'Tem horários bem estabelecidos (rotinas de casa)?', type: 'textarea', required: true },
+            { id: 'q29', num: 29, label: 'Aceita bem as ordens e os "não"s?', type: 'textarea', required: true },
+            { id: 'q30', num: 30, label: 'Apresenta agressividade, apatia ou teimosia?', type: 'textarea', required: true },
+            { id: 'q31', num: 31, label: 'Percebe quando muda alguma coisa em casa ou quando há um objeto novo?', type: 'textarea', required: true },
+            { id: 'q32', num: 32, label: 'Tem algum medo? Como os pais reagem nesses momentos?', type: 'textarea', required: true },
+            { id: 'q33', num: 33, label: 'Quais as brincadeiras e brinquedos infantis preferidos?', type: 'textarea', required: true },
+            { id: 'q34', num: 34, label: 'Como a criança se comporta quando está sozinha:', type: 'textarea', required: true },
+            { id: 'q35', num: 35, label: 'Como a criança se comporta quando está em família:', type: 'textarea', required: true },
+            { id: 'q36', num: 36, label: 'Em que horários os pais brincam ou fazem alguma atividade de lazer com a criança?', type: 'textarea', required: true },
+            { id: 'q37', num: 37, label: 'Veste-se sozinha?', type: 'textarea', required: true },
+            { id: 'q38', num: 38, label: 'Marque aquilo que a criança consegue fazer com independência:', type: 'checkbox', required: true, options: ['Abotoar', 'Fechar', 'Tomar banho', 'Pentear o cabelo', 'Comer', 'Amarrar os cadarços', 'Calçar o sapato', 'Escovar os dentes'], allowOther: true },
+          ]
+        },
+        {
+          title: 'Comunicação e comportamento',
+          questions: [
+            { id: 'q39', num: 39, label: 'Qual é o principal método de comunicação do(a) seu(sua) filho(a) (linguagem de sinais, gestos, imagens, verbalizações – em caso afirmativo, quantas palavras nas frases)? Descreva sucintamente como ele(a) consegue que suas necessidades sejam atendidas.', type: 'textarea', required: true },
+            { id: 'q40', num: 40, label: 'Seu filho(a) tem algum comportamento disruptivo com o qual você está preocupado (exemplos: agressão, birra etc.)? Por favor descreva.', type: 'textarea', required: true },
+          ]
+        },
+        {
+          title: 'Reforçamento',
+          questions: [
+            { id: 'q41', num: 41, label: 'Liste algumas das preferências do(a) seu(sua) filho(a):', type: 'textarea', required: true },
+            { id: 'q42', num: 42, label: 'Liste algumas das aversões do(a) seu(sua) filho(a):', type: 'textarea', required: true },
+            { id: 'q43', num: 43, label: 'Como você descreveria seu filho?', type: 'checkbox', required: true, options: ['Obediente', 'Independente', 'Comunicativo', 'Agressivo', 'Cooperativo', 'Amoroso'], allowOther: false },
+          ]
+        },
+        {
+          title: 'Outras informações',
+          questions: [
+            { id: 'q44', num: 44, label: 'Faz algum acompanhamento com outros especialistas? Quais?', type: 'textarea', required: true },
+            { id: 'q45', num: 45, label: 'Quais são suas expectativas em relação ao processo de intervenção? O que é de extrema importância para você?', type: 'textarea', required: false },
+            { id: 'q46', num: 46, label: 'Outros: use esta seção para escrever qualquer informação adicional que você queira que saibamos.', type: 'textarea', required: false },
+          ]
+        }
+      ],
 
-    const ANAMNESE_TOTAL_QUESTIONS = ANAMNESE_SCHEMA.reduce((sum, s) => sum + s.questions.length, 0);
+      adolescente: [
+        {
+          title: 'Informações sobre o(a) adolescente',
+          questions: [
+            { id: 'q01', num: 1, label: 'Nome completo', type: 'text', required: true },
+            { id: 'q02', num: 2, label: 'Data de nascimento', type: 'date', required: true },
+            { id: 'q03', num: 3, label: 'Possui algum diagnóstico? Se sim, qual?', type: 'textarea', required: true },
+            { id: 'q04', num: 4, label: 'Possui acompanhamento médico? Se sim, qual?', type: 'textarea', required: true },
+            { id: 'q05', num: 5, label: 'Faz uso de alguma medicação? Qual (ou quais)? Qual a dosagem?', type: 'textarea', required: true },
+            { id: 'q06', num: 6, label: 'Possui alguma alergia? Qual?', type: 'textarea', required: true },
+            { id: 'q07', num: 7, label: 'Realiza algum outro tratamento de saúde? Possui alguma comorbidade?', type: 'textarea', required: true },
+            { id: 'q08', num: 8, label: 'Como é a dieta (hábitos alimentares)?', type: 'textarea', required: true },
+            { id: 'q09', num: 9, label: 'Qual escola estuda? Em qual série está?', type: 'textarea', required: true },
+            { id: 'q10', num: 10, label: 'Participa da sala de reforço?', type: 'textarea', required: true },
+          ]
+        },
+        {
+          title: 'Informações sobre os pais ou responsáveis',
+          questions: [
+            { id: 'q11', num: 11, label: 'Nome completo e idade dos responsáveis legais', type: 'textarea', required: true },
+            { id: 'q12', num: 12, label: 'Celular e email para contato', type: 'textarea', required: true },
+            { id: 'q13', num: 13, label: 'Endereço', type: 'textarea', required: true },
+            { id: 'q14', num: 14, label: 'Escolaridade, profissão e ocupação atual de ambos', type: 'textarea', required: true },
+          ]
+        },
+        {
+          title: 'Sobre o sono',
+          questions: [
+            { id: 'q15', num: 15, label: 'Onde dorme? Tem seu próprio quarto?', type: 'textarea', required: true },
+            { id: 'q16', num: 16, label: 'Tem o costume de dormir na cama dos pais? Quanto tempo?', type: 'textarea', required: true },
+            { id: 'q17', num: 17, label: 'Como é o sono:', type: 'checkbox', required: true, options: ['Tranquilo', 'Agitado', 'Range os dentes', 'Apresenta terror noturno', 'Sonambulismo', 'Fala dormindo', 'Enurese (urina na cama)'], allowOther: true },
+            { id: 'q18', num: 18, label: 'Possui objeto de apego para dormir? Ou precisa de alguém para dormir?', type: 'textarea', required: true },
+          ]
+        },
+        {
+          title: 'Informações gerais',
+          questions: [
+            { id: 'q19', num: 19, label: 'Identifica que tenha alguma dificuldade motora?', type: 'textarea', required: true },
+            { id: 'q20', num: 20, label: 'Tem o hábito de brincar com algo? O que?', type: 'textarea', required: true },
+            { id: 'q21', num: 21, label: 'Quando consolidou o desfralde? Apresentou sinais de regressão?', type: 'textarea', required: true },
+            { id: 'q22', num: 22, label: 'Segue instruções elaboradas?', type: 'textarea', required: true },
+            { id: 'q23', num: 23, label: 'Qual seu humor habitual?', type: 'textarea', required: true },
+            { id: 'q24', num: 24, label: 'Possui preferência em ficar sozinho(a) ou em grupo?', type: 'textarea', required: true },
+            { id: 'q25', num: 25, label: 'Estranha mudança de ambiente ou adapta-se facilmente ao meio?', type: 'textarea', required: true },
+            { id: 'q26', num: 26, label: 'Tem horários bem estabelecidos (rotinas de casa)? Descreva', type: 'textarea', required: true },
+            { id: 'q27', num: 27, label: 'Aceita bem as ordens e os "não"s?', type: 'textarea', required: true },
+            { id: 'q28', num: 28, label: 'Apresenta agressividade, apatia ou teimosia?', type: 'textarea', required: true },
+            { id: 'q29', num: 29, label: 'Percebe quando muda alguma coisa em casa ou quando há um objeto novo?', type: 'textarea', required: true },
+            { id: 'q30', num: 30, label: 'Tem algum medo? Como os pais reagem nesses momentos?', type: 'textarea', required: true },
+            { id: 'q31', num: 31, label: 'Como se comporta quando está sozinho(a):', type: 'textarea', required: true },
+            { id: 'q32', num: 32, label: 'Como se comporta quando está em família:', type: 'textarea', required: true },
+            { id: 'q33', num: 33, label: 'Os pais fazem alguma atividade de lazer com ele(a)? Quando? Quais?', type: 'textarea', required: true },
+            { id: 'q34', num: 34, label: 'Possui autonomia em escolher roupas e de se vestir sozinho(a)?', type: 'textarea', required: true },
+            { id: 'q35', num: 35, label: 'Marque aquilo que consegue fazer com independência:', type: 'checkbox', required: true, options: ['Abotoar', 'Fechar', 'Tomar banho', 'Pentear o cabelo', 'Comer', 'Amarrar os cadarços', 'Calçar o sapato', 'Escovar os dentes'], allowOther: true },
+          ]
+        },
+        {
+          title: 'Comunicação e comportamento',
+          questions: [
+            { id: 'q36', num: 36, label: 'Seu filho(a) tem algum comportamento disruptivo com o qual você está preocupado (exemplos: agressão, birra, fala etc.)? Por favor descreva.', type: 'textarea', required: true },
+            { id: 'q37', num: 37, label: 'Como é sua comunicação?', type: 'textarea', required: true },
+          ]
+        },
+        {
+          title: 'Reforçamento',
+          questions: [
+            { id: 'q38', num: 38, label: 'Liste algumas das preferências do(a) seu(sua) filho(a):', type: 'textarea', required: true },
+            { id: 'q39', num: 39, label: 'Quais são suas atividades de preferência no dia a dia?', type: 'textarea', required: true },
+            { id: 'q40', num: 40, label: 'Liste algumas das aversões do(a) seu(sua) filho(a):', type: 'textarea', required: true },
+            { id: 'q41', num: 41, label: 'Como você descreveria seu filho?', type: 'checkbox', required: true, options: ['Obediente', 'Independente', 'Comunicativo', 'Agressivo', 'Cooperativo', 'Amoroso'], allowOther: false },
+          ]
+        },
+        {
+          title: 'Histórico e expectativas',
+          questions: [
+            { id: 'q42', num: 42, label: 'Já fez algum acompanhamento terapêutico? Por que?', type: 'textarea', required: true },
+            { id: 'q43', num: 43, label: 'Quais são suas expectativas em relação ao processo de intervenção? O que é de extrema importância para você?', type: 'textarea', required: true },
+            { id: 'q44', num: 44, label: 'Outros: use esta seção para escrever qualquer informação adicional que você queira que saibamos.', type: 'textarea', required: false },
+            { id: 'q45', num: 45, label: 'Descreva os motivos para o início do processo terapêutico.', type: 'textarea', required: true },
+          ]
+        }
+      ],
+
+      adulto: [
+        {
+          title: 'Identificação',
+          questions: [
+            { id: 'q01', num: 1, label: 'Nome completo', type: 'text', required: true },
+            { id: 'q02', num: 2, label: 'Data de nascimento', type: 'date', required: true },
+            { id: 'q03', num: 3, label: 'Estado civil', type: 'text', required: true },
+            { id: 'q04', num: 4, label: 'Profissão / ocupação atual', type: 'text', required: true },
+            { id: 'q05', num: 5, label: 'Escolaridade', type: 'text', required: true },
+            { id: 'q06', num: 6, label: 'Endereço', type: 'textarea', required: true },
+            { id: 'q07', num: 7, label: 'Telefone e e-mail para contato', type: 'textarea', required: true },
+            { id: 'q08', num: 8, label: 'Em caso de emergência, quem contatar?', type: 'textarea', required: false },
+          ]
+        },
+        {
+          title: 'Histórico de saúde',
+          questions: [
+            { id: 'q09', num: 9, label: 'Possui algum diagnóstico (médico ou psicológico)? Qual?', type: 'textarea', required: true },
+            { id: 'q10', num: 10, label: 'Possui acompanhamento médico atualmente? Especialidade?', type: 'textarea', required: true },
+            { id: 'q11', num: 11, label: 'Faz uso de alguma medicação? Qual e dosagem?', type: 'textarea', required: true },
+            { id: 'q12', num: 12, label: 'Possui alguma alergia?', type: 'textarea', required: true },
+            { id: 'q13', num: 13, label: 'Realiza outros tratamentos de saúde? Possui comorbidades?', type: 'textarea', required: true },
+            { id: 'q14', num: 14, label: 'Como descreve sua saúde física hoje?', type: 'textarea', required: true },
+            { id: 'q15', num: 15, label: 'Tem histórico de internações ou cirurgias importantes?', type: 'textarea', required: false },
+          ]
+        },
+        {
+          title: 'Histórico familiar',
+          questions: [
+            { id: 'q16', num: 16, label: 'Com quem reside atualmente?', type: 'textarea', required: true },
+            { id: 'q17', num: 17, label: 'Como descreveria o relacionamento com sua família?', type: 'textarea', required: true },
+            { id: 'q18', num: 18, label: 'Tem histórico familiar de transtornos psicológicos/psiquiátricos?', type: 'textarea', required: true },
+            { id: 'q19', num: 19, label: 'Tem filhos? Quantos? Idades?', type: 'textarea', required: false },
+            { id: 'q20', num: 20, label: 'Houve perdas significativas (lutos) que considere relevantes?', type: 'textarea', required: false },
+          ]
+        },
+        {
+          title: 'Vida profissional e social',
+          questions: [
+            { id: 'q21', num: 21, label: 'Como descreveria sua relação com o trabalho atual?', type: 'textarea', required: true },
+            { id: 'q22', num: 22, label: 'Sente-se realizado(a) profissionalmente?', type: 'textarea', required: true },
+            { id: 'q23', num: 23, label: 'Como é seu círculo social? Tem amigos próximos?', type: 'textarea', required: true },
+            { id: 'q24', num: 24, label: 'Pratica atividades de lazer? Quais?', type: 'textarea', required: false },
+            { id: 'q25', num: 25, label: 'Como descreveria sua vida amorosa/afetiva atual?', type: 'textarea', required: true },
+          ]
+        },
+        {
+          title: 'Sono e alimentação',
+          questions: [
+            { id: 'q26', num: 26, label: 'Como é seu sono (horas, qualidade, dificuldades)?', type: 'textarea', required: true },
+            { id: 'q27', num: 27, label: 'Toma medicação para dormir?', type: 'textarea', required: false },
+            { id: 'q28', num: 28, label: 'Como são seus hábitos alimentares?', type: 'textarea', required: true },
+            { id: 'q29', num: 29, label: 'Já teve ou tem alguma alteração na alimentação (compulsão, restrição, etc.)?', type: 'textarea', required: false },
+            { id: 'q30', num: 30, label: 'Faz uso de substâncias (álcool, cigarro, outras)? Frequência?', type: 'textarea', required: true },
+          ]
+        },
+        {
+          title: 'Vivência emocional atual',
+          questions: [
+            { id: 'q31', num: 31, label: 'Como descreveria seu humor habitual?', type: 'textarea', required: true },
+            { id: 'q32', num: 32, label: 'Sente-se ansioso(a) com frequência? Em quais situações?', type: 'textarea', required: true },
+            { id: 'q33', num: 33, label: 'Sente-se triste/desanimado(a) com frequência?', type: 'textarea', required: true },
+            { id: 'q34', num: 34, label: 'Tem alguma queixa específica que motivou a busca por terapia?', type: 'textarea', required: true },
+            { id: 'q35', num: 35, label: 'Há quanto tempo percebe essas questões?', type: 'textarea', required: true },
+            { id: 'q36', num: 36, label: 'Já passou por situações traumáticas que considera relevantes?', type: 'textarea', required: false },
+            { id: 'q37', num: 37, label: 'Tem dificuldade em algum aspecto específico (relacionamentos, decisões, autoestima, etc.)?', type: 'textarea', required: true },
+            { id: 'q38', num: 38, label: 'Como costuma lidar com situações difíceis?', type: 'textarea', required: false },
+          ]
+        },
+        {
+          title: 'Hábitos e rotina',
+          questions: [
+            { id: 'q39', num: 39, label: 'Como é uma semana típica sua?', type: 'textarea', required: true },
+            { id: 'q40', num: 40, label: 'Tem hobbies ou atividades que gosta de fazer no tempo livre?', type: 'textarea', required: false },
+            { id: 'q41', num: 41, label: 'Pratica atividade física? Com qual frequência?', type: 'textarea', required: false },
+          ]
+        },
+        {
+          title: 'Histórico terapêutico',
+          questions: [
+            { id: 'q42', num: 42, label: 'Já fez psicoterapia anteriormente?', type: 'textarea', required: true },
+            { id: 'q43', num: 43, label: 'Se sim, por quanto tempo e qual o motivo? Como foi a experiência?', type: 'textarea', required: false },
+            { id: 'q44', num: 44, label: 'Há motivos específicos que o(a) levaram a buscar terapia agora?', type: 'textarea', required: true },
+          ]
+        },
+        {
+          title: 'Expectativas e objetivos',
+          questions: [
+            { id: 'q45', num: 45, label: 'O que espera alcançar com o processo terapêutico?', type: 'textarea', required: true },
+            { id: 'q46', num: 46, label: 'Existe algum tema/área específica que gostaria de trabalhar?', type: 'textarea', required: false },
+            { id: 'q47', num: 47, label: 'Outras informações que considere importante compartilhar?', type: 'textarea', required: false },
+          ]
+        }
+      ],
+    };
+
+    // Tipos de anamnese disponíveis
+    const ANAMNESE_TIPOS = {
+      crianca: { label: 'Criança', subtitle: 'até 11 anos · respondida pelos responsáveis', icon: '🧒' },
+      adolescente: { label: 'Adolescente', subtitle: '12 a 17 anos · respondida pelos responsáveis', icon: '🧑‍🎓' },
+      adulto: { label: 'Adulto', subtitle: '18+ anos · autoaplicada', icon: '👤' },
+    };
+
+    function getAnamneseSchema(tipo) {
+      return ANAMNESE_SCHEMAS[tipo] || ANAMNESE_SCHEMAS.crianca;
+    }
+    function getAnamneseTotalQuestions(tipo) {
+      const schema = getAnamneseSchema(tipo);
+      return schema.reduce((sum, s) => sum + s.questions.length, 0);
+    }
 
     const state = {
       tokenClient: null,
@@ -2254,6 +2520,9 @@
       documentosFolderId: null,
       documentosLoading: false,
       editingDocumentoId: null,
+
+      // Anamnese
+      editingAnamneseTipo: null,   // tipo escolhido para nova anamnese
 
       // Google Calendar
       calendarId: null,            // id do calendário "Consultório"
@@ -2641,10 +2910,11 @@
     }
 
     // Conta respostas preenchidas
-    function countAnamneseAnswered(respostas) {
+    function countAnamneseAnswered(respostas, tipo) {
       if (!respostas) return 0;
+      const schema = getAnamneseSchema(tipo || (state.anamnese && state.anamnese.tipo) || 'crianca');
       let n = 0;
-      ANAMNESE_SCHEMA.forEach(section => {
+      schema.forEach(section => {
         section.questions.forEach(q => {
           const v = respostas[q.id];
           if (q.type === 'checkbox') {
@@ -2674,14 +2944,14 @@
         wrap.innerHTML = `
           <div class="anamnese-header">
             <div>
-              <h3>Anamnese <em>— comportamental</em></h3>
+              <h3>Anamnese</h3>
               <div class="anamnese-status">ficha inicial de anamnese do paciente</div>
             </div>
           </div>
           <div class="anamnese-empty"><div class="anamnese-empty-content">
             <h3>Ainda não preenchida<em>.</em></h3>
-            <p>a anamnese ajuda a conhecer a criança e planejar o processo terapêutico. pode ser preenchida agora ou depois.</p>
-            <button class="btn btn-gold" onclick="openAnamneseModal()">Preencher anamnese</button>
+            <p>a anamnese ajuda a conhecer o paciente e planejar o processo terapêutico. escolha o tipo adequado para começar.</p>
+            <button class="btn btn-gold" onclick="openAnamneseTypeModal()">Preencher anamnese</button>
           </div></div>
         `;
         return;
@@ -2689,6 +2959,9 @@
 
       // Tem anamnese — mostrar visualização
       const respostas = state.anamnese.respostas || {};
+      const tipo = state.anamnese.tipo || 'crianca';
+      const tipoInfo = ANAMNESE_TIPOS[tipo] || ANAMNESE_TIPOS.crianca;
+      const schema = getAnamneseSchema(tipo);
       const atualizadoEm = state.anamnese.atualizado_em
         ? new Date(state.anamnese.atualizado_em).toLocaleDateString('pt-BR') + ' às ' + new Date(state.anamnese.atualizado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
         : '—';
@@ -2696,7 +2969,7 @@
       let html = `
         <div class="anamnese-header">
           <div>
-            <h3>Anamnese <em>— comportamental</em></h3>
+            <h3>Anamnese <em>— ${tipoInfo.label.toLowerCase()}</em></h3>
             <div class="anamnese-status">última atualização: ${atualizadoEm}</div>
           </div>
           <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
@@ -2728,7 +3001,7 @@
         </div>
       `;
 
-      ANAMNESE_SCHEMA.forEach(section => {
+      schema.forEach(section => {
         html += `<div class="anamnese-view-section"><h4>${escapeHtml(section.title)}</h4>`;
         section.questions.forEach(q => {
           const v = respostas[q.id];
@@ -2766,10 +3039,35 @@
     // ============================================================
     // ANAMNESE — modal de preenchimento
     // ============================================================
+    // Abre modal de escolha do tipo de anamnese (chamado quando ainda não tem anamnese)
+    function openAnamneseTypeModal() {
+      if (!state.selectedPatientId) return;
+      $('anamneseTypeModal').classList.add('active');
+    }
+    window.openAnamneseTypeModal = openAnamneseTypeModal;
+
+    function closeAnamneseTypeModal() {
+      $('anamneseTypeModal').classList.remove('active');
+    }
+    window.closeAnamneseTypeModal = closeAnamneseTypeModal;
+
+    // Quando ela escolhe o tipo, fecha modal de escolha e abre modal de preenchimento
+    function selectAnamneseType(tipo) {
+      state.editingAnamneseTipo = tipo;
+      closeAnamneseTypeModal();
+      // Aguarda animação fechar antes de abrir o próximo
+      setTimeout(() => openAnamneseModal(), 150);
+    }
+    window.selectAnamneseType = selectAnamneseType;
+
     function openAnamneseModal() {
       if (!state.selectedPatientId) return;
 
       const p = state.patients.find(x => x.id === state.selectedPatientId);
+      const tipo = (state.anamnese && state.anamnese.tipo) || state.editingAnamneseTipo || 'crianca';
+      const tipoInfo = ANAMNESE_TIPOS[tipo] || ANAMNESE_TIPOS.crianca;
+
+      $('anamneseModalTitle').innerHTML = `Anamnese <em>${tipoInfo.label.toLowerCase()}</em>`;
       $('anamneseModalSubtitle').textContent = p ? `paciente: ${p.nome}` : 'preenchimento da anamnese';
 
       // Pré-carrega respostas se já existirem
@@ -2787,15 +3085,18 @@
       const modal = document.querySelector('#anamneseModal .modal');
       if (modal) modal.scrollTop = 0;
     }
+    window.openAnamneseModal = openAnamneseModal;
 
     function renderAnamneseForm(respostas) {
       const cont = $('anamneseFormFields');
+      const tipo = (state.anamnese && state.anamnese.tipo) || state.editingAnamneseTipo || 'crianca';
+      const schema = getAnamneseSchema(tipo);
       let html = '';
       let sectionIdx = 0;
-      ANAMNESE_SCHEMA.forEach(section => {
+      schema.forEach(section => {
         sectionIdx++;
         html += `<div class="anamnese-form-section">
-          <div class="anamnese-form-section-header">${escapeHtml(section.title)}<span class="section-idx">parte ${sectionIdx} / ${ANAMNESE_SCHEMA.length}</span></div>`;
+          <div class="anamnese-form-section-header">${escapeHtml(section.title)}<span class="section-idx">parte ${sectionIdx} / ${schema.length}</span></div>`;
         section.questions.forEach(q => {
           const v = respostas[q.id];
           const reqMark = q.required ? ' <span class="required">*</span>' : '';
@@ -2835,8 +3136,10 @@
     }
 
     function collectAnamneseFormData() {
+      const tipo = (state.anamnese && state.anamnese.tipo) || state.editingAnamneseTipo || 'crianca';
+      const schema = getAnamneseSchema(tipo);
       const respostas = {};
-      ANAMNESE_SCHEMA.forEach(section => {
+      schema.forEach(section => {
         section.questions.forEach(q => {
           if (q.type === 'checkbox') {
             const checked = [];
@@ -2855,9 +3158,11 @@
     }
 
     function updateAnamneseProgress() {
+      const tipo = (state.anamnese && state.anamnese.tipo) || state.editingAnamneseTipo || 'crianca';
+      const total = getAnamneseTotalQuestions(tipo);
       const respostas = collectAnamneseFormData();
-      const count = countAnamneseAnswered(respostas);
-      $('anamneseProgress').innerHTML = `preenchidas: <strong>${count}</strong> de <strong>${ANAMNESE_TOTAL_QUESTIONS}</strong>`;
+      const count = countAnamneseAnswered(respostas, tipo);
+      $('anamneseProgress').innerHTML = `preenchidas: <strong>${count}</strong> de <strong>${total}</strong>`;
     }
 
     function closeAnamneseModal() { $('anamneseModal').classList.remove('active'); }
@@ -2867,14 +3172,17 @@
       const respostas = collectAnamneseFormData();
       const now = new Date().toISOString();
       const isNew = !state.anamnese;
+      const tipo = (state.anamnese && state.anamnese.tipo) || state.editingAnamneseTipo || 'crianca';
 
       state.anamnese = {
         id: state.anamnese?.id || uid('an'),
         paciente_id: state.selectedPatientId,
+        tipo: tipo,
         respostas,
         criado_em: state.anamnese?.criado_em || now,
         atualizado_em: now,
       };
+      state.editingAnamneseTipo = null;
 
       $('btnSaveAnamnese').innerHTML = '<span class="spinner"></span><span>Salvando...</span>';
       try {
@@ -3330,8 +3638,10 @@
         pdf.writeEmissionDate();
         pdf.y += 6;
 
-        // Conteúdo — percorre schema
-        ANAMNESE_SCHEMA.forEach(section => {
+        // Conteúdo — percorre schema do tipo certo
+        const anamneseTipo = (state.anamnese && state.anamnese.tipo) || 'crianca';
+        const anamneseSchemaPdf = getAnamneseSchema(anamneseTipo);
+        anamneseSchemaPdf.forEach(section => {
           pdf.writeSection(section.title);
           section.questions.forEach(q => {
             const v = respostas[q.id];
@@ -3726,7 +4036,9 @@
           doc.text('Anamnese ainda não preenchida.', pageW / 2, pdf.y + 20, { align: 'center' });
         } else {
           const respostas = state.anamnese.respostas || {};
-          ANAMNESE_SCHEMA.forEach(section => {
+          const anamneseTipoProntuario = (state.anamnese && state.anamnese.tipo) || 'crianca';
+          const anamneseSchemaProntuario = getAnamneseSchema(anamneseTipoProntuario);
+          anamneseSchemaProntuario.forEach(section => {
             pdf.writeSection(section.title);
             section.questions.forEach(q => {
               const v = respostas[q.id];
@@ -6844,6 +7156,7 @@
     $('patientModal').addEventListener('click', (e) => { if (e.target.id === 'patientModal') closePatientModal(); });
     $('evolutionModal').addEventListener('click', (e) => { if (e.target.id === 'evolutionModal') closeEvolutionModal(); });
     $('anamneseModal').addEventListener('click', (e) => { if (e.target.id === 'anamneseModal') closeAnamneseModal(); });
+    $('anamneseTypeModal').addEventListener('click', (e) => { if (e.target.id === 'anamneseTypeModal') closeAnamneseTypeModal(); });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         // Primeiro tenta fechar menu mobile se estiver aberto
@@ -6853,7 +7166,8 @@
           document.body.classList.remove('menu-open');
           return;
         }
-        if ($('reciboModal').classList.contains('active')) closeReciboModal();
+        if ($('anamneseTypeModal').classList.contains('active')) closeAnamneseTypeModal();
+        else if ($('reciboModal').classList.contains('active')) closeReciboModal();
         else if ($('documentoModal').classList.contains('active')) closeDocumentoModal();
         else if ($('anamneseModal').classList.contains('active')) closeAnamneseModal();
         else if ($('evolutionModal').classList.contains('active')) closeEvolutionModal();
