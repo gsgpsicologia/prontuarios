@@ -870,12 +870,10 @@
         overflow-x: hidden;
       }
 
-      /* App: garantir que não tem overflow + remove stacking context pra sidebar funcionar */
+      /* App: garantir que não tem overflow */
       .app {
         overflow-x: hidden;
         max-width: 100vw;
-        z-index: auto !important;
-        position: static !important;
       }
       #listView, #agendaPage, #financeiroPage, #detailView, .tab-panel { max-width: 100%; overflow-x: hidden; }
 
@@ -1187,8 +1185,12 @@
       .login-monogram { font-size: 6.5rem; }
     }
 
-    /* === Esconder lista mobile no desktop === */
+    /* === Lista mobile da agenda — escondida no desktop === */
     .agenda-mobile-list { display: none; }
+    @media (max-width: 768px) {
+      .agenda-mobile-list { display: block !important; }
+      .agenda-grid-wrap { display: none !important; }
+    }
     .agenda-mobile-day { background: var(--cream-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); margin-bottom: 0.85rem; overflow: hidden; }
     .agenda-mobile-day-header { padding: 0.7rem 1rem; background: var(--cream); border-bottom: 1px solid var(--border-soft); display: flex; justify-content: space-between; align-items: baseline; }
     .agenda-mobile-day-header.today { background: var(--gold-wash); }
@@ -6687,14 +6689,37 @@
     }
     window.closeMobileMenu = closeMobileMenu;
 
-    // CRÍTICO PRO MOBILE: move sidebar pra fora do .app pra evitar problemas de stacking context
-    // Sem isso, no iOS Safari a sidebar pode ficar atrás do backdrop por causa do z-index do .app
-    (function moveSidebarToBody() {
+    // Move sidebar entre .app (desktop) e <body> (mobile) conforme largura da tela
+    // Em mobile, fora do .app evita problemas de stacking context com o backdrop
+    let sidebarOriginalParent = null;
+    let sidebarOriginalNextSibling = null;
+    function adjustSidebarPosition() {
       const sidebar = document.querySelector('.sidebar');
-      if (sidebar && sidebar.parentElement && sidebar.parentElement.classList.contains('app')) {
-        document.body.appendChild(sidebar);
+      if (!sidebar) return;
+      const isMobile = window.innerWidth <= 768;
+
+      if (isMobile) {
+        // Se está dentro do .app, move pro body
+        if (sidebar.parentElement && sidebar.parentElement.classList.contains('app')) {
+          sidebarOriginalParent = sidebar.parentElement;
+          sidebarOriginalNextSibling = sidebar.nextElementSibling;
+          document.body.appendChild(sidebar);
+        }
+      } else {
+        // Se está no body, devolve pro .app na posição original
+        if (sidebar.parentElement === document.body && sidebarOriginalParent) {
+          if (sidebarOriginalNextSibling) {
+            sidebarOriginalParent.insertBefore(sidebar, sidebarOriginalNextSibling);
+          } else {
+            sidebarOriginalParent.appendChild(sidebar);
+          }
+        }
       }
-    })();
+    }
+
+    // Aplica na carga e em resize
+    adjustSidebarPosition();
+    window.addEventListener('resize', adjustSidebarPosition);
 
     $('mobileMenuToggle').addEventListener('click', openMobileMenu);
     $('mobileMenuBackdrop').addEventListener('click', closeMobileMenu);
