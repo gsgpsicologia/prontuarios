@@ -1029,8 +1029,17 @@
       .view-toggle button { flex: 1; padding: 0.55rem 0.4rem; font-size: 0.78rem; }
 
       .agenda-stats { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
-      .agenda-stat { padding: 0.65rem 0.85rem; }
-      .agenda-stat .value { font-size: 1.2rem; }
+      .agenda-stat {
+        padding: 0.85rem 1rem;
+        background: #fbf6ea !important;
+        box-shadow: 0 1px 3px rgba(184, 148, 74, 0.08);
+      }
+      .agenda-stat .value { font-size: 1.3rem; }
+      .summary-card {
+        padding: 1.1rem 1.3rem;
+        background: #fbf6ea !important;
+        box-shadow: 0 1px 3px rgba(184, 148, 74, 0.08);
+      }
 
       /* Agenda SEMANA: vira lista vertical por dia em mobile */
       .agenda-grid-wrap { display: none; }
@@ -1049,10 +1058,9 @@
       /* RESUMO — cards 1 coluna */
       .summary-grid-main { grid-template-columns: 1fr; gap: 0.7rem; }
       .summary-row-2 { grid-template-columns: 1fr; gap: 1rem; }
-      .summary-card { padding: 1rem 1.2rem; }
       .summary-card .value { font-size: 1.7rem; }
       .summary-card .value.small { font-size: 1.25rem; }
-      .summary-section { padding: 1.2rem; }
+      .summary-section { padding: 1.2rem; background: #fbf6ea !important; }
       .summary-section h3 { font-size: 1.1rem; }
       .col-chart { min-height: 130px; }
       .col-chart .col-bar { max-width: 36px; }
@@ -1062,8 +1070,17 @@
       .fin-toolbar { flex-direction: column; align-items: stretch; }
       .fin-month-nav { justify-content: space-between; }
       .patient-fin-summary { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
-      .patient-fin-card { padding: 0.8rem 1rem; }
+      .patient-fin-card {
+        padding: 0.9rem 1rem;
+        background: #fbf6ea !important;
+        box-shadow: 0 1px 3px rgba(184, 148, 74, 0.08);
+      }
       .patient-fin-card .value { font-size: 1.2rem; }
+
+      .pendency-list, .receipts-list, .patient-fin-list, .docs-list {
+        background: #fbf6ea !important;
+        box-shadow: 0 1px 3px rgba(184, 148, 74, 0.08);
+      }
 
       /* Pendency item — empilha info+aging+valor */
       .pendency-item {
@@ -4116,6 +4133,7 @@
         renderAgendaHeader();
         renderAgendaStats();
         renderAgendaGrid();
+        renderAgendaMobileList(); // chama de novo pra garantir
       } else if (state.agendaView === 'month') {
         renderMonthLabel();
         renderMonthGrid();
