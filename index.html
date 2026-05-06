@@ -2047,15 +2047,12 @@
     <div class="modal anamnese-modal">
       <div class="modal-header">
         <h2 id="anamneseModalTitle">Anamnese <em>comportamental</em></h2>
-        <p id="anamneseModalSubtitle">preencha as informações sobre a criança</p>
+        <p id="anamneseModalSubtitle">preencha as informações</p>
       </div>
       <form id="anamneseForm">
         <div class="modal-body">
-          <div class="anamnese-intro">
-            <h3>Olá, como vai? <em>✦</em></h3>
-            <p>Se você está lendo e preenchendo esse formulário, é porque daremos início ao processo terapêutico da sua criança. Que bom ter você por aqui!</p>
-            <p>Acreditamos que uma boa intervenção no desenvolvimento infantil deve levar em conta a tríade família — escola — clínica. Vocês são partes fundamentais do processo!</p>
-            <p>Neste documento, você vai preencher alguns dados importantes para que a equipe consiga conhecer um pouco mais sobre sua criança, tornando cada etapa do processo singular e personalizada.</p>
+          <div class="anamnese-intro" id="anamneseIntro">
+            <!-- Conteúdo dinâmico conforme o tipo -->
           </div>
 
           <div id="anamneseFormFields"></div>
@@ -3069,6 +3066,29 @@
 
       $('anamneseModalTitle').innerHTML = `Anamnese <em>${tipoInfo.label.toLowerCase()}</em>`;
       $('anamneseModalSubtitle').textContent = p ? `paciente: ${p.nome}` : 'preenchimento da anamnese';
+
+      // Intro dinâmica conforme o tipo
+      const intros = {
+        crianca: `
+          <h3>Olá, como vai? <em>✦</em></h3>
+          <p>Se você está lendo e preenchendo esse formulário, é porque daremos início ao processo terapêutico da sua criança. Que bom ter você por aqui!</p>
+          <p>Acreditamos que uma boa intervenção no desenvolvimento infantil deve levar em conta a tríade família — escola — clínica. Vocês são partes fundamentais do processo!</p>
+          <p>Neste documento, você vai preencher alguns dados importantes para que a equipe consiga conhecer um pouco mais sobre sua criança, tornando cada etapa do processo singular e personalizada.</p>
+        `,
+        adolescente: `
+          <h3>Olá, como vai? <em>✦</em></h3>
+          <p>Se você está lendo e preenchendo esse formulário, é porque daremos início ao processo terapêutico do(a) seu(sua) filho(a). Que bom ter você por aqui!</p>
+          <p>Acreditamos que uma boa intervenção deve levar em conta a tríade família — escola — clínica. Vocês são partes fundamentais do processo!</p>
+          <p>Neste documento, você vai preencher alguns dados importantes para que a equipe consiga conhecer um pouco mais sobre o(a) adolescente, tornando cada etapa do processo singular e personalizada.</p>
+        `,
+        adulto: `
+          <h3>Olá, como vai? <em>✦</em></h3>
+          <p>Se você está lendo e preenchendo esse formulário, é porque daremos início ao seu processo terapêutico. Que bom ter você por aqui!</p>
+          <p>Acreditamos que conhecer sua história, contexto atual e expectativas é parte fundamental para construir um processo terapêutico significativo e personalizado.</p>
+          <p>Neste documento, você vai compartilhar algumas informações importantes sobre você. Pode preencher com calma — não há respostas certas ou erradas, apenas as suas.</p>
+        `,
+      };
+      $('anamneseIntro').innerHTML = intros[tipo] || intros.crianca;
 
       // Pré-carrega respostas se já existirem
       const respostas = (state.anamnese && state.anamnese.respostas) || {};
