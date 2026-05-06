@@ -425,6 +425,121 @@
       font-family: var(--font-display);
       margin-top: 0.15rem;
     }
+
+    /* === CONSENTIMENTO LGPD === */
+    .consent-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap; }
+    .consent-header h3 { font-family: var(--font-display); font-size: 1.6rem; font-weight: 400; color: var(--ink); margin: 0; }
+    .consent-header h3 em { color: var(--gold); font-style: italic; }
+    .consent-status-line { font-style: italic; color: var(--ink-soft); font-size: 0.88rem; margin-top: 0.2rem; }
+
+    .consent-card {
+      background: var(--cream-soft);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 1.7rem 1.9rem;
+      margin-bottom: 1.2rem;
+      position: relative;
+    }
+    .consent-card-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;
+    }
+    .consent-card-header h4 {
+      font-family: var(--font-display); font-size: 1.3rem; font-weight: 500;
+      color: var(--ink); margin: 0; line-height: 1.25;
+    }
+    .consent-card-header h4 em { color: var(--gold); font-style: italic; }
+    .consent-card-meta { font-size: 0.85rem; color: var(--ink-soft); font-style: italic; font-family: var(--font-display); margin-top: 0.3rem; }
+    .consent-card-meta span { display: inline-block; margin-right: 0.8rem; }
+    .consent-card-meta strong { color: var(--ink); font-style: normal; font-weight: 500; }
+
+    .consent-status {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.3rem 0.75rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 500;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .consent-status.pendente { background: rgba(184, 148, 74, 0.12); color: var(--gold); }
+    .consent-status.gerado { background: rgba(159, 176, 138, 0.18); color: #647354; }
+    .consent-status.assinado { background: rgba(159, 176, 138, 0.3); color: #4a5a3c; }
+    .consent-status .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    .consent-card-actions {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin-top: 1rem; padding-top: 1rem;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .consent-attached-file {
+      display: flex; align-items: center; gap: 0.7rem;
+      padding: 0.7rem 0.9rem;
+      background: var(--cream);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      margin-top: 1rem;
+      font-size: 0.88rem;
+    }
+    .consent-attached-file .icon {
+      width: 32px; height: 32px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--gold-wash); border-radius: 50%; color: var(--gold);
+    }
+    .consent-attached-file .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .consent-attached-file .date { color: var(--ink-soft); font-style: italic; font-size: 0.78rem; }
+
+    .consent-empty {
+      text-align: center; padding: 3rem 2rem;
+      background: var(--cream-soft);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .consent-empty h4 {
+      font-family: var(--font-display); font-size: 1.4rem;
+      color: var(--ink); margin: 0 0 0.5rem; font-weight: 400;
+    }
+    .consent-empty h4 em { color: var(--gold); font-style: italic; }
+    .consent-empty p {
+      color: var(--ink-soft); font-style: italic;
+      max-width: 480px; margin: 0 auto 1.5rem;
+      font-family: var(--font-display); font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    .consent-info-box {
+      background: rgba(184, 148, 74, 0.07);
+      border-left: 3px solid var(--gold);
+      padding: 0.9rem 1.2rem;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-bottom: 1.2rem;
+      font-size: 0.88rem;
+      color: var(--ink-soft);
+      line-height: 1.55;
+    }
+    .consent-info-box strong { color: var(--ink); }
+
+    /* Modal de upload de arquivo assinado */
+    .consent-upload-area {
+      border: 2px dashed var(--gold);
+      border-radius: var(--radius-md);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--cream-soft);
+    }
+    .consent-upload-area:hover { background: var(--gold-wash); }
+    .consent-upload-area.dragover { background: var(--gold-wash); border-color: var(--gold-dark, #997a3c); }
+    .consent-upload-area .icon { font-size: 2.5rem; margin-bottom: 0.6rem; }
+    .consent-upload-area .text { font-family: var(--font-display); color: var(--ink); font-size: 1rem; }
+    .consent-upload-area .hint { font-size: 0.82rem; color: var(--ink-soft); margin-top: 0.4rem; font-style: italic; }
+    .consent-upload-preview {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--cream);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-soft);
+    }
     .anamnese-empty::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 30% 30%, var(--sage-wash) 0%, transparent 40%), radial-gradient(circle at 70% 70%, var(--gold-wash) 0%, transparent 40%); opacity: 0.3; border-radius: var(--radius-lg); pointer-events: none; }
     .anamnese-empty-content { position: relative; z-index: 1; }
     .anamnese-empty h3 { font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 400; }
@@ -1568,6 +1683,7 @@
           <button class="tab-btn" data-tab="evolutions">Evoluções <span class="count" id="evolutionCount">0</span></button>
           <button class="tab-btn" data-tab="financeiro">Financeiro</button>
           <button class="tab-btn" data-tab="documentos">Documentos <span class="count" id="documentoCount">0</span></button>
+          <button class="tab-btn" data-tab="consentimento">Consentimento</button>
         </div>
 
         <!-- TAB: INFO -->
@@ -1609,6 +1725,11 @@
         <!-- TAB: DOCUMENTOS -->
         <div class="tab-panel" id="tabDocumentos">
           <div id="documentosContent"></div>
+        </div>
+
+        <!-- TAB: CONSENTIMENTO -->
+        <div class="tab-panel" id="tabConsentimento">
+          <div id="consentimentoContent"></div>
         </div>
 
         <!-- TAB: EVOLUÇÕES -->
@@ -2004,6 +2125,39 @@
     </div>
   </div>
 
+  <!-- MODAL UPLOAD DE TERMO ASSINADO -->
+  <div class="modal-backdrop" id="consentUploadModal">
+    <div class="modal" style="max-width: 540px;">
+      <div class="modal-header">
+        <h2>Anexar termo <em>assinado</em></h2>
+        <p>faça upload da foto ou PDF do termo já assinado pelo paciente</p>
+      </div>
+      <div class="modal-body">
+        <div class="consent-info-box">
+          <strong>Formatos aceitos:</strong> JPG, PNG, PDF · <strong>Tamanho máx:</strong> 8 MB
+        </div>
+
+        <label for="consentFileInput" class="consent-upload-area" id="consentUploadArea">
+          <div class="icon">📎</div>
+          <div class="text">Clique aqui ou arraste o arquivo</div>
+          <div class="hint">JPG, PNG ou PDF</div>
+        </label>
+        <input type="file" id="consentFileInput" accept="image/jpeg,image/png,application/pdf" style="display:none;" />
+
+        <div id="consentUploadPreview"></div>
+
+        <div style="margin-top: 1.2rem;">
+          <label for="consentSignedDate" style="display:block; font-size:0.85rem; color:var(--ink-soft); font-style:italic; margin-bottom:0.4rem;">Data da assinatura:</label>
+          <input type="date" id="consentSignedDate" style="width:100%; padding:0.7rem; border:1px solid var(--border-soft); border-radius:var(--radius-sm); font-size:0.95rem;" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeConsentUploadModal()">Cancelar</button>
+        <button type="button" class="btn btn-gold" id="btnConfirmConsentUpload" onclick="confirmConsentUpload()">Confirmar upload</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL ESCOLHA DO TIPO DE ANAMNESE -->
   <div class="modal-backdrop" id="anamneseTypeModal">
     <div class="modal" style="max-width: 540px;">
@@ -2166,6 +2320,7 @@
     const EVOLUTIONS_FOLDER_NAME = 'evolucoes';
     const ANAMNESES_FOLDER_NAME = 'anamneses';
     const DOCUMENTOS_FOLDER_NAME = 'documentos';
+    const CONSENTIMENTOS_FOLDER_NAME = 'consentimentos';
     const DATA_FILENAME = 'pacientes.json';
     const AGENDA_FILENAME = 'agenda.json';
     const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
@@ -2518,6 +2673,13 @@
       documentosLoading: false,
       editingDocumentoId: null,
 
+      // Consentimento LGPD
+      consentimento: null,         // objeto único de consentimento do paciente atual
+      consentimentoFileId: null,   // arquivo JSON no Drive
+      consentimentoLoading: false,
+      consentUploadFile: null,     // arquivo selecionado pra upload
+      consentimentosFolderId: null,
+
       // Anamnese
       editingAnamneseTipo: null,   // tipo escolhido para nova anamnese
 
@@ -2810,6 +2972,14 @@
         });
         state.documentosFolderId = res.result.files.length ? res.result.files[0].id
           : (await gapi.client.drive.files.create({ resource: { name: DOCUMENTOS_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder', parents: [state.folderId] }, fields: 'id' })).result.id;
+
+        // subpasta de consentimentos LGPD
+        res = await gapi.client.drive.files.list({
+          q: `name='${CONSENTIMENTOS_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and '${state.folderId}' in parents and trashed=false`,
+          fields: 'files(id, name)',
+        });
+        state.consentimentosFolderId = res.result.files.length ? res.result.files[0].id
+          : (await gapi.client.drive.files.create({ resource: { name: CONSENTIMENTOS_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder', parents: [state.folderId] }, fields: 'id' })).result.id;
 
         // arquivo de pacientes
         res = await gapi.client.drive.files.list({
@@ -3235,6 +3405,663 @@
 
     window.openAnamneseModal = openAnamneseModal;
     window.deleteAnamnese = deleteAnamnese;
+
+    // ============================================================
+    // CONSENTIMENTO LGPD — termo único de consentimento livre e esclarecido
+    // ============================================================
+
+    function consentimentoFilenameFor(patientId) { return `consentimento_${patientId}.json`; }
+
+    async function loadPatientConsentimento(patientId) {
+      state.consentimentoLoading = true;
+      state.consentimento = null;
+      state.consentimentoFileId = null;
+      try {
+        if (!state.consentimentosFolderId) return;
+        const filename = consentimentoFilenameFor(patientId);
+        const res = await gapi.client.drive.files.list({
+          q: `name='${filename}' and '${state.consentimentosFolderId}' in parents and trashed=false`,
+          fields: 'files(id, name)',
+        });
+        if (res.result.files.length) {
+          state.consentimentoFileId = res.result.files[0].id;
+          const data = await gapi.client.drive.files.get({ fileId: state.consentimentoFileId, alt: 'media' });
+          try { state.consentimento = JSON.parse(data.body); } catch { state.consentimento = null; }
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        state.consentimentoLoading = false;
+      }
+    }
+
+    async function savePatientConsentimento(patientId) {
+      setSyncState('syncing');
+      try {
+        const filename = consentimentoFilenameFor(patientId);
+        const newId = await uploadJsonFile(state.consentimentoFileId, filename, state.consentimento, state.consentimentosFolderId, (id) => { state.consentimentoFileId = id; });
+        state.consentimentoFileId = newId || state.consentimentoFileId;
+        setSyncState('ok');
+      } catch (e) { console.error(e); setSyncState('error'); toast('Erro ao salvar consentimento', 'error'); throw e; }
+    }
+
+    // Determina se paciente é menor de idade
+    function isPatientMinor(patient) {
+      if (!patient || !patient.nascimento) return false;
+      const birth = new Date(patient.nascimento);
+      const now = new Date();
+      const age = now.getFullYear() - birth.getFullYear() -
+        (now < new Date(now.getFullYear(), birth.getMonth(), birth.getDate()) ? 1 : 0);
+      return age < 18;
+    }
+
+    // ===== Renderização da aba Consentimento =====
+    function renderConsentimentoTab() {
+      const wrap = $('consentimentoContent');
+      const patient = state.patients.find(p => p.id === state.selectedPatientId);
+      if (!patient) { wrap.innerHTML = ''; return; }
+
+      if (state.consentimentoLoading) {
+        wrap.innerHTML = `<div class="loading-box"><div class="spinner"></div><p>carregando consentimento...</p></div>`;
+        return;
+      }
+
+      const c = state.consentimento;
+      const isMinor = isPatientMinor(patient);
+
+      let html = `
+        <div class="consent-header">
+          <div>
+            <h3>Consentimento <em>— LGPD & CFP</em></h3>
+            <div class="consent-status-line">termo único de consentimento livre e esclarecido</div>
+          </div>
+        </div>
+
+        <div class="consent-info-box">
+          <strong>Sobre este termo:</strong> reúne em um único documento os requisitos da
+          <strong>Lei Geral de Proteção de Dados (LGPD nº 13.709/2018)</strong>,
+          do <strong>Código de Ética Profissional do Psicólogo (Resolução CFP nº 010/2005)</strong>
+          e da <strong>Resolução CFP nº 011/2018</strong> sobre prestação de serviços. ${isMinor ? 'Como o paciente é menor de idade, o termo será gerado para o responsável legal assinar conforme prevê o <strong>ECA (Lei 8.069/1990)</strong>.' : 'Como o paciente é maior de idade, o termo será assinado pelo próprio paciente.'}
+        </div>
+      `;
+
+      if (!c) {
+        html += `
+          <div class="consent-empty">
+            <h4>Nenhum termo gerado <em>ainda</em></h4>
+            <p>O termo de consentimento deve ser apresentado e assinado pelo ${isMinor ? 'responsável legal' : 'paciente'} antes do início do processo terapêutico, conforme exigência da LGPD para tratamento de dados sensíveis.</p>
+            <button class="btn btn-gold" onclick="generateConsentimentoPdf()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Gerar termo em PDF
+            </button>
+          </div>
+        `;
+      } else {
+        // Card do termo gerado
+        const generatedAt = c.gerado_em ? new Date(c.gerado_em).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+        const signedAt = c.assinado_em ? new Date(c.assinado_em).toLocaleDateString('pt-BR') : null;
+
+        let statusClass = 'gerado';
+        let statusLabel = 'Gerado, aguardando assinatura';
+        if (signedAt) { statusClass = 'assinado'; statusLabel = 'Assinado'; }
+
+        html += `
+          <div class="consent-card">
+            <div class="consent-card-header">
+              <div style="flex:1; min-width:0;">
+                <h4>Termo de Consentimento <em>${isMinor ? '(responsável)' : '(paciente)'}</em></h4>
+                <div class="consent-card-meta">
+                  <span><strong>Gerado:</strong> ${generatedAt}</span>
+                  ${signedAt ? `<span><strong>Assinado:</strong> ${signedAt}</span>` : ''}
+                </div>
+              </div>
+              <span class="consent-status ${statusClass}"><span class="dot"></span>${statusLabel}</span>
+            </div>
+
+            ${c.arquivo_assinado ? `
+              <div class="consent-attached-file">
+                <div class="icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                </div>
+                <div class="name">${escapeHtml(c.arquivo_assinado.name || 'arquivo anexado')}</div>
+                <span class="date">${c.arquivo_assinado.uploaded_at ? new Date(c.arquivo_assinado.uploaded_at).toLocaleDateString('pt-BR') : ''}</span>
+                <button class="btn btn-ghost btn-sm" onclick="viewSignedConsent()">Ver</button>
+              </div>
+            ` : ''}
+
+            <div class="consent-card-actions">
+              <button class="btn btn-secondary btn-sm" onclick="generateConsentimentoPdf()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                ${c.arquivo_assinado ? 'Gerar novo PDF' : 'Baixar PDF'}
+              </button>
+              ${!signedAt ? `
+                <button class="btn btn-secondary btn-sm" onclick="openConsentUploadModal()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  Anexar termo assinado
+                </button>
+              ` : `
+                <button class="btn btn-secondary btn-sm" onclick="openConsentUploadModal()">Substituir arquivo</button>
+                <button class="btn btn-secondary btn-sm" onclick="markConsentAsUnsigned()">Desmarcar assinatura</button>
+              `}
+              <button class="btn btn-danger btn-sm" onclick="deleteConsentimento()">Excluir</button>
+            </div>
+          </div>
+        `;
+      }
+
+      wrap.innerHTML = html;
+    }
+
+    // ============================================================
+    // GERAR TERMO EM PDF
+    // ============================================================
+    async function generateConsentimentoPdf() {
+      const patient = state.patients.find(p => p.id === state.selectedPatientId);
+      if (!patient) return;
+
+      const isMinor = isPatientMinor(patient);
+      const now = new Date();
+
+      // Garante que existe registro
+      if (!state.consentimento) {
+        state.consentimento = {
+          id: uid('cs'),
+          paciente_id: patient.id,
+          tipo: isMinor ? 'responsavel' : 'paciente',
+          gerado_em: now.toISOString(),
+          assinado_em: null,
+          arquivo_assinado: null,
+        };
+      } else {
+        state.consentimento.gerado_em = now.toISOString();
+        state.consentimento.tipo = isMinor ? 'responsavel' : 'paciente';
+      }
+
+      try {
+        await savePatientConsentimento(patient.id);
+      } catch {}
+
+      // Gera PDF
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pageW = 210, pageH = 297;
+      const margin = 22;
+      const contentW = pageW - margin * 2;
+
+      // Tenta carregar o timbrado
+      let timbradoImg = null;
+      try {
+        const r = await fetch('timbrado.jpg');
+        if (r.ok) {
+          const blob = await r.blob();
+          timbradoImg = await new Promise((res) => {
+            const reader = new FileReader();
+            reader.onload = () => res(reader.result);
+            reader.readAsDataURL(blob);
+          });
+        }
+      } catch {}
+
+      let y = margin;
+
+      function addPageBg() {
+        if (timbradoImg) {
+          doc.addImage(timbradoImg, 'JPEG', 0, 0, pageW, pageH);
+        }
+      }
+
+      function ensureSpace(needed) {
+        if (y + needed > pageH - margin - 10) {
+          doc.addPage();
+          addPageBg();
+          y = margin;
+        }
+      }
+
+      function writeTitle(text, size) {
+        doc.setFont('times', 'bold');
+        doc.setFontSize(size || 13);
+        doc.setTextColor(40, 35, 30);
+        const lines = doc.splitTextToSize(text, contentW);
+        ensureSpace(lines.length * 5 + 4);
+        doc.text(lines, pageW / 2, y, { align: 'center' });
+        y += lines.length * 5 + 3;
+      }
+
+      function writeSection(text) {
+        ensureSpace(10);
+        y += 3;
+        doc.setFont('times', 'bold');
+        doc.setFontSize(10.5);
+        doc.setTextColor(60, 50, 40);
+        const lines = doc.splitTextToSize(text.toUpperCase(), contentW);
+        doc.text(lines, margin, y);
+        y += lines.length * 4.5 + 2;
+        // linha
+        doc.setDrawColor(184, 148, 74);
+        doc.setLineWidth(0.4);
+        doc.line(margin, y, margin + 30, y);
+        y += 4;
+      }
+
+      function writeParagraph(text, opts) {
+        opts = opts || {};
+        doc.setFont('times', opts.bold ? 'bold' : 'normal');
+        doc.setFontSize(opts.size || 10);
+        doc.setTextColor(50, 45, 40);
+        const lines = doc.splitTextToSize(text, contentW);
+        ensureSpace(lines.length * 4.5 + 2);
+        const align = opts.align || 'justify';
+        if (align === 'justify') {
+          // jsPDF não tem justify nativo, simulado com left
+          doc.text(lines, margin, y);
+        } else {
+          doc.text(lines, margin, y, { align });
+        }
+        y += lines.length * 4.5 + (opts.gap || 2);
+      }
+
+      function writeBullet(text) {
+        doc.setFont('times', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(50, 45, 40);
+        const indented = '  • ' + text;
+        const lines = doc.splitTextToSize(indented, contentW - 5);
+        ensureSpace(lines.length * 4.5 + 1);
+        doc.text(lines, margin + 2, y);
+        y += lines.length * 4.5 + 1;
+      }
+
+      addPageBg();
+
+      // Cabeçalho
+      doc.setFont('times', 'bold');
+      doc.setFontSize(15);
+      doc.setTextColor(40, 35, 30);
+      doc.text('TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO', pageW / 2, y, { align: 'center' });
+      y += 6;
+      doc.setFont('times', 'italic');
+      doc.setFontSize(10);
+      doc.setTextColor(120, 110, 95);
+      doc.text('para serviços de psicologia clínica · LGPD & CFP', pageW / 2, y, { align: 'center' });
+      y += 8;
+
+      // Linha decorativa
+      doc.setDrawColor(184, 148, 74);
+      doc.setLineWidth(0.5);
+      doc.line(margin + 30, y, pageW - margin - 30, y);
+      y += 7;
+
+      // === Identificação da Psicóloga ===
+      writeSection('I — Da profissional');
+      writeParagraph('Eu, Gabrielly Guandalino, psicóloga inscrita no Conselho Regional de Psicologia sob o nº CRP-PR 08/38673, doravante denominada "psicóloga", declaro perante o(a) paciente abaixo identificado(a) que me comprometo a prestar serviços de psicologia clínica em conformidade com o Código de Ética Profissional do Psicólogo (Resolução CFP nº 010/2005) e demais resoluções aplicáveis.');
+
+      // === Identificação do Paciente ===
+      writeSection('II — Do paciente');
+      const pNome = patient.nome || '';
+      const pCpf = patient.cpf || '';
+      const pNasc = patient.nascimento ? new Date(patient.nascimento).toLocaleDateString('pt-BR') : '';
+      writeParagraph(`Paciente: ${pNome}`, { bold: true });
+      if (pCpf) writeParagraph(`CPF: ${pCpf}`);
+      if (pNasc) writeParagraph(`Data de nascimento: ${pNasc}`);
+
+      if (isMinor && patient.responsavel_nome) {
+        y += 1;
+        writeParagraph('Por se tratar de paciente menor de idade, o termo é firmado pelo(a) responsável legal abaixo qualificado(a), conforme prevê o art. 4º do Estatuto da Criança e do Adolescente (Lei 8.069/1990).');
+        writeParagraph(`Responsável legal: ${patient.responsavel_nome}`, { bold: true });
+        if (patient.responsavel_cpf) writeParagraph(`CPF: ${patient.responsavel_cpf}`);
+        if (patient.responsavel_parentesco) writeParagraph(`Parentesco: ${patient.responsavel_parentesco}`);
+      }
+
+      // === Objeto ===
+      writeSection('III — Do objeto e finalidade do atendimento');
+      writeParagraph('O presente termo tem por objeto autorizar a prestação de serviços de psicologia clínica, compreendendo: (a) avaliação psicológica inicial mediante anamnese; (b) acompanhamento psicoterapêutico; (c) elaboração de documentos psicológicos quando aplicável; (d) emissão de relatórios e pareceres técnicos quando solicitados pelo(a) paciente ou responsável.');
+
+      // === Sigilo ===
+      writeSection('IV — Do sigilo profissional');
+      writeParagraph('Em conformidade com o art. 9º do Código de Ética Profissional do Psicólogo, todas as informações compartilhadas durante o atendimento são protegidas por sigilo profissional, sendo a quebra de sigilo admitida apenas nas hipóteses previstas em lei, tais como:');
+      writeBullet('Risco iminente à vida do(a) paciente ou de terceiros;');
+      writeBullet('Suspeita ou confirmação de violência contra criança, adolescente, idoso ou pessoa com deficiência (com comunicação obrigatória aos órgãos competentes);');
+      writeBullet('Determinação judicial expressa.');
+      if (isMinor) {
+        writeParagraph('Tratando-se de paciente menor de idade, o(a) responsável legal será informado(a) sobre os aspectos gerais do tratamento, preservando-se, sempre que possível, a privacidade do conteúdo específico das sessões, em respeito ao desenvolvimento da autonomia da criança/adolescente.');
+      }
+
+      // === LGPD - Dados ===
+      writeSection('V — Do tratamento de dados pessoais (LGPD)');
+      writeParagraph('Em atendimento à Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018), declara-se que serão tratados dados pessoais e dados pessoais sensíveis relativos à saúde, conforme detalhado a seguir:');
+      writeParagraph('Categorias de dados coletados:', { bold: true });
+      writeBullet('Dados de identificação (nome, CPF, RG, data de nascimento);');
+      writeBullet('Dados de contato (telefone, e-mail, endereço);');
+      writeBullet('Dados de identificação do(s) responsável(is) legal(is), quando aplicável;');
+      writeBullet('Dados sensíveis de saúde (anamnese, histórico clínico, diagnósticos, evoluções terapêuticas);');
+      writeBullet('Documentos clínicos (atestados, relatórios, declarações).');
+
+      writeParagraph('Finalidades do tratamento:', { bold: true });
+      writeBullet('Prestação dos serviços de psicologia clínica contratados;');
+      writeBullet('Cumprimento de obrigações legais e regulatórias do exercício profissional;');
+      writeBullet('Emissão de documentos psicológicos (atestados, relatórios, declarações);');
+      writeBullet('Contato administrativo (agendamento, lembretes de sessões e cobrança).');
+
+      writeParagraph('Bases legais (art. 7º e 11º da LGPD):', { bold: true });
+      writeBullet('Consentimento específico e destacado do(a) titular ou responsável legal (art. 11, I);');
+      writeBullet('Cumprimento de obrigação legal pela controladora (art. 7º, II);');
+      writeBullet('Tutela da saúde por profissional de saúde (art. 11, II, "f").');
+
+      writeParagraph('Armazenamento e segurança:', { bold: true });
+      writeParagraph('Os dados são armazenados em ambiente digital criptografado (Google Drive privativo da psicóloga), com controle de acesso por autenticação em duas etapas. Documentos físicos, quando existirem, ficam guardados em local de acesso restrito.');
+
+      writeParagraph('Tempo de guarda:', { bold: true });
+      writeParagraph('Os prontuários psicológicos serão mantidos pelo prazo mínimo de 5 (cinco) anos a contar do último atendimento, conforme determina a Resolução CFP nº 001/2009, podendo ser estendido por exigência legal específica.');
+
+      writeParagraph('Compartilhamento de dados:', { bold: true });
+      writeParagraph('Os dados não serão compartilhados com terceiros, exceto: (a) por determinação judicial; (b) por solicitação expressa e por escrito do(a) paciente ou responsável; (c) nas hipóteses previstas no item IV deste termo (quebra excepcional de sigilo).');
+
+      // === Direitos do Titular ===
+      writeSection('VI — Dos direitos do titular dos dados');
+      writeParagraph('O(A) paciente, na qualidade de titular dos dados pessoais, tem assegurados os direitos previstos no art. 18 da LGPD, podendo, mediante requerimento à psicóloga:');
+      writeBullet('Confirmar a existência de tratamento de seus dados;');
+      writeBullet('Acessar os dados tratados;');
+      writeBullet('Solicitar correção de dados incompletos, inexatos ou desatualizados;');
+      writeBullet('Solicitar a anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desconformidade com a LGPD;');
+      writeBullet('Revogar o consentimento, observado o prazo legal mínimo de guarda do prontuário (5 anos);');
+      writeBullet('Solicitar informações sobre eventual compartilhamento dos dados;');
+      writeBullet('Peticionar à Autoridade Nacional de Proteção de Dados (ANPD).');
+
+      // === Comunicação ===
+      writeSection('VII — Da comunicação entre as partes');
+      writeParagraph('Reconheço e autorizo que a comunicação administrativa entre as partes (agendamentos, confirmações, lembretes e cobranças) seja realizada por meio de WhatsApp, e-mail ou telefone, ciente de que tais canais possuem limitações próprias de segurança digital. Conteúdo terapêutico ou clínico não deverá ser tratado por estes canais, devendo ser reservado às sessões.');
+
+      // === Direitos do Paciente ===
+      writeSection('VIII — Dos direitos do paciente no atendimento');
+      writeBullet('Receber atendimento técnico-profissional de qualidade, em respeito à dignidade humana;');
+      writeBullet('Interromper o tratamento a qualquer momento, sem ônus moral ou financeiro indevido;');
+      writeBullet('Receber esclarecimentos sobre o método terapêutico utilizado;');
+      writeBullet('Solicitar encaminhamento a outro(a) profissional, quando entender necessário.');
+
+      // === Honorários ===
+      writeSection('IX — Dos honorários');
+      writeParagraph('Os honorários, frequência das sessões e forma de pagamento serão acordados verbalmente entre as partes em momento próprio, podendo ser formalizados em instrumento separado, se necessário.');
+
+      // === Vigência ===
+      writeSection('X — Da vigência');
+      writeParagraph('Este termo entra em vigor na data de sua assinatura e permanece válido durante todo o período de atendimento, podendo ser revogado por escrito a qualquer momento por qualquer das partes, ressalvada a obrigação legal de guarda do prontuário pelo prazo mínimo previsto.');
+
+      // === Declaração ===
+      writeSection('XI — Declaração final');
+      writeParagraph(`Declaro ter lido, compreendido e concordado integralmente com os termos acima expostos, prestando o presente CONSENTIMENTO LIVRE, INFORMADO, ESPECÍFICO E INEQUÍVOCO ${isMinor ? 'em nome do(a) paciente menor de idade sob minha responsabilidade legal' : 'em meu próprio nome'}, para o tratamento de dados pessoais e dados sensíveis nos termos deste instrumento.`);
+
+      // === Assinaturas ===
+      ensureSpace(50);
+      y += 8;
+      doc.setFont('times', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(50, 45, 40);
+
+      const localDate = `_______________________, _____ de _____________________ de ${now.getFullYear()}.`;
+      doc.text(localDate, margin, y);
+      y += 4;
+      doc.setFont('times', 'italic');
+      doc.setFontSize(8.5);
+      doc.setTextColor(120, 110, 95);
+      doc.text('(local e data)', margin, y);
+      y += 14;
+
+      // Assinaturas em duas colunas
+      doc.setFont('times', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(50, 45, 40);
+      const colW = (contentW - 10) / 2;
+      const col1X = margin;
+      const col2X = margin + colW + 10;
+
+      // Linha de assinatura 1
+      doc.setDrawColor(50, 45, 40);
+      doc.setLineWidth(0.3);
+      doc.line(col1X, y, col1X + colW, y);
+      doc.line(col2X, y, col2X + colW, y);
+      y += 4;
+
+      doc.setFontSize(9);
+      const assinante1 = isMinor ? (patient.responsavel_nome || 'Responsável legal') : pNome;
+      const cpf1 = isMinor ? (patient.responsavel_cpf || '') : pCpf;
+      doc.text(assinante1, col1X + colW / 2, y, { align: 'center' });
+      doc.text('Gabrielly Guandalino', col2X + colW / 2, y, { align: 'center' });
+      y += 4;
+
+      doc.setFontSize(8);
+      doc.setTextColor(120, 110, 95);
+      const sub1 = isMinor ? 'Responsável legal' : 'Paciente';
+      doc.text(sub1 + (cpf1 ? ` · CPF: ${cpf1}` : ''), col1X + colW / 2, y, { align: 'center' });
+      doc.text('Psicóloga · CRP-PR 08/38673', col2X + colW / 2, y, { align: 'center' });
+
+      // Rodapé
+      const totalPages = doc.internal.pages.length - 1;
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFont('times', 'italic');
+        doc.setFontSize(7.5);
+        doc.setTextColor(150, 140, 125);
+        doc.text(`Termo de Consentimento — ${pNome} — gerado em ${now.toLocaleDateString('pt-BR')} — pág. ${i}/${totalPages}`, pageW / 2, pageH - 8, { align: 'center' });
+      }
+
+      // Salva
+      const safeName = (pNome || 'paciente').replace(/[^\w\sáàâãäéèêëíìîïóòôõöúùûüçñÁÀÂÃÄÉÈÊËÍÌÎÏÓÒÔÕÖÚÙÛÜÇÑ-]/g, '').replace(/\s+/g, '_').slice(0, 60);
+      doc.save(`Termo_Consentimento_${safeName}.pdf`);
+
+      renderConsentimentoTab();
+      toast('Termo gerado com sucesso', 'success');
+    }
+    window.generateConsentimentoPdf = generateConsentimentoPdf;
+
+    // ============================================================
+    // UPLOAD DE TERMO ASSINADO
+    // ============================================================
+    function openConsentUploadModal() {
+      state.consentUploadFile = null;
+      $('consentFileInput').value = '';
+      $('consentUploadPreview').innerHTML = '';
+      $('consentSignedDate').valueAsDate = new Date();
+      $('consentUploadModal').classList.add('active');
+    }
+    window.openConsentUploadModal = openConsentUploadModal;
+
+    function closeConsentUploadModal() {
+      $('consentUploadModal').classList.remove('active');
+      state.consentUploadFile = null;
+    }
+    window.closeConsentUploadModal = closeConsentUploadModal;
+
+    // Setup de drag & drop e file input
+    function setupConsentUpload() {
+      const area = $('consentUploadArea');
+      const input = $('consentFileInput');
+      if (!area || !input) return;
+
+      input.addEventListener('change', (e) => {
+        if (e.target.files.length) handleConsentFileSelect(e.target.files[0]);
+      });
+
+      area.addEventListener('dragover', (e) => { e.preventDefault(); area.classList.add('dragover'); });
+      area.addEventListener('dragleave', () => area.classList.remove('dragover'));
+      area.addEventListener('drop', (e) => {
+        e.preventDefault();
+        area.classList.remove('dragover');
+        if (e.dataTransfer.files.length) handleConsentFileSelect(e.dataTransfer.files[0]);
+      });
+    }
+
+    function handleConsentFileSelect(file) {
+      if (!file) return;
+      if (file.size > 8 * 1024 * 1024) {
+        toast('Arquivo muito grande (máx 8MB)', 'error');
+        return;
+      }
+      const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+      if (!validTypes.includes(file.type)) {
+        toast('Formato não aceito (use JPG, PNG ou PDF)', 'error');
+        return;
+      }
+      state.consentUploadFile = file;
+      const preview = $('consentUploadPreview');
+      const sizeKb = Math.round(file.size / 1024);
+      preview.innerHTML = `
+        <div class="consent-upload-preview">
+          <div style="display:flex; align-items:center; gap:0.7rem;">
+            <div style="font-size:1.6rem;">${file.type === 'application/pdf' ? '📄' : '🖼️'}</div>
+            <div style="flex:1; min-width:0;">
+              <div style="font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(file.name)}</div>
+              <div style="font-size:0.82rem; color:var(--ink-soft); font-style:italic;">${sizeKb} KB · ${file.type}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function confirmConsentUpload() {
+      const file = state.consentUploadFile;
+      if (!file) {
+        toast('Selecione um arquivo primeiro', 'error');
+        return;
+      }
+      const signedDate = $('consentSignedDate').value;
+      if (!signedDate) {
+        toast('Informe a data da assinatura', 'error');
+        return;
+      }
+
+      const btn = $('btnConfirmConsentUpload');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span><span>Enviando...</span>';
+
+      try {
+        // Upload do arquivo binário pro Drive
+        const patient = state.patients.find(p => p.id === state.selectedPatientId);
+        const ext = file.name.split('.').pop() || 'bin';
+        const safeName = (patient.nome || 'paciente').replace(/[^\w-]/g, '_').slice(0, 40);
+        const fileName = `termo_assinado_${safeName}_${Date.now()}.${ext}`;
+
+        const arrayBuffer = await file.arrayBuffer();
+        const base64 = btoa(new Uint8Array(arrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+
+        const metadata = { name: fileName, parents: [state.consentimentosFolderId] };
+        const boundary = '-------ConsentBoundary' + Date.now();
+        const delimiter = `\r\n--${boundary}\r\n`;
+        const closeDelim = `\r\n--${boundary}--`;
+
+        const body =
+          delimiter +
+          'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+          JSON.stringify(metadata) +
+          delimiter +
+          `Content-Type: ${file.type}\r\n` +
+          'Content-Transfer-Encoding: base64\r\n\r\n' +
+          base64 +
+          closeDelim;
+
+        const uploadRes = await gapi.client.request({
+          path: '/upload/drive/v3/files',
+          method: 'POST',
+          params: { uploadType: 'multipart', fields: 'id,name' },
+          headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
+          body,
+        });
+
+        const uploadedFileId = uploadRes.result.id;
+
+        // Atualiza consentimento
+        if (!state.consentimento) {
+          const isMinor = isPatientMinor(patient);
+          state.consentimento = {
+            id: uid('cs'),
+            paciente_id: patient.id,
+            tipo: isMinor ? 'responsavel' : 'paciente',
+            gerado_em: new Date().toISOString(),
+            assinado_em: null,
+            arquivo_assinado: null,
+          };
+        }
+
+        state.consentimento.assinado_em = new Date(signedDate).toISOString();
+        state.consentimento.arquivo_assinado = {
+          file_id: uploadedFileId,
+          name: file.name,
+          mime_type: file.type,
+          size: file.size,
+          uploaded_at: new Date().toISOString(),
+        };
+
+        await savePatientConsentimento(patient.id);
+        closeConsentUploadModal();
+        renderConsentimentoTab();
+        toast('Termo assinado anexado', 'success');
+      } catch (e) {
+        console.error(e);
+        toast('Erro ao enviar arquivo', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Confirmar upload';
+      }
+    }
+    window.confirmConsentUpload = confirmConsentUpload;
+
+    async function viewSignedConsent() {
+      const c = state.consentimento;
+      if (!c || !c.arquivo_assinado) return;
+      try {
+        const res = await gapi.client.drive.files.get({
+          fileId: c.arquivo_assinado.file_id,
+          alt: 'media',
+        });
+        // Converte resposta em blob
+        const mimeType = c.arquivo_assinado.mime_type;
+        const len = res.body.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) bytes[i] = res.body.charCodeAt(i);
+        const blob = new Blob([bytes], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        // Cleanup
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      } catch (e) {
+        console.error(e);
+        toast('Erro ao abrir arquivo', 'error');
+      }
+    }
+    window.viewSignedConsent = viewSignedConsent;
+
+    async function markConsentAsUnsigned() {
+      if (!state.consentimento) return;
+      if (!confirm('Desmarcar a assinatura deste termo?')) return;
+      state.consentimento.assinado_em = null;
+      try {
+        await savePatientConsentimento(state.selectedPatientId);
+        renderConsentimentoTab();
+        toast('Assinatura desmarcada', 'success');
+      } catch {}
+    }
+    window.markConsentAsUnsigned = markConsentAsUnsigned;
+
+    async function deleteConsentimento() {
+      if (!state.consentimento) return;
+      if (!confirm('Excluir o registro de consentimento deste paciente? Esta ação não pode ser desfeita. O arquivo anexado também será removido.')) return;
+      try {
+        // Remove arquivo anexado se houver
+        if (state.consentimento.arquivo_assinado && state.consentimento.arquivo_assinado.file_id) {
+          try { await gapi.client.drive.files.delete({ fileId: state.consentimento.arquivo_assinado.file_id }); } catch {}
+        }
+        if (state.consentimentoFileId) {
+          await gapi.client.drive.files.delete({ fileId: state.consentimentoFileId });
+        }
+        state.consentimento = null;
+        state.consentimentoFileId = null;
+        renderConsentimentoTab();
+        toast('Consentimento excluído', 'success');
+      } catch {
+        toast('Erro ao excluir', 'error');
+      }
+    }
+    window.deleteConsentimento = deleteConsentimento;
 
     // ============================================================
     // EXPORTAÇÃO PDF — infraestrutura comum
@@ -6771,11 +7598,12 @@
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tabInfo'));
 
       renderAll();
-      // Carrega evoluções + anamnese + documentos em paralelo
+      // Carrega evoluções + anamnese + documentos + consentimento em paralelo
       await Promise.all([
         loadPatientEvolutions(id),
         loadPatientAnamnese(id),
         loadPatientDocumentos(id),
+        loadPatientConsentimento(id),
       ]);
       $('evolutionCount').textContent = state.evolutions.length;
       $('documentoCount').textContent = state.documentos.length;
@@ -6783,6 +7611,7 @@
       if (state.activeTab === 'evolutions') renderEvolutions();
       if (state.activeTab === 'anamnese') renderAnamneseTab();
       if (state.activeTab === 'documentos') renderDocumentosTab();
+      if (state.activeTab === 'consentimento') renderConsentimentoTab();
     }
 
     async function savePatient(e) {
@@ -6962,6 +7791,7 @@
         if (tab === 'anamnese') renderAnamneseTab();
         if (tab === 'financeiro') renderPatientFinanceiroTab();
         if (tab === 'documentos') renderDocumentosTab();
+        if (tab === 'consentimento') renderConsentimentoTab();
       });
     });
 
@@ -7177,6 +8007,10 @@
     $('evolutionModal').addEventListener('click', (e) => { if (e.target.id === 'evolutionModal') closeEvolutionModal(); });
     $('anamneseModal').addEventListener('click', (e) => { if (e.target.id === 'anamneseModal') closeAnamneseModal(); });
     $('anamneseTypeModal').addEventListener('click', (e) => { if (e.target.id === 'anamneseTypeModal') closeAnamneseTypeModal(); });
+    $('consentUploadModal').addEventListener('click', (e) => { if (e.target.id === 'consentUploadModal') closeConsentUploadModal(); });
+
+    // Setup do drag & drop do upload de consentimento
+    setupConsentUpload();
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         // Primeiro tenta fechar menu mobile se estiver aberto
@@ -7186,7 +8020,8 @@
           document.body.classList.remove('menu-open');
           return;
         }
-        if ($('anamneseTypeModal').classList.contains('active')) closeAnamneseTypeModal();
+        if ($('consentUploadModal').classList.contains('active')) closeConsentUploadModal();
+        else if ($('anamneseTypeModal').classList.contains('active')) closeAnamneseTypeModal();
         else if ($('reciboModal').classList.contains('active')) closeReciboModal();
         else if ($('documentoModal').classList.contains('active')) closeDocumentoModal();
         else if ($('anamneseModal').classList.contains('active')) closeAnamneseModal();
