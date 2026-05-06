@@ -3581,276 +3581,220 @@
         await savePatientConsentimento(patient.id);
       } catch {}
 
-      // Gera PDF
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      const pageW = 210, pageH = 297;
-      const margin = 22;
-      const contentW = pageW - margin * 2;
-
-      // Tenta carregar o timbrado
-      let timbradoImg = null;
       try {
-        const r = await fetch('timbrado.jpg');
-        if (r.ok) {
-          const blob = await r.blob();
-          timbradoImg = await new Promise((res) => {
-            const reader = new FileReader();
-            reader.onload = () => res(reader.result);
-            reader.readAsDataURL(blob);
+        // Usa o mesmo helper dos outros documentos elaborados (estilo elegante)
+        const pdf = createPdfHelper('elegant');
+        const { doc: pdoc } = pdf;
+        const palette = pdf.palette;
+        const pageW = 210, marginX = 22;
+
+        // Título principal e subtítulo (mesmo padrão dos outros docs)
+        pdf.writeMainTitle('Termo de Consentimento');
+        pdf.writeSubtitle('livre e esclarecido — LGPD & CFP');
+        pdf.y += 6;
+
+        // Helper local pra parágrafo justificado normal
+        function par(text, opts) {
+          opts = opts || {};
+          pdf.writeText(text, {
+            font: 'times',
+            size: opts.size || 10.5,
+            weight: opts.bold ? 'bold' : 'normal',
+            color: palette.ink,
+            lineHeight: 4.6,
+            bottomGap: opts.gap || 3,
           });
         }
-      } catch {}
 
-      let y = margin;
-
-      function addPageBg() {
-        if (timbradoImg) {
-          doc.addImage(timbradoImg, 'JPEG', 0, 0, pageW, pageH);
+        // Helper pra item com bullet
+        function bullet(text) {
+          pdf.writeText('  •  ' + text, {
+            font: 'times',
+            size: 10.5,
+            weight: 'normal',
+            color: palette.ink,
+            lineHeight: 4.6,
+            bottomGap: 1.5,
+          });
         }
-      }
 
-      function ensureSpace(needed) {
-        if (y + needed > pageH - margin - 10) {
-          doc.addPage();
-          addPageBg();
-          y = margin;
+        // Helper pra cabeçalho de seção (estilo dourado discreto)
+        function section(text) {
+          pdf.ensureSpace(12);
+          pdf.y += 3;
+          pdoc.setFont('times', 'italic');
+          pdoc.setFontSize(11.5);
+          pdoc.setTextColor(palette.gold[0], palette.gold[1], palette.gold[2]);
+          pdoc.text(text, marginX, pdf.y);
+          pdf.y += 5;
+          // Linha decorativa
+          pdoc.setDrawColor(palette.gold[0], palette.gold[1], palette.gold[2]);
+          pdoc.setLineWidth(0.3);
+          pdoc.line(marginX, pdf.y, marginX + 25, pdf.y);
+          pdf.y += 4;
         }
-      }
 
-      function writeTitle(text, size) {
-        doc.setFont('times', 'bold');
-        doc.setFontSize(size || 13);
-        doc.setTextColor(40, 35, 30);
-        const lines = doc.splitTextToSize(text, contentW);
-        ensureSpace(lines.length * 5 + 4);
-        doc.text(lines, pageW / 2, y, { align: 'center' });
-        y += lines.length * 5 + 3;
-      }
+        // === Identificação da Psicóloga ===
+        section('I — Da profissional');
+        par('Eu, Gabrielly Guandalino, psicóloga inscrita no Conselho Regional de Psicologia sob o nº CRP-PR 08/38673, doravante denominada "psicóloga", declaro perante o(a) paciente abaixo identificado(a) que me comprometo a prestar serviços de psicologia clínica em conformidade com o Código de Ética Profissional do Psicólogo (Resolução CFP nº 010/2005) e demais resoluções aplicáveis.');
 
-      function writeSection(text) {
-        ensureSpace(10);
-        y += 3;
-        doc.setFont('times', 'bold');
-        doc.setFontSize(10.5);
-        doc.setTextColor(60, 50, 40);
-        const lines = doc.splitTextToSize(text.toUpperCase(), contentW);
-        doc.text(lines, margin, y);
-        y += lines.length * 4.5 + 2;
-        // linha
-        doc.setDrawColor(184, 148, 74);
-        doc.setLineWidth(0.4);
-        doc.line(margin, y, margin + 30, y);
-        y += 4;
-      }
+        // === Identificação do Paciente ===
+        section('II — Do paciente');
+        const pNome = patient.nome || '';
+        const pCpf = patient.cpf || '';
+        const pNasc = patient.nascimento ? new Date(patient.nascimento).toLocaleDateString('pt-BR') : '';
+        par(`Paciente: ${pNome}`, { bold: true });
+        if (pCpf) par(`CPF: ${pCpf}`);
+        if (pNasc) par(`Data de nascimento: ${pNasc}`);
 
-      function writeParagraph(text, opts) {
-        opts = opts || {};
-        doc.setFont('times', opts.bold ? 'bold' : 'normal');
-        doc.setFontSize(opts.size || 10);
-        doc.setTextColor(50, 45, 40);
-        const lines = doc.splitTextToSize(text, contentW);
-        ensureSpace(lines.length * 4.5 + 2);
-        const align = opts.align || 'justify';
-        if (align === 'justify') {
-          // jsPDF não tem justify nativo, simulado com left
-          doc.text(lines, margin, y);
-        } else {
-          doc.text(lines, margin, y, { align });
+        if (isMinor && patient.responsavel_nome) {
+          pdf.y += 1;
+          par('Por se tratar de paciente menor de idade, o termo é firmado pelo(a) responsável legal abaixo qualificado(a), conforme prevê o art. 4º do Estatuto da Criança e do Adolescente (Lei 8.069/1990).');
+          par(`Responsável legal: ${patient.responsavel_nome}`, { bold: true });
+          if (patient.responsavel_cpf) par(`CPF: ${patient.responsavel_cpf}`);
+          if (patient.responsavel_parentesco) par(`Parentesco: ${patient.responsavel_parentesco}`);
         }
-        y += lines.length * 4.5 + (opts.gap || 2);
+
+        // === Objeto ===
+        section('III — Do objeto e finalidade do atendimento');
+        par('O presente termo tem por objeto autorizar a prestação de serviços de psicologia clínica, compreendendo: (a) avaliação psicológica inicial mediante anamnese; (b) acompanhamento psicoterapêutico; (c) elaboração de documentos psicológicos quando aplicável; (d) emissão de relatórios e pareceres técnicos quando solicitados pelo(a) paciente ou responsável.');
+
+        // === Sigilo ===
+        section('IV — Do sigilo profissional');
+        par('Em conformidade com o art. 9º do Código de Ética Profissional do Psicólogo, todas as informações compartilhadas durante o atendimento são protegidas por sigilo profissional, sendo a quebra de sigilo admitida apenas nas hipóteses previstas em lei, tais como:');
+        bullet('Risco iminente à vida do(a) paciente ou de terceiros;');
+        bullet('Suspeita ou confirmação de violência contra criança, adolescente, idoso ou pessoa com deficiência (com comunicação obrigatória aos órgãos competentes);');
+        bullet('Determinação judicial expressa.');
+        if (isMinor) {
+          pdf.y += 1;
+          par('Tratando-se de paciente menor de idade, o(a) responsável legal será informado(a) sobre os aspectos gerais do tratamento, preservando-se, sempre que possível, a privacidade do conteúdo específico das sessões, em respeito ao desenvolvimento da autonomia da criança/adolescente.');
+        }
+
+        // === LGPD - Dados ===
+        section('V — Do tratamento de dados pessoais (LGPD)');
+        par('Em atendimento à Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018), declara-se que serão tratados dados pessoais e dados pessoais sensíveis relativos à saúde, conforme detalhado a seguir:');
+
+        par('Categorias de dados coletados:', { bold: true, gap: 1 });
+        bullet('Dados de identificação (nome, CPF, RG, data de nascimento);');
+        bullet('Dados de contato (telefone, e-mail, endereço);');
+        bullet('Dados de identificação do(s) responsável(is) legal(is), quando aplicável;');
+        bullet('Dados sensíveis de saúde (anamnese, histórico clínico, diagnósticos, evoluções terapêuticas);');
+        bullet('Documentos clínicos (atestados, relatórios, declarações).');
+
+        pdf.y += 1;
+        par('Finalidades do tratamento:', { bold: true, gap: 1 });
+        bullet('Prestação dos serviços de psicologia clínica contratados;');
+        bullet('Cumprimento de obrigações legais e regulatórias do exercício profissional;');
+        bullet('Emissão de documentos psicológicos (atestados, relatórios, declarações);');
+        bullet('Contato administrativo (agendamento, lembretes de sessões e cobrança).');
+
+        pdf.y += 1;
+        par('Bases legais (art. 7º e 11º da LGPD):', { bold: true, gap: 1 });
+        bullet('Consentimento específico e destacado do(a) titular ou responsável legal (art. 11, I);');
+        bullet('Cumprimento de obrigação legal pela controladora (art. 7º, II);');
+        bullet('Tutela da saúde por profissional de saúde (art. 11, II, "f").');
+
+        pdf.y += 1;
+        par('Armazenamento e segurança:', { bold: true, gap: 1 });
+        par('Os dados são armazenados em ambiente digital criptografado (Google Drive privativo da psicóloga), com controle de acesso por autenticação em duas etapas. Documentos físicos, quando existirem, ficam guardados em local de acesso restrito.');
+
+        par('Tempo de guarda:', { bold: true, gap: 1 });
+        par('Os prontuários psicológicos serão mantidos pelo prazo mínimo de 5 (cinco) anos a contar do último atendimento, conforme determina a Resolução CFP nº 001/2009, podendo ser estendido por exigência legal específica.');
+
+        par('Compartilhamento de dados:', { bold: true, gap: 1 });
+        par('Os dados não serão compartilhados com terceiros, exceto: (a) por determinação judicial; (b) por solicitação expressa e por escrito do(a) paciente ou responsável; (c) nas hipóteses previstas no item IV deste termo (quebra excepcional de sigilo).');
+
+        // === Direitos do Titular ===
+        section('VI — Dos direitos do titular dos dados');
+        par('O(A) paciente, na qualidade de titular dos dados pessoais, tem assegurados os direitos previstos no art. 18 da LGPD, podendo, mediante requerimento à psicóloga:');
+        bullet('Confirmar a existência de tratamento de seus dados;');
+        bullet('Acessar os dados tratados;');
+        bullet('Solicitar correção de dados incompletos, inexatos ou desatualizados;');
+        bullet('Solicitar a anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desconformidade com a LGPD;');
+        bullet('Revogar o consentimento, observado o prazo legal mínimo de guarda do prontuário (5 anos);');
+        bullet('Solicitar informações sobre eventual compartilhamento dos dados;');
+        bullet('Peticionar à Autoridade Nacional de Proteção de Dados (ANPD).');
+
+        // === Comunicação ===
+        section('VII — Da comunicação entre as partes');
+        par('Reconheço e autorizo que a comunicação administrativa entre as partes (agendamentos, confirmações, lembretes e cobranças) seja realizada por meio de WhatsApp, e-mail ou telefone, ciente de que tais canais possuem limitações próprias de segurança digital. Conteúdo terapêutico ou clínico não deverá ser tratado por estes canais, devendo ser reservado às sessões.');
+
+        // === Direitos do Paciente ===
+        section('VIII — Dos direitos do paciente no atendimento');
+        bullet('Receber atendimento técnico-profissional de qualidade, em respeito à dignidade humana;');
+        bullet('Interromper o tratamento a qualquer momento, sem ônus moral ou financeiro indevido;');
+        bullet('Receber esclarecimentos sobre o método terapêutico utilizado;');
+        bullet('Solicitar encaminhamento a outro(a) profissional, quando entender necessário.');
+
+        // === Honorários ===
+        section('IX — Dos honorários');
+        par('Os honorários, frequência das sessões e forma de pagamento serão acordados verbalmente entre as partes em momento próprio, podendo ser formalizados em instrumento separado, se necessário.');
+
+        // === Vigência ===
+        section('X — Da vigência');
+        par('Este termo entra em vigor na data de sua assinatura e permanece válido durante todo o período de atendimento, podendo ser revogado por escrito a qualquer momento por qualquer das partes, ressalvada a obrigação legal de guarda do prontuário pelo prazo mínimo previsto.');
+
+        // === Declaração ===
+        section('XI — Declaração final');
+        par(`Declaro ter lido, compreendido e concordado integralmente com os termos acima expostos, prestando o presente CONSENTIMENTO LIVRE, INFORMADO, ESPECÍFICO E INEQUÍVOCO ${isMinor ? 'em nome do(a) paciente menor de idade sob minha responsabilidade legal' : 'em meu próprio nome'}, para o tratamento de dados pessoais e dados sensíveis nos termos deste instrumento.`);
+
+        // === Assinaturas ===
+        pdf.ensureSpace(45);
+        pdf.y += 8;
+
+        pdoc.setFont('times', 'normal');
+        pdoc.setFontSize(10);
+        pdoc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+
+        const localDate = `_______________________, _____ de _____________________ de ${now.getFullYear()}.`;
+        pdoc.text(localDate, marginX, pdf.y);
+        pdf.y += 4;
+        pdoc.setFont('times', 'italic');
+        pdoc.setFontSize(8.5);
+        pdoc.setTextColor(palette.faint[0], palette.faint[1], palette.faint[2]);
+        pdoc.text('(local e data)', marginX, pdf.y);
+        pdf.y += 14;
+
+        // Linhas de assinatura em duas colunas
+        const contentW = pageW - marginX * 2;
+        const colW = (contentW - 10) / 2;
+        const col1X = marginX;
+        const col2X = marginX + colW + 10;
+
+        pdoc.setDrawColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+        pdoc.setLineWidth(0.3);
+        pdoc.line(col1X, pdf.y, col1X + colW, pdf.y);
+        pdoc.line(col2X, pdf.y, col2X + colW, pdf.y);
+        pdf.y += 4;
+
+        pdoc.setFont('times', 'normal');
+        pdoc.setFontSize(9.5);
+        pdoc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+        const assinante1 = isMinor ? (patient.responsavel_nome || 'Responsável legal') : pNome;
+        const cpf1 = isMinor ? (patient.responsavel_cpf || '') : pCpf;
+        pdoc.text(assinante1, col1X + colW / 2, pdf.y, { align: 'center' });
+        pdoc.text('Gabrielly Guandalino', col2X + colW / 2, pdf.y, { align: 'center' });
+        pdf.y += 4;
+
+        pdoc.setFontSize(8);
+        pdoc.setTextColor(palette.sub[0], palette.sub[1], palette.sub[2]);
+        const sub1 = isMinor ? 'Responsável legal' : 'Paciente';
+        pdoc.text(sub1 + (cpf1 ? ` · CPF: ${cpf1}` : ''), col1X + colW / 2, pdf.y, { align: 'center' });
+        pdoc.text('Psicóloga · CRP-PR 08/38673', col2X + colW / 2, pdf.y, { align: 'center' });
+
+        // Finaliza (rodapé com numeração — reusa do helper)
+        pdf.finalize();
+
+        // Salva
+        const safeName = sanitizeFilename(pNome);
+        pdoc.save(`Termo_Consentimento_${safeName}.pdf`);
+
+        renderConsentimentoTab();
+        toast('Termo gerado com sucesso', 'success');
+      } catch (e) {
+        console.error(e);
+        toast('Erro ao gerar PDF', 'error');
       }
-
-      function writeBullet(text) {
-        doc.setFont('times', 'normal');
-        doc.setFontSize(10);
-        doc.setTextColor(50, 45, 40);
-        const indented = '  • ' + text;
-        const lines = doc.splitTextToSize(indented, contentW - 5);
-        ensureSpace(lines.length * 4.5 + 1);
-        doc.text(lines, margin + 2, y);
-        y += lines.length * 4.5 + 1;
-      }
-
-      addPageBg();
-
-      // Cabeçalho
-      doc.setFont('times', 'bold');
-      doc.setFontSize(15);
-      doc.setTextColor(40, 35, 30);
-      doc.text('TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO', pageW / 2, y, { align: 'center' });
-      y += 6;
-      doc.setFont('times', 'italic');
-      doc.setFontSize(10);
-      doc.setTextColor(120, 110, 95);
-      doc.text('para serviços de psicologia clínica · LGPD & CFP', pageW / 2, y, { align: 'center' });
-      y += 8;
-
-      // Linha decorativa
-      doc.setDrawColor(184, 148, 74);
-      doc.setLineWidth(0.5);
-      doc.line(margin + 30, y, pageW - margin - 30, y);
-      y += 7;
-
-      // === Identificação da Psicóloga ===
-      writeSection('I — Da profissional');
-      writeParagraph('Eu, Gabrielly Guandalino, psicóloga inscrita no Conselho Regional de Psicologia sob o nº CRP-PR 08/38673, doravante denominada "psicóloga", declaro perante o(a) paciente abaixo identificado(a) que me comprometo a prestar serviços de psicologia clínica em conformidade com o Código de Ética Profissional do Psicólogo (Resolução CFP nº 010/2005) e demais resoluções aplicáveis.');
-
-      // === Identificação do Paciente ===
-      writeSection('II — Do paciente');
-      const pNome = patient.nome || '';
-      const pCpf = patient.cpf || '';
-      const pNasc = patient.nascimento ? new Date(patient.nascimento).toLocaleDateString('pt-BR') : '';
-      writeParagraph(`Paciente: ${pNome}`, { bold: true });
-      if (pCpf) writeParagraph(`CPF: ${pCpf}`);
-      if (pNasc) writeParagraph(`Data de nascimento: ${pNasc}`);
-
-      if (isMinor && patient.responsavel_nome) {
-        y += 1;
-        writeParagraph('Por se tratar de paciente menor de idade, o termo é firmado pelo(a) responsável legal abaixo qualificado(a), conforme prevê o art. 4º do Estatuto da Criança e do Adolescente (Lei 8.069/1990).');
-        writeParagraph(`Responsável legal: ${patient.responsavel_nome}`, { bold: true });
-        if (patient.responsavel_cpf) writeParagraph(`CPF: ${patient.responsavel_cpf}`);
-        if (patient.responsavel_parentesco) writeParagraph(`Parentesco: ${patient.responsavel_parentesco}`);
-      }
-
-      // === Objeto ===
-      writeSection('III — Do objeto e finalidade do atendimento');
-      writeParagraph('O presente termo tem por objeto autorizar a prestação de serviços de psicologia clínica, compreendendo: (a) avaliação psicológica inicial mediante anamnese; (b) acompanhamento psicoterapêutico; (c) elaboração de documentos psicológicos quando aplicável; (d) emissão de relatórios e pareceres técnicos quando solicitados pelo(a) paciente ou responsável.');
-
-      // === Sigilo ===
-      writeSection('IV — Do sigilo profissional');
-      writeParagraph('Em conformidade com o art. 9º do Código de Ética Profissional do Psicólogo, todas as informações compartilhadas durante o atendimento são protegidas por sigilo profissional, sendo a quebra de sigilo admitida apenas nas hipóteses previstas em lei, tais como:');
-      writeBullet('Risco iminente à vida do(a) paciente ou de terceiros;');
-      writeBullet('Suspeita ou confirmação de violência contra criança, adolescente, idoso ou pessoa com deficiência (com comunicação obrigatória aos órgãos competentes);');
-      writeBullet('Determinação judicial expressa.');
-      if (isMinor) {
-        writeParagraph('Tratando-se de paciente menor de idade, o(a) responsável legal será informado(a) sobre os aspectos gerais do tratamento, preservando-se, sempre que possível, a privacidade do conteúdo específico das sessões, em respeito ao desenvolvimento da autonomia da criança/adolescente.');
-      }
-
-      // === LGPD - Dados ===
-      writeSection('V — Do tratamento de dados pessoais (LGPD)');
-      writeParagraph('Em atendimento à Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018), declara-se que serão tratados dados pessoais e dados pessoais sensíveis relativos à saúde, conforme detalhado a seguir:');
-      writeParagraph('Categorias de dados coletados:', { bold: true });
-      writeBullet('Dados de identificação (nome, CPF, RG, data de nascimento);');
-      writeBullet('Dados de contato (telefone, e-mail, endereço);');
-      writeBullet('Dados de identificação do(s) responsável(is) legal(is), quando aplicável;');
-      writeBullet('Dados sensíveis de saúde (anamnese, histórico clínico, diagnósticos, evoluções terapêuticas);');
-      writeBullet('Documentos clínicos (atestados, relatórios, declarações).');
-
-      writeParagraph('Finalidades do tratamento:', { bold: true });
-      writeBullet('Prestação dos serviços de psicologia clínica contratados;');
-      writeBullet('Cumprimento de obrigações legais e regulatórias do exercício profissional;');
-      writeBullet('Emissão de documentos psicológicos (atestados, relatórios, declarações);');
-      writeBullet('Contato administrativo (agendamento, lembretes de sessões e cobrança).');
-
-      writeParagraph('Bases legais (art. 7º e 11º da LGPD):', { bold: true });
-      writeBullet('Consentimento específico e destacado do(a) titular ou responsável legal (art. 11, I);');
-      writeBullet('Cumprimento de obrigação legal pela controladora (art. 7º, II);');
-      writeBullet('Tutela da saúde por profissional de saúde (art. 11, II, "f").');
-
-      writeParagraph('Armazenamento e segurança:', { bold: true });
-      writeParagraph('Os dados são armazenados em ambiente digital criptografado (Google Drive privativo da psicóloga), com controle de acesso por autenticação em duas etapas. Documentos físicos, quando existirem, ficam guardados em local de acesso restrito.');
-
-      writeParagraph('Tempo de guarda:', { bold: true });
-      writeParagraph('Os prontuários psicológicos serão mantidos pelo prazo mínimo de 5 (cinco) anos a contar do último atendimento, conforme determina a Resolução CFP nº 001/2009, podendo ser estendido por exigência legal específica.');
-
-      writeParagraph('Compartilhamento de dados:', { bold: true });
-      writeParagraph('Os dados não serão compartilhados com terceiros, exceto: (a) por determinação judicial; (b) por solicitação expressa e por escrito do(a) paciente ou responsável; (c) nas hipóteses previstas no item IV deste termo (quebra excepcional de sigilo).');
-
-      // === Direitos do Titular ===
-      writeSection('VI — Dos direitos do titular dos dados');
-      writeParagraph('O(A) paciente, na qualidade de titular dos dados pessoais, tem assegurados os direitos previstos no art. 18 da LGPD, podendo, mediante requerimento à psicóloga:');
-      writeBullet('Confirmar a existência de tratamento de seus dados;');
-      writeBullet('Acessar os dados tratados;');
-      writeBullet('Solicitar correção de dados incompletos, inexatos ou desatualizados;');
-      writeBullet('Solicitar a anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desconformidade com a LGPD;');
-      writeBullet('Revogar o consentimento, observado o prazo legal mínimo de guarda do prontuário (5 anos);');
-      writeBullet('Solicitar informações sobre eventual compartilhamento dos dados;');
-      writeBullet('Peticionar à Autoridade Nacional de Proteção de Dados (ANPD).');
-
-      // === Comunicação ===
-      writeSection('VII — Da comunicação entre as partes');
-      writeParagraph('Reconheço e autorizo que a comunicação administrativa entre as partes (agendamentos, confirmações, lembretes e cobranças) seja realizada por meio de WhatsApp, e-mail ou telefone, ciente de que tais canais possuem limitações próprias de segurança digital. Conteúdo terapêutico ou clínico não deverá ser tratado por estes canais, devendo ser reservado às sessões.');
-
-      // === Direitos do Paciente ===
-      writeSection('VIII — Dos direitos do paciente no atendimento');
-      writeBullet('Receber atendimento técnico-profissional de qualidade, em respeito à dignidade humana;');
-      writeBullet('Interromper o tratamento a qualquer momento, sem ônus moral ou financeiro indevido;');
-      writeBullet('Receber esclarecimentos sobre o método terapêutico utilizado;');
-      writeBullet('Solicitar encaminhamento a outro(a) profissional, quando entender necessário.');
-
-      // === Honorários ===
-      writeSection('IX — Dos honorários');
-      writeParagraph('Os honorários, frequência das sessões e forma de pagamento serão acordados verbalmente entre as partes em momento próprio, podendo ser formalizados em instrumento separado, se necessário.');
-
-      // === Vigência ===
-      writeSection('X — Da vigência');
-      writeParagraph('Este termo entra em vigor na data de sua assinatura e permanece válido durante todo o período de atendimento, podendo ser revogado por escrito a qualquer momento por qualquer das partes, ressalvada a obrigação legal de guarda do prontuário pelo prazo mínimo previsto.');
-
-      // === Declaração ===
-      writeSection('XI — Declaração final');
-      writeParagraph(`Declaro ter lido, compreendido e concordado integralmente com os termos acima expostos, prestando o presente CONSENTIMENTO LIVRE, INFORMADO, ESPECÍFICO E INEQUÍVOCO ${isMinor ? 'em nome do(a) paciente menor de idade sob minha responsabilidade legal' : 'em meu próprio nome'}, para o tratamento de dados pessoais e dados sensíveis nos termos deste instrumento.`);
-
-      // === Assinaturas ===
-      ensureSpace(50);
-      y += 8;
-      doc.setFont('times', 'normal');
-      doc.setFontSize(10);
-      doc.setTextColor(50, 45, 40);
-
-      const localDate = `_______________________, _____ de _____________________ de ${now.getFullYear()}.`;
-      doc.text(localDate, margin, y);
-      y += 4;
-      doc.setFont('times', 'italic');
-      doc.setFontSize(8.5);
-      doc.setTextColor(120, 110, 95);
-      doc.text('(local e data)', margin, y);
-      y += 14;
-
-      // Assinaturas em duas colunas
-      doc.setFont('times', 'normal');
-      doc.setFontSize(10);
-      doc.setTextColor(50, 45, 40);
-      const colW = (contentW - 10) / 2;
-      const col1X = margin;
-      const col2X = margin + colW + 10;
-
-      // Linha de assinatura 1
-      doc.setDrawColor(50, 45, 40);
-      doc.setLineWidth(0.3);
-      doc.line(col1X, y, col1X + colW, y);
-      doc.line(col2X, y, col2X + colW, y);
-      y += 4;
-
-      doc.setFontSize(9);
-      const assinante1 = isMinor ? (patient.responsavel_nome || 'Responsável legal') : pNome;
-      const cpf1 = isMinor ? (patient.responsavel_cpf || '') : pCpf;
-      doc.text(assinante1, col1X + colW / 2, y, { align: 'center' });
-      doc.text('Gabrielly Guandalino', col2X + colW / 2, y, { align: 'center' });
-      y += 4;
-
-      doc.setFontSize(8);
-      doc.setTextColor(120, 110, 95);
-      const sub1 = isMinor ? 'Responsável legal' : 'Paciente';
-      doc.text(sub1 + (cpf1 ? ` · CPF: ${cpf1}` : ''), col1X + colW / 2, y, { align: 'center' });
-      doc.text('Psicóloga · CRP-PR 08/38673', col2X + colW / 2, y, { align: 'center' });
-
-      // Rodapé
-      const totalPages = doc.internal.pages.length - 1;
-      for (let i = 1; i <= totalPages; i++) {
-        doc.setPage(i);
-        doc.setFont('times', 'italic');
-        doc.setFontSize(7.5);
-        doc.setTextColor(150, 140, 125);
-        doc.text(`Termo de Consentimento — ${pNome} — gerado em ${now.toLocaleDateString('pt-BR')} — pág. ${i}/${totalPages}`, pageW / 2, pageH - 8, { align: 'center' });
-      }
-
-      // Salva
-      const safeName = (pNome || 'paciente').replace(/[^\w\sáàâãäéèêëíìîïóòôõöúùûüçñÁÀÂÃÄÉÈÊËÍÌÎÏÓÒÔÕÖÚÙÛÜÇÑ-]/g, '').replace(/\s+/g, '_').slice(0, 60);
-      doc.save(`Termo_Consentimento_${safeName}.pdf`);
-
-      renderConsentimentoTab();
-      toast('Termo gerado com sucesso', 'success');
     }
     window.generateConsentimentoPdf = generateConsentimentoPdf;
 
