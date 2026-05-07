@@ -207,6 +207,45 @@
     .patient-tag.status-pausa { background: var(--gold-wash); color: var(--gold-deep); }
     .patient-tag.status-alta { background: var(--border); color: var(--ink-soft); }
     .patient-tag.status-transferido { background: var(--border); color: var(--ink-soft); }
+    .patient-tag.origem-particular { background: rgba(159, 176, 138, 0.18); color: #5a6c4a; }
+    .patient-tag.origem-indicacao { background: rgba(184, 148, 74, 0.18); color: var(--gold-deep); }
+
+    /* Repasse pra proprietária da sala */
+    .repasse-pill {
+      display: inline-flex; align-items: center;
+      font-size: 0.68rem; padding: 0.22rem 0.55rem;
+      border-radius: 50px; font-weight: 500;
+      letter-spacing: 0.04em; margin-left: 0.4rem;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .repasse-pill:hover { transform: translateY(-1px); }
+    .repasse-pill.ok { background: rgba(159, 176, 138, 0.25); color: #4a5a3c; cursor: default; }
+    .repasse-pill.pending { background: rgba(184, 148, 74, 0.18); color: var(--gold-deep); border: 1px dashed rgba(184, 148, 74, 0.45); }
+
+    /* Subdivisão particular vs indicação no card de recebimento */
+    .origem-breakdown {
+      margin-top: 0.7rem; padding-top: 0.7rem;
+      border-top: 1px solid rgba(184, 148, 74, 0.18);
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .origem-breakdown .origem-tag {
+      display: inline-flex; align-items: center;
+      font-size: 0.78rem; padding: 0.25rem 0.6rem;
+      border-radius: 50px; gap: 0.3rem;
+      font-style: italic; font-family: var(--font-display);
+    }
+    .origem-breakdown .origem-tag strong {
+      font-style: normal; font-family: inherit; font-weight: 500;
+    }
+    .origem-breakdown .origem-tag.particular { background: rgba(159, 176, 138, 0.15); color: #5a6c4a; }
+    .origem-breakdown .origem-tag.indicacao { background: rgba(184, 148, 74, 0.14); color: var(--gold-deep); }
+
+    /* Card de alerta (repasses pendentes) */
+    .summary-card.alert {
+      border-color: rgba(184, 148, 74, 0.4);
+      box-shadow: 0 0 0 1px rgba(184, 148, 74, 0.15);
+    }
     .patient-chevron { color: var(--ink-faint); transition: all 0.2s; }
     .patient-item:hover .patient-chevron { color: var(--gold); transform: translateX(4px); }
 
@@ -1564,6 +1603,20 @@
 
         <div id="finStats" class="summary-grid-main"></div>
 
+        <div class="fin-filter-row" style="display:flex; gap:0.5rem; align-items:center; margin: 0.5rem 0 1rem; flex-wrap:wrap;">
+          <span style="font-size:0.85rem; color:var(--ink-soft); font-style:italic; font-family:var(--font-display);">filtrar por:</span>
+          <select class="status-filter" id="finOrigemFilter">
+            <option value="">Todas as origens</option>
+            <option value="particular">Apenas particulares</option>
+            <option value="indicacao">Apenas indicações</option>
+          </select>
+          <select class="status-filter" id="finRepasseFilter">
+            <option value="">Repasse: todos</option>
+            <option value="pendente">Repasse pendente</option>
+            <option value="ok">Repasse efetuado</option>
+          </select>
+        </div>
+
         <div id="finPendencyContainer"></div>
         <div id="finReceiptsContainer"></div>
       </div>
@@ -1601,6 +1654,11 @@
             <option value="pausa">Em pausa</option>
             <option value="alta">Alta</option>
             <option value="transferido">Transferidos</option>
+          </select>
+          <select class="status-filter" id="origemFilter">
+            <option value="">Todas as origens</option>
+            <option value="particular">Particular</option>
+            <option value="indicacao">Indicação</option>
           </select>
         </div>
         <div id="patientListWrap"></div>
@@ -2049,6 +2107,12 @@
                   <label class="form-label">Data do pagamento</label>
                   <input type="date" class="form-input" id="apptDataPagamento" />
                 </div>
+                <div class="form-group full" id="repasseFieldWrap" style="display:none;">
+                  <label class="checkbox-label" style="display:flex; align-items:center; gap:0.6rem; padding:0.7rem 0.9rem; background:rgba(184,148,74,0.08); border:1px dashed var(--gold); border-radius:var(--radius-sm); cursor:pointer; font-size:0.9rem;">
+                    <input type="checkbox" id="apptRepassado" style="width:18px; height:18px; cursor:pointer;" />
+                    <span>Repasse à proprietária da sala já efetuado <em style="color:var(--ink-soft); font-style:italic; font-size:0.82rem;">(paciente por indicação)</em></span>
+                  </label>
+                </div>
                 <div class="form-group full">
                   <label class="form-label">Observações do pagamento</label>
                   <input type="text" class="form-input" id="apptObsPagamento" placeholder="ex: PIX banco do brasil, parcelado em 3x..." />
@@ -2110,10 +2174,9 @@
               <select class="form-select" name="status"><option value="ativo">Ativo</option><option value="pausa">Em pausa</option><option value="alta">Alta</option><option value="transferido">Transferido</option></select>
             </div>
             <div class="form-group"><label class="form-label">Início do acompanhamento</label><input type="date" class="form-input" name="inicio" /></div>
-            <div class="form-group"><label class="form-label">Tipo de pagamento</label>
-              <select class="form-select" name="tipo_pagamento"><option value="">Não informado</option><option value="particular">Particular</option><option value="convenio">Convênio</option></select>
+            <div class="form-group"><label class="form-label">Origem do paciente</label>
+              <select class="form-select" name="origem"><option value="particular">Particular</option><option value="indicacao">Indicação</option></select>
             </div>
-            <div class="form-group"><label class="form-label">Convênio</label><input type="text" class="form-input" name="convenio" /></div>
             <div class="form-group full"><label class="form-label">Queixa inicial / motivo da procura</label><textarea class="form-textarea" name="queixa" rows="3"></textarea></div>
           </div>
         </div>
@@ -2633,6 +2696,9 @@
       dataFileId: null,
       searchQuery: '',
       statusFilter: '',
+      origemFilter: '',
+      finOrigemFilter: '',
+      finRepasseFilter: '',
       view: 'list',
       activeTab: 'info',
       selectedPatientId: null,
@@ -3008,6 +3074,8 @@
       if (!state.dataFileId) return;
       const res = await gapi.client.drive.files.get({ fileId: state.dataFileId, alt: 'media' });
       try { state.patients = JSON.parse(res.body); } catch { state.patients = []; }
+      // Migração: pacientes antigos sem origem viram "particular"
+      state.patients.forEach(p => { if (!p.origem) p.origem = 'particular'; });
     }
 
     async function savePatients() {
@@ -3559,6 +3627,25 @@
       const patient = state.patients.find(p => p.id === state.selectedPatientId);
       if (!patient) return;
 
+      // Pega WhatsApp dela do localStorage (pra usar no termo como contato da DPO)
+      if (!state.psicologaWhatsapp) {
+        const saved = localStorage.getItem('psicologaWhatsapp');
+        if (saved) state.psicologaWhatsapp = saved;
+      }
+      // Se ainda não tem, pergunta uma vez
+      if (!state.psicologaWhatsapp) {
+        const wpp = prompt(
+          'Para o termo, informe o WhatsApp profissional da psicóloga (será mostrado como contato da Encarregada de Dados — DPO).\n\nExemplo: (44) 99999-9999\n\nSerá salvo apenas no seu navegador.'
+        );
+        if (wpp && wpp.trim()) {
+          state.psicologaWhatsapp = wpp.trim();
+          localStorage.setItem('psicologaWhatsapp', wpp.trim());
+        } else {
+          // Se cancelou, gera com placeholder
+          state.psicologaWhatsapp = '_____________________';
+        }
+      }
+
       const isMinor = isPatientMinor(patient);
       const now = new Date();
 
@@ -3696,47 +3783,76 @@
 
         pdf.y += 1;
         par('Armazenamento e segurança:', { bold: true, gap: 1 });
-        par('Os dados são armazenados em ambiente digital criptografado (Google Drive privativo da psicóloga), com controle de acesso por autenticação em duas etapas. Documentos físicos, quando existirem, ficam guardados em local de acesso restrito.');
+        par('Os dados são armazenados em ambiente digital criptografado (Google Drive privativo da psicóloga), com controle de acesso por autenticação em duas etapas (2FA), conforme determina o art. 46 da LGPD. Documentos físicos, quando existirem, ficam guardados em local de acesso restrito e exclusivo da psicóloga.');
+
+        par('Transferência internacional de dados:', { bold: true, gap: 1 });
+        par('Em razão do uso de plataforma de armazenamento em nuvem (Google Drive — Google LLC), há transferência internacional de dados para servidores localizados nos Estados Unidos da América, conforme art. 33 da LGPD. A Google LLC declara conformidade com padrões internacionais de proteção de dados (ISO/IEC 27001, 27017, 27018, SOC 2 e SOC 3), garantindo nível de proteção compatível com a legislação brasileira. Mais informações em: cloud.google.com/security/compliance.');
 
         par('Tempo de guarda:', { bold: true, gap: 1 });
-        par('Os prontuários psicológicos serão mantidos pelo prazo mínimo de 5 (cinco) anos a contar do último atendimento, conforme determina a Resolução CFP nº 001/2009, podendo ser estendido por exigência legal específica.');
+        par('Os prontuários psicológicos serão mantidos pelo prazo mínimo de 5 (cinco) anos a contar do último atendimento, conforme determina a Resolução CFP nº 001/2009, podendo ser estendido por exigência legal específica. Findo este prazo e na ausência de obrigação de guarda, os dados serão eliminados de forma segura.');
 
         par('Compartilhamento de dados:', { bold: true, gap: 1 });
-        par('Os dados não serão compartilhados com terceiros, exceto: (a) por determinação judicial; (b) por solicitação expressa e por escrito do(a) paciente ou responsável; (c) nas hipóteses previstas no item IV deste termo (quebra excepcional de sigilo).');
+        par('Os dados não serão compartilhados com terceiros, exceto: (a) por determinação judicial; (b) por solicitação expressa e por escrito do(a) paciente ou responsável; (c) nas hipóteses previstas no item IV deste termo (quebra excepcional de sigilo); (d) quando exigido por autoridade competente nos termos da lei.');
+
+        // === Encarregada de Dados (DPO) — NOVO ===
+        section('VI — Da encarregada pelo tratamento de dados (DPO)');
+        const whatsapp = state.psicologaWhatsapp || '_____________________';
+        par(`Em atendimento ao art. 41 da LGPD, fica designada como Encarregada pelo Tratamento de Dados Pessoais (DPO — Data Protection Officer) a própria psicóloga ${'\u200B'}Gabrielly Guandalino, podendo ser contatada para o exercício dos direitos do titular pelos seguintes canais:`);
+        bullet(`WhatsApp: ${whatsapp}`);
+        bullet('E-mail profissional: gsgpsicologia@gmail.com');
+        par('Solicitações relacionadas ao exercício de direitos serão respondidas em até 15 (quinze) dias, salvo quando houver impossibilidade técnica ou legal devidamente justificada.', { gap: 2 });
 
         // === Direitos do Titular ===
-        section('VI — Dos direitos do titular dos dados');
-        par('O(A) paciente, na qualidade de titular dos dados pessoais, tem assegurados os direitos previstos no art. 18 da LGPD, podendo, mediante requerimento à psicóloga:');
+        section('VII — Dos direitos do titular dos dados');
+        par('O(A) paciente, na qualidade de titular dos dados pessoais, tem assegurados os direitos previstos no art. 18 da LGPD, podendo, mediante requerimento à Encarregada acima identificada:');
         bullet('Confirmar a existência de tratamento de seus dados;');
         bullet('Acessar os dados tratados;');
         bullet('Solicitar correção de dados incompletos, inexatos ou desatualizados;');
-        bullet('Solicitar a anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desconformidade com a LGPD;');
+        bullet('Solicitar a anonimização, bloqueio ou eliminação de dados desnecessários, excessivos ou tratados em desconformidade com a LGPD;');
+        bullet('Solicitar a portabilidade dos dados a outro fornecedor de serviço;');
         bullet('Revogar o consentimento, observado o prazo legal mínimo de guarda do prontuário (5 anos);');
         bullet('Solicitar informações sobre eventual compartilhamento dos dados;');
         bullet('Peticionar à Autoridade Nacional de Proteção de Dados (ANPD).');
 
+        // === Plano de Incidente — NOVO ===
+        section('VIII — Da comunicação em caso de incidente');
+        par('Em caso de eventual incidente de segurança que possa acarretar risco ou dano relevante aos titulares de dados, a psicóloga compromete-se a:');
+        bullet('Comunicar o(a) paciente ou responsável legal em prazo razoável, preferencialmente em até 72 (setenta e duas) horas após a constatação do incidente;');
+        bullet('Comunicar à Autoridade Nacional de Proteção de Dados (ANPD) na forma do art. 48 da LGPD;');
+        bullet('Adotar medidas imediatas de mitigação dos efeitos do incidente.');
+
         // === Comunicação ===
-        section('VII — Da comunicação entre as partes');
-        par('Reconheço e autorizo que a comunicação administrativa entre as partes (agendamentos, confirmações, lembretes e cobranças) seja realizada por meio de WhatsApp, e-mail ou telefone, ciente de que tais canais possuem limitações próprias de segurança digital. Conteúdo terapêutico ou clínico não deverá ser tratado por estes canais, devendo ser reservado às sessões.');
+        section('IX — Da comunicação entre as partes');
+        par('Reconheço e autorizo que a comunicação administrativa entre as partes (agendamentos, confirmações, lembretes e cobranças) seja realizada por meio de WhatsApp, e-mail ou telefone, ciente de que tais canais possuem limitações próprias de segurança digital. Conteúdo terapêutico ou clínico de natureza sensível não deverá ser tratado por estes canais, devendo ser reservado às sessões presenciais ou por videochamada em plataforma segura.');
 
         // === Direitos do Paciente ===
-        section('VIII — Dos direitos do paciente no atendimento');
+        section('X — Dos direitos do paciente no atendimento');
         bullet('Receber atendimento técnico-profissional de qualidade, em respeito à dignidade humana;');
         bullet('Interromper o tratamento a qualquer momento, sem ônus moral ou financeiro indevido;');
         bullet('Receber esclarecimentos sobre o método terapêutico utilizado;');
-        bullet('Solicitar encaminhamento a outro(a) profissional, quando entender necessário.');
+        bullet('Solicitar encaminhamento a outro(a) profissional, quando entender necessário;');
+        if (isMinor) {
+          bullet('Tratando-se de criança ou adolescente, ter respeitado o princípio do melhor interesse do menor (art. 3º do ECA), sendo as informações compartilhadas com os responsáveis na medida necessária ao acompanhamento, sem prejuízo da privacidade legítima do(a) paciente.');
+        }
+
+        // === Gravações — NOVO ===
+        section('XI — Da autorização para registro audiovisual (opcional)');
+        par('A psicóloga poderá, mediante autorização específica abaixo, registrar trechos das sessões em áudio ou vídeo exclusivamente para fins de supervisão clínica ou aprimoramento técnico, com sigilo equiparado ao das próprias sessões. Esta autorização é facultativa e pode ser revogada a qualquer momento.');
+        pdf.y += 2;
+        par('(   ) AUTORIZO o registro audiovisual nos termos acima.', { bold: true, gap: 1 });
+        par('(   ) NÃO AUTORIZO qualquer registro audiovisual.', { bold: true, gap: 2 });
 
         // === Honorários ===
-        section('IX — Dos honorários');
+        section('XII — Dos honorários');
         par('Os honorários, frequência das sessões e forma de pagamento serão acordados verbalmente entre as partes em momento próprio, podendo ser formalizados em instrumento separado, se necessário.');
 
         // === Vigência ===
-        section('X — Da vigência');
+        section('XIII — Da vigência');
         par('Este termo entra em vigor na data de sua assinatura e permanece válido durante todo o período de atendimento, podendo ser revogado por escrito a qualquer momento por qualquer das partes, ressalvada a obrigação legal de guarda do prontuário pelo prazo mínimo previsto.');
 
         // === Declaração ===
-        section('XI — Declaração final');
-        par(`Declaro ter lido, compreendido e concordado integralmente com os termos acima expostos, prestando o presente CONSENTIMENTO LIVRE, INFORMADO, ESPECÍFICO E INEQUÍVOCO ${isMinor ? 'em nome do(a) paciente menor de idade sob minha responsabilidade legal' : 'em meu próprio nome'}, para o tratamento de dados pessoais e dados sensíveis nos termos deste instrumento.`);
+        section('XIV — Declaração final');
+        par(`Declaro ter lido, compreendido e concordado integralmente com os termos acima expostos, prestando o presente CONSENTIMENTO LIVRE, INFORMADO, ESPECÍFICO E INEQUÍVOCO ${isMinor ? 'em nome do(a) paciente menor de idade sob minha responsabilidade legal' : 'em meu próprio nome'}, para o tratamento de dados pessoais e dados sensíveis nos termos deste instrumento, nos termos do art. 8º da LGPD.`);
 
         // === Assinaturas ===
         pdf.ensureSpace(45);
@@ -4554,9 +4670,8 @@
         const statusLabel = ({ ativo: 'Ativo', pausa: 'Em pausa', alta: 'Alta', transferido: 'Transferido' })[patient.status] || patient.status;
         pdf.writeQA('Status', statusLabel);
         pdf.writeQA('Início do acompanhamento', patient.inicio ? formatDate(patient.inicio) : '');
-        const pagLabel = ({ particular: 'Particular', convenio: 'Convênio' })[patient.tipo_pagamento] || '';
-        pdf.writeQA('Tipo de pagamento', pagLabel);
-        pdf.writeQA('Convênio', patient.convenio);
+        const origemLabel = ({ particular: 'Particular', indicacao: 'Indicação' })[patient.origem || 'particular'] || 'Particular';
+        pdf.writeQA('Origem do paciente', origemLabel);
         pdf.writeQA('Queixa inicial / motivo da procura', patient.queixa);
 
         pdf.finalize();
@@ -4810,8 +4925,7 @@
         const statusLabel = ({ ativo: 'Ativo', pausa: 'Em pausa', alta: 'Alta', transferido: 'Transferido' })[patient.status] || patient.status;
         pdf.writeQA('Status', statusLabel);
         pdf.writeQA('Início do acompanhamento', patient.inicio ? formatDate(patient.inicio) : '');
-        pdf.writeQA('Tipo de pagamento', ({ particular: 'Particular', convenio: 'Convênio' })[patient.tipo_pagamento] || '');
-        pdf.writeQA('Convênio', patient.convenio);
+        pdf.writeQA('Origem do paciente', ({ particular: 'Particular', indicacao: 'Indicação' })[patient.origem || 'particular'] || 'Particular');
         pdf.writeQA('Queixa inicial / motivo da procura', patient.queixa);
 
         // ===== SEÇÃO 2: ANAMNESE =====
@@ -5859,6 +5973,8 @@
       $('apptFormaPagamento').value = 'pix';
       $('apptDataPagamento').value = '';
       $('apptObsPagamento').value = '';
+      $('apptRepassado').checked = false;
+      $('repasseFieldWrap').style.display = 'none';
       $('paymentFields').classList.add('hidden');
       $('receiptBtnWrap').style.display = 'none';
       setupPaymentToggle();
@@ -5904,7 +6020,9 @@
       $('apptFormaPagamento').value = pag.formaPagamento || 'pix';
       $('apptDataPagamento').value = pag.dataPagamento || (pag.pago ? '' : '');
       $('apptObsPagamento').value = pag.observacoes || '';
+      $('apptRepassado').checked = !!pag.repassado;
       setupPaymentToggle();
+      updateRepasseVisibility(apt.pacienteId);
 
       // Esconder seção de repetição (só aparece em novo atendimento)
       $('repeatSection').style.display = 'none';
@@ -5946,6 +6064,7 @@
           formaPagamento: pago ? $('apptFormaPagamento').value : null,
           dataPagamento: pago ? ($('apptDataPagamento').value || toIsoDate(new Date())) : null,
           observacoes: pago ? $('apptObsPagamento').value.trim() : '',
+          repassado: pago ? $('apptRepassado').checked : false,
         },
       };
 
@@ -6073,6 +6192,7 @@
             $('apptPatientId').value = p.id;
             $('apptPatientSearch').value = p.nome;
             drop.classList.remove('active');
+            updateRepasseVisibility(p.id);
           });
         });
       }
@@ -6175,12 +6295,35 @@
       const startIso = toIsoDate(monthStart);
       const endIso = toIsoDate(monthEnd);
 
+      // helper: origem do paciente do atendimento
+      const getOrigem = (apt) => {
+        const p = state.patients.find(x => x.id === apt.patientId);
+        return (p && (p.origem || 'particular')) || 'particular';
+      };
+
       // Recebido neste mês: pagamentos cuja dataPagamento está no mês
       const recebidos = state.appointments.filter(a =>
         a.pagamento && a.pagamento.pago && a.pagamento.dataPagamento &&
         a.pagamento.dataPagamento >= startIso && a.pagamento.dataPagamento <= endIso
       );
       const totalRecebido = recebidos.reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+
+      // Subdivisão particular/indicação
+      const recebidosParticular = recebidos.filter(a => getOrigem(a) === 'particular');
+      const recebidosIndicacao = recebidos.filter(a => getOrigem(a) === 'indicacao');
+      const totalParticular = recebidosParticular.reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+      const totalIndicacao = recebidosIndicacao.reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+
+      // Repasses pendentes (sessões pagas de indicação ainda sem repasse marcado)
+      const repassesPendentes = state.appointments.filter(a =>
+        a.pagamento && a.pagamento.pago && !a.pagamento.repassado &&
+        getOrigem(a) === 'indicacao'
+      );
+      const totalRepassesPendentes = repassesPendentes.reduce((s, a) => s + (parseFloat(a.valor) || 0), 0);
+      // E os do mês especificamente
+      const repassesPendentesMes = repassesPendentes.filter(a =>
+        a.pagamento.dataPagamento >= startIso && a.pagamento.dataPagamento <= endIso
+      );
 
       // A receber: realizados no mês ainda não pagos
       const aReceberDoMes = state.appointments.filter(a =>
@@ -6199,11 +6342,20 @@
           <div class="label">Recebido no mês</div>
           <div class="value money">${fmtBRL(totalRecebido)}</div>
           <div class="hint">${recebidos.length} ${recebidos.length === 1 ? 'pagamento' : 'pagamentos'}</div>
+          <div class="origem-breakdown">
+            <span class="origem-tag particular">Particular: <strong>${fmtBRL(totalParticular)}</strong></span>
+            <span class="origem-tag indicacao">Indicação: <strong>${fmtBRL(totalIndicacao)}</strong></span>
+          </div>
         </div>
         <div class="summary-card">
           <div class="label">A receber do mês</div>
           <div class="value money small">${fmtBRL(totalAReceber)}</div>
           <div class="hint">${aReceberDoMes.length} ${aReceberDoMes.length === 1 ? 'atendimento' : 'atendimentos'} realizados</div>
+        </div>
+        <div class="summary-card${totalRepassesPendentes > 0 ? ' alert' : ''}">
+          <div class="label">Repasses pendentes</div>
+          <div class="value money small" style="color: ${totalRepassesPendentes > 0 ? 'var(--gold-deep)' : 'var(--ink)'}">${fmtBRL(totalRepassesPendentes)}</div>
+          <div class="hint">${repassesPendentes.length} ${repassesPendentes.length === 1 ? 'sessão de indicação' : 'sessões de indicação'} sem repasse${repassesPendentesMes.length !== repassesPendentes.length ? ` · <strong>${repassesPendentesMes.length}</strong> deste mês` : ''}</div>
         </div>
         <div class="summary-card">
           <div class="label">Inadimplência total</div>
@@ -6221,8 +6373,16 @@
     function renderFinPendencies() {
       const cont = $('finPendencyContainer');
 
-      // Agrupa pendências por paciente
-      const todasPendentes = state.appointments.filter(isPendente);
+      // Agrupa pendências por paciente (já aplica filtro de origem se houver)
+      let todasPendentes = state.appointments.filter(isPendente);
+      if (state.finOrigemFilter) {
+        todasPendentes = todasPendentes.filter(apt => {
+          const p = state.patients.find(x => x.id === apt.patientId);
+          const origem = (p && (p.origem || 'particular')) || 'particular';
+          return origem === state.finOrigemFilter;
+        });
+      }
+
       const porPaciente = {};
       todasPendentes.forEach(apt => {
         if (!apt.patientId) return;
@@ -6291,10 +6451,28 @@
       const startIso = toIsoDate(monthStart);
       const endIso = toIsoDate(monthEnd);
 
-      const recebidos = state.appointments
+      const getOrigem = (apt) => {
+        const p = state.patients.find(x => x.id === apt.patientId);
+        return (p && (p.origem || 'particular')) || 'particular';
+      };
+
+      let recebidos = state.appointments
         .filter(a => a.pagamento && a.pagamento.pago && a.pagamento.dataPagamento &&
-                     a.pagamento.dataPagamento >= startIso && a.pagamento.dataPagamento <= endIso)
-        .sort((a, b) => (b.pagamento.dataPagamento || '').localeCompare(a.pagamento.dataPagamento || ''));
+                     a.pagamento.dataPagamento >= startIso && a.pagamento.dataPagamento <= endIso);
+
+      // Aplica filtros
+      if (state.finOrigemFilter) {
+        recebidos = recebidos.filter(a => getOrigem(a) === state.finOrigemFilter);
+      }
+      if (state.finRepasseFilter) {
+        recebidos = recebidos.filter(a => {
+          const origem = getOrigem(a);
+          if (origem !== 'indicacao') return state.finRepasseFilter === 'ok' ? false : false;
+          return state.finRepasseFilter === 'ok' ? !!a.pagamento.repassado : !a.pagamento.repassado;
+        });
+      }
+
+      recebidos.sort((a, b) => (b.pagamento.dataPagamento || '').localeCompare(a.pagamento.dataPagamento || ''));
 
       if (!recebidos.length) {
         cont.innerHTML = `
@@ -6302,7 +6480,7 @@
             <div class="pendency-section-header">
               <span><em>Recebimentos</em> — pagamentos do mês</span>
             </div>
-            <div class="receipt-empty">nenhum recebimento neste mês ainda.</div>
+            <div class="receipt-empty">nenhum recebimento ${state.finOrigemFilter || state.finRepasseFilter ? 'com esses filtros' : 'neste mês ainda'}.</div>
           </div>
         `;
         return;
@@ -6318,12 +6496,24 @@
             const patient = state.patients.find(p => p.id === apt.patientId);
             const name = patient ? patient.nome : '(paciente excluído)';
             const forma = apt.pagamento.formaPagamento || 'outro';
+            const origem = patient ? (patient.origem || 'particular') : 'particular';
+            const origemBadge = `<span class="patient-tag origem-${origem}" style="font-size:0.6rem; padding:0.18rem 0.5rem;">${origem === 'indicacao' ? 'Indicação' : 'Particular'}</span>`;
+
+            // Badge de repasse só pra indicação
+            let repasseBadge = '';
+            if (origem === 'indicacao') {
+              const repassado = apt.pagamento.repassado;
+              repasseBadge = repassado
+                ? `<span class="repasse-pill ok" style="margin-left:0;">✓ repassado</span>`
+                : `<span class="repasse-pill pending" style="margin-left:0;" onclick="quickToggleRepasse(event, '${apt.id}')">⌛ repasse pendente</span>`;
+            }
+
             return `
               <div class="receipt-item">
                 <div class="receipt-icon ${forma}">${FORMA_PAGAMENTO_ICONS[forma] || ''}</div>
                 <div class="receipt-info">
-                  <div class="name">${escapeHtml(name)}</div>
-                  <div class="meta">${APPT_TYPES[apt.tipo] || apt.tipo} · sessão de ${formatDate(apt.data)} · pago em ${formatDate(apt.pagamento.dataPagamento)}</div>
+                  <div class="name">${escapeHtml(name)} ${origemBadge}</div>
+                  <div class="meta">${APPT_TYPES[apt.tipo] || apt.tipo} · sessão de ${formatDate(apt.data)} · pago em ${formatDate(apt.pagamento.dataPagamento)} ${repasseBadge}</div>
                 </div>
                 <span class="receipt-form">${FORMA_PAGAMENTO_LABEL[forma] || forma}</span>
                 <div class="receipt-amount">${fmtBRL(apt.valor)}</div>
@@ -6404,6 +6594,8 @@
         return;
       }
 
+      const isIndicacao = (patient.origem || 'particular') === 'indicacao';
+
       html += `<div class="patient-fin-list">
         <div class="pendency-section-header"><span><em>Histórico</em> — atendimentos do paciente</span></div>
         ${apts.map(apt => {
@@ -6430,10 +6622,20 @@
             ? `<button class="btn-icon" onclick="exportReciboPdf('${apt.id}')" title="Recibo PDF"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></button>`
             : '';
 
+          // Badge de repasse (só aparece em paciente de indicação E sessão paga)
+          let repasseBadge = '';
+          if (isIndicacao && apt.pagamento && apt.pagamento.pago) {
+            const repassado = apt.pagamento.repassado;
+            repasseBadge = repassado
+              ? `<span class="repasse-pill ok" title="Repassado à proprietária">✓ repassado</span>`
+              : `<span class="repasse-pill pending" title="Repasse pendente" onclick="quickToggleRepasse(event, '${apt.id}')">⌛ repasse pendente</span>`;
+          }
+
           return `<div class="patient-fin-row">
             <div class="data-info">
               <span class="data">${formatDate(apt.data)}</span>
               <span class="tipo">${APPT_TYPES[apt.tipo] || apt.tipo}</span>
+              ${repasseBadge}
             </div>
             <div></div>
             <div class="valor">${apt.valor ? fmtBRL(apt.valor) : '—'}</div>
@@ -6448,6 +6650,23 @@
 
       cont.innerHTML = html;
     }
+
+    // Toggle rápido de repasse direto da lista
+    async function quickToggleRepasse(event, apptId) {
+      event.stopPropagation();
+      const apt = state.appointments.find(a => a.id === apptId);
+      if (!apt || !apt.pagamento || !apt.pagamento.pago) return;
+      apt.pagamento.repassado = !apt.pagamento.repassado;
+      try {
+        await saveAppointments();
+        renderPatientFinanceiroTab();
+        toast(apt.pagamento.repassado ? 'Marcado como repassado' : 'Repasse pendente', 'success');
+      } catch {
+        apt.pagamento.repassado = !apt.pagamento.repassado; // rollback
+        toast('Erro ao salvar', 'error');
+      }
+    }
+    window.quickToggleRepasse = quickToggleRepasse;
 
     // ============================================================
     // FINANCEIRO — modal de pagamento (toggle)
@@ -6467,6 +6686,16 @@
       };
       checkbox.addEventListener('change', updateUI);
       updateUI();
+    }
+
+    // Mostra/esconde o campo de repasse conforme o paciente selecionado é "indicação"
+    function updateRepasseVisibility(patientId) {
+      const wrap = $('repasseFieldWrap');
+      if (!wrap) return;
+      if (!patientId) { wrap.style.display = 'none'; return; }
+      const patient = state.patients.find(p => p.id === patientId);
+      const origem = patient && (patient.origem || 'particular');
+      wrap.style.display = origem === 'indicacao' ? '' : 'none';
     }
 
     // ============================================================
@@ -7203,6 +7432,10 @@
     function filteredPatients() {
       return state.patients.filter(p => {
         if (state.statusFilter && p.status !== state.statusFilter) return false;
+        if (state.origemFilter) {
+          const origem = p.origem || 'particular'; // pacientes antigos viram particular
+          if (origem !== state.origemFilter) return false;
+        }
         if (state.searchQuery) {
           const q = state.searchQuery.toLowerCase();
           const hay = [p.nome, p.cpf, p.telefone, p.email].filter(Boolean).join(' ').toLowerCase();
@@ -7234,6 +7467,8 @@
         const age = calcAge(p.nascimento);
         const ageStr = age !== null ? `${age} anos` : '';
         const statusLabel = { ativo: 'Ativo', pausa: 'Em pausa', alta: 'Alta', transferido: 'Transferido' }[p.status] || p.status;
+        const origem = p.origem || 'particular';
+        const origemLabel = origem === 'indicacao' ? 'Indicação' : 'Particular';
         return `<div class="patient-item" onclick="openPatient('${p.id}')">
           <div class="patient-avatar">${initials(p.nome)}</div>
           <div class="patient-info">
@@ -7244,6 +7479,7 @@
               ${p.inicio ? `<span class="dot"></span><span>desde ${formatDate(p.inicio)}</span>` : ''}
             </div>
           </div>
+          <span class="patient-tag origem-${origem}">${origemLabel}</span>
           <span class="patient-tag status-${p.status || 'ativo'}">${statusLabel}</span>
           <svg class="patient-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </div>`;
@@ -7257,8 +7493,11 @@
       $('detailAvatar').textContent = initials(p.nome);
       $('detailName').textContent = p.nome;
       const age = calcAge(p.nascimento);
+      const origem = p.origem || 'particular';
+      const origemLabel = origem === 'indicacao' ? 'Indicação' : 'Particular';
       $('detailMeta').innerHTML = `
         ${age !== null ? `<span>${age} anos</span><span class="dot"></span>` : ''}
+        <span class="patient-tag origem-${origem}">${origemLabel}</span>
         <span class="patient-tag status-${p.status || 'ativo'}">${({ativo:'Ativo',pausa:'Em pausa',alta:'Alta',transferido:'Transferido'})[p.status] || p.status}</span>
       `;
 
@@ -7272,8 +7511,7 @@
       $('detailClinical').innerHTML = rows([
         ['Status', ({ativo:'Ativo',pausa:'Em pausa',alta:'Alta',transferido:'Transferido'})[p.status] || p.status],
         ['Início', p.inicio ? formatDate(p.inicio) : ''],
-        ['Pagamento', ({particular:'Particular',convenio:'Convênio'})[p.tipo_pagamento] || ''],
-        ['Convênio', p.convenio],
+        ['Origem', ({particular:'Particular',indicacao:'Indicação'})[p.origem || 'particular'] || 'Particular'],
         ['Queixa inicial', p.queixa ? `<div style="text-align:left; max-width:280px; white-space:pre-wrap;">${escapeHtml(p.queixa)}</div>` : ''],
       ]);
       $('detailContact').innerHTML = rows([
@@ -7898,6 +8136,14 @@
       state.currentFinMonth = startOfMonth(new Date());
       renderFinanceiroPage();
     });
+    $('finOrigemFilter').addEventListener('change', (e) => {
+      state.finOrigemFilter = e.target.value;
+      renderFinanceiroPage();
+    });
+    $('finRepasseFilter').addEventListener('change', (e) => {
+      state.finRepasseFilter = e.target.value;
+      renderFinanceiroPage();
+    });
 
     // Botão "Gerar recibo PDF" do modal
     $('btnGerarRecibo').addEventListener('click', () => {
@@ -7945,6 +8191,7 @@
     // Busca / filtros pacientes
     $('searchInput').addEventListener('input', (e) => { state.searchQuery = e.target.value; renderList(); });
     $('statusFilter').addEventListener('change', (e) => { state.statusFilter = e.target.value; renderList(); });
+    $('origemFilter').addEventListener('change', (e) => { state.origemFilter = e.target.value; renderList(); });
 
     // Fecha modais
     $('patientModal').addEventListener('click', (e) => { if (e.target.id === 'patientModal') closePatientModal(); });
