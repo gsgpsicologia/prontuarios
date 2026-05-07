@@ -1741,7 +1741,7 @@
           <button class="tab-btn" data-tab="evolutions">Evoluções <span class="count" id="evolutionCount">0</span></button>
           <button class="tab-btn" data-tab="financeiro">Financeiro</button>
           <button class="tab-btn" data-tab="documentos">Documentos <span class="count" id="documentoCount">0</span></button>
-          <button class="tab-btn" data-tab="consentimento">Consentimento</button>
+          <button class="tab-btn" data-tab="consentimento">Contrato</button>
         </div>
 
         <!-- TAB: INFO -->
@@ -3540,27 +3540,27 @@
       let html = `
         <div class="consent-header">
           <div>
-            <h3>Consentimento <em>— LGPD & CFP</em></h3>
-            <div class="consent-status-line">termo único de consentimento livre e esclarecido</div>
+            <h3>Contrato <em>e Consentimento (LGPD & CFP)</em></h3>
+            <div class="consent-status-line">contrato de prestação de serviços + termo de consentimento livre e esclarecido</div>
           </div>
         </div>
 
         <div class="consent-info-box">
-          <strong>Sobre este termo:</strong> reúne em um único documento os requisitos da
-          <strong>Lei Geral de Proteção de Dados (LGPD nº 13.709/2018)</strong>,
-          do <strong>Código de Ética Profissional do Psicólogo (Resolução CFP nº 010/2005)</strong>
-          e da <strong>Resolução CFP nº 011/2018</strong> sobre prestação de serviços. ${isMinor ? 'Como o paciente é menor de idade, o termo será gerado para o responsável legal assinar conforme prevê o <strong>ECA (Lei 8.069/1990)</strong>.' : 'Como o paciente é maior de idade, o termo será assinado pelo próprio paciente.'}
+          <strong>Documento único.</strong> Reúne em uma só peça contratual o
+          <strong>Contrato de Prestação de Serviços de Psicologia Clínica</strong>
+          (Código Civil, CDC, CFP) e o <strong>Termo de Consentimento Livre e Esclarecido</strong>
+          (LGPD nº 13.709/2018, Código de Ética Profissional do Psicólogo). ${isMinor ? 'Como o paciente é menor de idade, o documento será gerado para o responsável legal assinar (ECA — Lei 8.069/1990).' : 'Como o paciente é maior de idade, será assinado pelo próprio paciente.'}
         </div>
       `;
 
       if (!c) {
         html += `
           <div class="consent-empty">
-            <h4>Nenhum termo gerado <em>ainda</em></h4>
-            <p>O termo de consentimento deve ser apresentado e assinado pelo ${isMinor ? 'responsável legal' : 'paciente'} antes do início do processo terapêutico, conforme exigência da LGPD para tratamento de dados sensíveis.</p>
+            <h4>Nenhum documento gerado <em>ainda</em></h4>
+            <p>O contrato + termo deve ser apresentado e assinado pelo ${isMinor ? 'responsável legal' : 'paciente'} antes do início do processo terapêutico, formalizando a relação contratual e atendendo às exigências da LGPD para dados sensíveis.</p>
             <button class="btn btn-gold" onclick="generateConsentimentoPdf()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              Gerar termo em PDF
+              Gerar contrato + termo em PDF
             </button>
           </div>
         `;
@@ -3577,7 +3577,7 @@
           <div class="consent-card">
             <div class="consent-card-header">
               <div style="flex:1; min-width:0;">
-                <h4>Termo de Consentimento <em>${isMinor ? '(responsável)' : '(paciente)'}</em></h4>
+                <h4>Contrato + Termo de Consentimento <em>${isMinor ? '(responsável)' : '(paciente)'}</em></h4>
                 <div class="consent-card-meta">
                   <span><strong>Gerado:</strong> ${generatedAt}</span>
                   ${signedAt ? `<span><strong>Assinado:</strong> ${signedAt}</span>` : ''}
@@ -3627,24 +3627,49 @@
       const patient = state.patients.find(p => p.id === state.selectedPatientId);
       if (!patient) return;
 
-      // Pega WhatsApp dela do localStorage (pra usar no termo como contato da DPO)
-      if (!state.psicologaWhatsapp) {
-        const saved = localStorage.getItem('psicologaWhatsapp');
-        if (saved) state.psicologaWhatsapp = saved;
-      }
-      // Se ainda não tem, pergunta uma vez
-      if (!state.psicologaWhatsapp) {
-        const wpp = prompt(
-          'Para o termo, informe o WhatsApp profissional da psicóloga (será mostrado como contato da Encarregada de Dados — DPO).\n\nExemplo: (44) 99999-9999\n\nSerá salvo apenas no seu navegador.'
-        );
-        if (wpp && wpp.trim()) {
-          state.psicologaWhatsapp = wpp.trim();
-          localStorage.setItem('psicologaWhatsapp', wpp.trim());
-        } else {
-          // Se cancelou, gera com placeholder
-          state.psicologaWhatsapp = '_____________________';
+      // ===== CONFIGURAÇÕES PROFISSIONAIS DA PSICÓLOGA =====
+      // (salvas no localStorage, perguntadas na 1ª vez)
+      const loadOrAsk = (key, label, hint) => {
+        let val = state[key] || localStorage.getItem(key);
+        if (!val) {
+          const r = prompt(label + (hint ? '\n\n' + hint : ''));
+          if (r !== null && r.trim()) {
+            val = r.trim();
+            localStorage.setItem(key, val);
+          } else {
+            val = '';
+          }
         }
-      }
+        state[key] = val;
+        return val;
+      };
+
+      const psicWhatsapp = loadOrAsk('psicologaWhatsapp',
+        'WhatsApp profissional da psicóloga (contato da Encarregada de Dados).',
+        'Exemplo: (44) 99999-9999\nSerá salvo apenas no seu navegador.') || '_____________________';
+
+      const psicCnpj = loadOrAsk('psicologaCnpj',
+        'CNPJ profissional (deixe em branco se atender como pessoa física).',
+        'Exemplo: 56.320.762/0001-20');
+
+      const psicRazaoSocial = loadOrAsk('psicologaRazaoSocial',
+        'Razão social (apenas se tiver CNPJ; deixe em branco se for pessoa física).',
+        'Exemplo: GSG SERVICO DE PSICOLOGIA LTDA.');
+
+      const psicChavePix = loadOrAsk('psicologaChavePix',
+        'Chave PIX para pagamentos.',
+        'Pode ser CNPJ, CPF, e-mail ou telefone.');
+
+      const psicBanco = loadOrAsk('psicologaBanco',
+        'Banco/Instituição da chave PIX (opcional).',
+        'Exemplo: NU PAGAMENTOS – IP');
+
+      // Pergunta valor da sessão (sempre, pois pode mudar)
+      const valorStr = prompt(
+        'Valor da sessão (R$) para incluir no contrato.\n\nDigite apenas números, ex: 200,00\nDeixe em branco para não especificar valor.'
+      );
+      const valorSessao = (valorStr && valorStr.trim()) ? valorStr.replace(',', '.').replace(/[^\d.]/g, '') : null;
+      const valorFmt = valorSessao ? Number(valorSessao).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : null;
 
       const isMinor = isPatientMinor(patient);
       const now = new Date();
@@ -3675,12 +3700,12 @@
         const palette = pdf.palette;
         const pageW = 210, marginX = 22;
 
-        // Título principal e subtítulo (mesmo padrão dos outros docs)
-        pdf.writeMainTitle('Termo de Consentimento');
-        pdf.writeSubtitle('livre e esclarecido — LGPD & CFP');
+        // Título
+        pdf.writeMainTitle('Contrato de Prestação de Serviços');
+        pdf.writeSubtitle('e Termo de Consentimento Livre e Esclarecido — LGPD & CFP');
         pdf.y += 6;
 
-        // Helper local pra parágrafo justificado normal
+        // Helpers
         function par(text, opts) {
           opts = opts || {};
           pdf.writeText(text, {
@@ -3692,21 +3717,13 @@
             bottomGap: opts.gap || 3,
           });
         }
-
-        // Helper pra item com bullet
         function bullet(text) {
           pdf.writeText('  •  ' + text, {
-            font: 'times',
-            size: 10.5,
-            weight: 'normal',
-            color: palette.ink,
-            lineHeight: 4.6,
-            bottomGap: 1.5,
+            font: 'times', size: 10.5, weight: 'normal',
+            color: palette.ink, lineHeight: 4.6, bottomGap: 1.5,
           });
         }
-
-        // Helper pra cabeçalho de seção (estilo dourado discreto)
-        function section(text) {
+        function clause(text) {
           pdf.ensureSpace(12);
           pdf.y += 3;
           pdoc.setFont('times', 'italic');
@@ -3714,66 +3731,137 @@
           pdoc.setTextColor(palette.gold[0], palette.gold[1], palette.gold[2]);
           pdoc.text(text, marginX, pdf.y);
           pdf.y += 5;
-          // Linha decorativa
           pdoc.setDrawColor(palette.gold[0], palette.gold[1], palette.gold[2]);
           pdoc.setLineWidth(0.3);
           pdoc.line(marginX, pdf.y, marginX + 25, pdf.y);
           pdf.y += 4;
         }
+        function partTitle(text) {
+          pdf.ensureSpace(15);
+          pdf.y += 5;
+          pdoc.setFont('times', 'bold');
+          pdoc.setFontSize(12.5);
+          pdoc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
+          pdoc.text(text.toUpperCase(), pageW / 2, pdf.y, { align: 'center' });
+          pdf.y += 5;
+          pdoc.setDrawColor(palette.gold[0], palette.gold[1], palette.gold[2]);
+          pdoc.setLineWidth(0.5);
+          pdoc.line(marginX + 40, pdf.y, pageW - marginX - 40, pdf.y);
+          pdf.y += 6;
+        }
 
-        // === Identificação da Psicóloga ===
-        section('I — Da profissional');
-        par('Eu, Gabrielly Guandalino, psicóloga inscrita no Conselho Regional de Psicologia sob o nº CRP-PR 08/38673, doravante denominada "psicóloga", declaro perante o(a) paciente abaixo identificado(a) que me comprometo a prestar serviços de psicologia clínica em conformidade com o Código de Ética Profissional do Psicólogo (Resolução CFP nº 010/2005) e demais resoluções aplicáveis.');
-
-        // === Identificação do Paciente ===
-        section('II — Do paciente');
         const pNome = patient.nome || '';
         const pCpf = patient.cpf || '';
         const pNasc = patient.nascimento ? new Date(patient.nascimento).toLocaleDateString('pt-BR') : '';
-        par(`Paciente: ${pNome}`, { bold: true });
-        if (pCpf) par(`CPF: ${pCpf}`);
-        if (pNasc) par(`Data de nascimento: ${pNasc}`);
 
+        // ============================================================
+        // PARTE I — CONTRATO DE PRESTAÇÃO DE SERVIÇOS
+        // ============================================================
+        partTitle('Parte I — Do Contrato de Prestação de Serviços');
+
+        clause('Cláusula 1ª — Da qualificação das partes');
+        const psicQualif = psicCnpj
+          ? `GABRIELLY GUANDALINO, psicóloga inscrita no Conselho Regional de Psicologia sob o nº CRP-PR 08/38673${psicRazaoSocial ? `, atuando sob a pessoa jurídica ${psicRazaoSocial}` : ''}, inscrita no CNPJ sob o nº ${psicCnpj}, doravante denominada simplesmente CONTRATADA;`
+          : 'GABRIELLY GUANDALINO, psicóloga inscrita no Conselho Regional de Psicologia sob o nº CRP-PR 08/38673, doravante denominada simplesmente CONTRATADA;';
+        par(psicQualif);
         if (isMinor && patient.responsavel_nome) {
-          pdf.y += 1;
-          par('Por se tratar de paciente menor de idade, o termo é firmado pelo(a) responsável legal abaixo qualificado(a), conforme prevê o art. 4º do Estatuto da Criança e do Adolescente (Lei 8.069/1990).');
-          par(`Responsável legal: ${patient.responsavel_nome}`, { bold: true });
-          if (patient.responsavel_cpf) par(`CPF: ${patient.responsavel_cpf}`);
-          if (patient.responsavel_parentesco) par(`Parentesco: ${patient.responsavel_parentesco}`);
+          par(`${patient.responsavel_nome.toUpperCase()}${patient.responsavel_cpf ? `, inscrito(a) no CPF nº ${patient.responsavel_cpf}` : ''}, na qualidade de responsável legal por ${pNome.toUpperCase()}${pCpf ? ` (CPF nº ${pCpf})` : ''}${pNasc ? `, nascido(a) em ${pNasc}` : ''}, conforme art. 4º do Estatuto da Criança e do Adolescente (Lei 8.069/1990), doravante denominado(a) simplesmente CONTRATANTE.`);
+        } else {
+          par(`${pNome.toUpperCase()}${pCpf ? `, inscrito(a) no CPF nº ${pCpf}` : ''}${pNasc ? `, nascido(a) em ${pNasc}` : ''}, doravante denominado(a) simplesmente CONTRATANTE.`);
         }
+        par('Têm entre si justo e contratado o presente Contrato de Prestação de Serviços de Psicologia Clínica, regido pelas cláusulas e condições a seguir, em conformidade com o Código Civil Brasileiro (Lei nº 10.406/2002), a Lei nº 4.119/1962 (regulamentação da profissão de psicólogo), o Código de Defesa do Consumidor (Lei nº 8.078/1990) e o Código de Ética Profissional do Psicólogo (Resolução CFP nº 010/2005).');
 
-        // === Objeto ===
-        section('III — Do objeto e finalidade do atendimento');
-        par('O presente termo tem por objeto autorizar a prestação de serviços de psicologia clínica, compreendendo: (a) avaliação psicológica inicial mediante anamnese; (b) acompanhamento psicoterapêutico; (c) elaboração de documentos psicológicos quando aplicável; (d) emissão de relatórios e pareceres técnicos quando solicitados pelo(a) paciente ou responsável.');
+        clause('Cláusula 2ª — Do objeto e do escopo dos serviços');
+        par('O presente contrato tem por objeto a prestação, pela CONTRATADA, de serviços de psicologia clínica ao(à) CONTRATANTE, compreendendo:');
+        bullet('Avaliação psicológica inicial mediante anamnese clínica;');
+        bullet('Acompanhamento psicoterapêutico individual, conforme abordagem técnica adotada pela CONTRATADA;');
+        bullet('Elaboração de documentos psicológicos pertinentes (atestados, declarações, relatórios e pareceres), nos termos da Resolução CFP nº 006/2019;');
+        bullet('Suporte pontual via WhatsApp para questões administrativas (agendamento, confirmações e dúvidas técnicas), respeitados os limites estabelecidos na Cláusula 18ª.');
+        par('Os serviços poderão ser prestados na modalidade presencial ou online (telepsicologia), conforme acordo entre as partes, observada a Resolução CFP nº 011/2018, que regulamenta a prestação de serviços psicológicos por meio de tecnologias da informação e da comunicação.');
 
-        // === Sigilo ===
-        section('IV — Do sigilo profissional');
+        clause('Cláusula 3ª — Da metodologia e duração das sessões');
+        par('Cada sessão de psicoterapia terá duração padrão de 50 (cinquenta) minutos, com frequência a ser estabelecida em comum acordo entre as partes, conforme avaliação técnica da CONTRATADA e necessidade clínica do(a) CONTRATANTE.');
+        par('Para atendimentos online, o(a) CONTRATANTE deverá dispor de equipamento adequado (computador, tablet ou celular) com acesso à internet de qualidade, em ambiente que assegure privacidade, conforto e ausência de interferências externas. Recomenda-se o uso de fones de ouvido.');
+        par('Em caso de atraso por parte do(a) CONTRATANTE, o tempo de atraso será descontado da duração da sessão, sem prorrogação compensatória, salvo se houver disponibilidade da CONTRATADA. O valor integral será devido.');
+
+        clause('Cláusula 4ª — Dos honorários e forma de pagamento');
+        if (valorFmt) {
+          par(`O valor de cada sessão é fixado em R$ ${valorFmt} (${numberToWords(parseFloat(valorSessao))}), devendo ser pago pelo(a) CONTRATANTE preferencialmente até o dia da sessão ou em data acordada entre as partes.`);
+        } else {
+          par('O valor de cada sessão será acordado entre as partes em momento próprio, devendo ser pago pelo(a) CONTRATANTE preferencialmente até o dia da sessão ou em data acordada entre as partes.');
+        }
+        if (psicChavePix) {
+          par('Forma de pagamento preferencial:', { bold: true, gap: 1 });
+          bullet(`PIX — Chave: ${psicChavePix}${psicBanco ? ` (${psicBanco})` : ''}`);
+          if (psicRazaoSocial) bullet(`Titular: ${psicRazaoSocial}`);
+          par('O comprovante deverá ser enviado à CONTRATADA via WhatsApp para confirmação. Outras formas de pagamento (dinheiro, cartão, transferência) podem ser aceitas mediante prévio acordo.', { gap: 2 });
+        } else {
+          par('Forma de pagamento será acordada entre as partes (PIX, dinheiro, cartão ou transferência).');
+        }
+        par('Os materiais e recursos terapêuticos eventualmente disponibilizados durante o processo estão incluídos no valor da sessão, salvo situações específicas previamente comunicadas e acordadas.');
+
+        clause('Cláusula 5ª — Do reajuste de valores');
+        par('Os honorários poderão ser reajustados anualmente, a critério da CONTRATADA, mediante comunicação prévia ao(à) CONTRATANTE com antecedência mínima de 30 (trinta) dias, com base em índice oficial de inflação (IPCA ou outro indicador legalmente válido) ou conforme avaliação profissional da CONTRATADA, observada sempre a transparência e a razoabilidade.');
+        par('Discordando do reajuste, o(a) CONTRATANTE poderá rescindir o contrato sem ônus, observando o disposto na Cláusula 8ª.');
+
+        clause('Cláusula 6ª — Da inadimplência');
+        par('O atraso no pagamento dos honorários por prazo superior a 15 (quinze) dias, contados da data acordada, sujeitará o(a) CONTRATANTE a:');
+        bullet('Atualização monetária pelo IPCA (ou índice equivalente) sobre o valor devido;');
+        bullet('Juros de mora de 1% (um por cento) ao mês;');
+        bullet('Multa contratual de 2% (dois por cento) sobre o valor atualizado, nos termos do art. 52, § 1º, do CDC.');
+        par('A persistência da inadimplência por prazo superior a 30 (trinta) dias autoriza a CONTRATADA a suspender os atendimentos, mediante comunicação prévia, sem prejuízo da cobrança dos valores devidos pelas vias legais cabíveis.');
+
+        clause('Cláusula 7ª — Dos cancelamentos, faltas e remarcações');
+        par('Cancelamentos e remarcações deverão ser comunicados pelo(a) CONTRATANTE com antecedência mínima de 24 (vinte e quatro) horas em relação ao horário agendado.');
+        par('A sessão será cobrada integralmente nas seguintes hipóteses:', { bold: true, gap: 1 });
+        bullet('Falta sem aviso prévio (no-show);');
+        bullet('Cancelamento ou remarcação solicitados com antecedência inferior a 24 horas, salvo caso fortuito ou força maior devidamente comprovados (Cláusula 10ª).');
+        par('Excetuam-se desta regra situações de imprevisto grave ou emergência, que serão avaliadas pela CONTRATADA de forma ética e individual, com base na boa-fé contratual.');
+        par('Em caso de cancelamento ou indisponibilidade pela CONTRATADA, o(a) CONTRATANTE será comunicado(a) com a maior brevidade possível, e a sessão será reagendada em novo horário acordado entre as partes, sem qualquer ônus ao(à) CONTRATANTE.');
+
+        clause('Cláusula 8ª — Da rescisão e encerramento do processo terapêutico');
+        par('Qualquer das partes poderá rescindir o presente contrato a qualquer tempo, mediante comunicação prévia, por escrito ou por mensagem em aplicativo, com antecedência mínima de 7 (sete) dias.');
+        par('Sessões já pagas e não realizadas, em caso de rescisão por iniciativa do(a) CONTRATANTE, serão:');
+        bullet('Compensadas em sessões futuras dentro do prazo de 60 (sessenta) dias; ou');
+        bullet('Reembolsadas integralmente em até 30 (trinta) dias úteis, mediante solicitação expressa do(a) CONTRATANTE.');
+        par('Em caso de rescisão pela CONTRATADA por motivo técnico-profissional, esta se compromete a fornecer encaminhamento responsável a outro(a) profissional, conforme art. 1º, alínea "g", do Código de Ética Profissional do Psicólogo.');
+
+        clause('Cláusula 9ª — Da prescrição');
+        par('A pretensão de cobrança dos honorários profissionais prescreverá em 5 (cinco) anos, conforme art. 206, § 5º, II, do Código Civil. A pretensão do(a) CONTRATANTE quanto à reparação por eventuais danos prescreverá conforme prazos previstos na legislação civil aplicável.');
+
+        clause('Cláusula 10ª — Do caso fortuito e da força maior');
+        par('Nenhuma das partes será responsabilizada pelo descumprimento de obrigações decorrente de caso fortuito ou força maior (art. 393 do Código Civil), entendidos como eventos imprevisíveis ou inevitáveis cujos efeitos não puderam ser evitados, tais como: estado de calamidade pública, pandemias, falhas generalizadas de serviços essenciais ou determinações de autoridades competentes.');
+
+        clause('Cláusula 11ª — Das alterações contratuais');
+        par('Qualquer alteração das condições estabelecidas neste contrato somente terá validade se feita por escrito e aceita expressamente por ambas as partes, ressalvado o reajuste anual previsto na Cláusula 5ª, que segue procedimento próprio.');
+
+        // ============================================================
+        // PARTE II — CONSENTIMENTO LIVRE E ESCLARECIDO (LGPD & CFP)
+        // ============================================================
+        partTitle('Parte II — Do Consentimento Livre e Esclarecido (LGPD & CFP)');
+
+        clause('Cláusula 12ª — Do sigilo profissional');
         par('Em conformidade com o art. 9º do Código de Ética Profissional do Psicólogo, todas as informações compartilhadas durante o atendimento são protegidas por sigilo profissional, sendo a quebra de sigilo admitida apenas nas hipóteses previstas em lei, tais como:');
-        bullet('Risco iminente à vida do(a) paciente ou de terceiros;');
-        bullet('Suspeita ou confirmação de violência contra criança, adolescente, idoso ou pessoa com deficiência (com comunicação obrigatória aos órgãos competentes);');
+        bullet('Risco iminente à vida do(a) CONTRATANTE ou de terceiros;');
+        bullet('Suspeita ou confirmação de violência contra criança, adolescente, idoso ou pessoa com deficiência (com comunicação obrigatória aos órgãos competentes — arts. 13 e 245 do ECA, art. 19 do Estatuto do Idoso, art. 26 da LBI);');
         bullet('Determinação judicial expressa.');
         if (isMinor) {
-          pdf.y += 1;
-          par('Tratando-se de paciente menor de idade, o(a) responsável legal será informado(a) sobre os aspectos gerais do tratamento, preservando-se, sempre que possível, a privacidade do conteúdo específico das sessões, em respeito ao desenvolvimento da autonomia da criança/adolescente.');
+          par('Tratando-se de paciente menor de idade, o(a) responsável legal será informado(a) sobre os aspectos gerais do tratamento, preservando-se, sempre que possível, a privacidade do conteúdo específico das sessões, em respeito ao princípio do melhor interesse da criança e do adolescente (art. 3º do ECA) e ao desenvolvimento de sua autonomia.');
         }
 
-        // === LGPD - Dados ===
-        section('V — Do tratamento de dados pessoais (LGPD)');
-        par('Em atendimento à Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018), declara-se que serão tratados dados pessoais e dados pessoais sensíveis relativos à saúde, conforme detalhado a seguir:');
+        clause('Cláusula 13ª — Da titularidade e guarda do prontuário');
+        par('O prontuário psicológico, suas anotações, registros e documentos correlatos pertencem à CONTRATADA, conforme dispõe a Resolução CFP nº 001/2009, sendo de sua responsabilidade exclusiva a guarda e custódia.');
+        par('Ao(à) CONTRATANTE é assegurado o direito de acesso ao seu prontuário e a obtenção de cópias dos documentos pertinentes, mediante solicitação por escrito, observados os limites éticos e legais aplicáveis.');
+        par('Os prontuários serão mantidos pelo prazo mínimo de 5 (cinco) anos a contar do último atendimento, conforme determina a Resolução CFP nº 001/2009, podendo ser estendido por exigência legal específica.');
 
+        clause('Cláusula 14ª — Do tratamento de dados pessoais (LGPD)');
+        par('Em atendimento à Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018), serão tratados dados pessoais e dados pessoais sensíveis relativos à saúde, conforme detalhado a seguir:');
         par('Categorias de dados coletados:', { bold: true, gap: 1 });
         bullet('Dados de identificação (nome, CPF, RG, data de nascimento);');
         bullet('Dados de contato (telefone, e-mail, endereço);');
-        bullet('Dados de identificação do(s) responsável(is) legal(is), quando aplicável;');
+        bullet('Dados do(s) responsável(is) legal(is), quando aplicável;');
         bullet('Dados sensíveis de saúde (anamnese, histórico clínico, diagnósticos, evoluções terapêuticas);');
         bullet('Documentos clínicos (atestados, relatórios, declarações).');
-
-        pdf.y += 1;
-        par('Finalidades do tratamento:', { bold: true, gap: 1 });
-        bullet('Prestação dos serviços de psicologia clínica contratados;');
-        bullet('Cumprimento de obrigações legais e regulatórias do exercício profissional;');
-        bullet('Emissão de documentos psicológicos (atestados, relatórios, declarações);');
-        bullet('Contato administrativo (agendamento, lembretes de sessões e cobrança).');
 
         pdf.y += 1;
         par('Bases legais (art. 7º e 11º da LGPD):', { bold: true, gap: 1 });
@@ -3783,92 +3871,71 @@
 
         pdf.y += 1;
         par('Armazenamento e segurança:', { bold: true, gap: 1 });
-        par('Os dados são armazenados em ambiente digital criptografado (Google Drive privativo da psicóloga), com controle de acesso por autenticação em duas etapas (2FA), conforme determina o art. 46 da LGPD. Documentos físicos, quando existirem, ficam guardados em local de acesso restrito e exclusivo da psicóloga.');
+        par('Os dados são armazenados em ambiente digital criptografado (Google Drive privativo da CONTRATADA), com controle de acesso por autenticação em duas etapas (2FA), conforme art. 46 da LGPD.');
 
         par('Transferência internacional de dados:', { bold: true, gap: 1 });
-        par('Em razão do uso de plataforma de armazenamento em nuvem (Google Drive — Google LLC), há transferência internacional de dados para servidores localizados nos Estados Unidos da América, conforme art. 33 da LGPD. A Google LLC declara conformidade com padrões internacionais de proteção de dados (ISO/IEC 27001, 27017, 27018, SOC 2 e SOC 3), garantindo nível de proteção compatível com a legislação brasileira. Mais informações em: cloud.google.com/security/compliance.');
+        par('O uso de plataforma em nuvem (Google) implica transferência internacional de dados aos Estados Unidos, nos termos do art. 33 da LGPD, com nível de proteção compatível com a legislação brasileira (certificações ISO/IEC 27001, 27017, 27018, SOC 2 e SOC 3).');
 
-        par('Tempo de guarda:', { bold: true, gap: 1 });
-        par('Os prontuários psicológicos serão mantidos pelo prazo mínimo de 5 (cinco) anos a contar do último atendimento, conforme determina a Resolução CFP nº 001/2009, podendo ser estendido por exigência legal específica. Findo este prazo e na ausência de obrigação de guarda, os dados serão eliminados de forma segura.');
+        par('Compartilhamento:', { bold: true, gap: 1 });
+        par('Os dados não serão compartilhados com terceiros, exceto: (a) por determinação judicial; (b) por solicitação expressa e por escrito do(a) CONTRATANTE; (c) nas hipóteses previstas na Cláusula 12ª.');
 
-        par('Compartilhamento de dados:', { bold: true, gap: 1 });
-        par('Os dados não serão compartilhados com terceiros, exceto: (a) por determinação judicial; (b) por solicitação expressa e por escrito do(a) paciente ou responsável; (c) nas hipóteses previstas no item IV deste termo (quebra excepcional de sigilo); (d) quando exigido por autoridade competente nos termos da lei.');
-
-        // === Encarregada de Dados (DPO) — NOVO ===
-        section('VI — Da encarregada pelo tratamento de dados (DPO)');
-        const whatsapp = state.psicologaWhatsapp || '_____________________';
-        par(`Em atendimento ao art. 41 da LGPD, fica designada como Encarregada pelo Tratamento de Dados Pessoais (DPO — Data Protection Officer) a própria psicóloga ${'\u200B'}Gabrielly Guandalino, podendo ser contatada para o exercício dos direitos do titular pelos seguintes canais:`);
-        bullet(`WhatsApp: ${whatsapp}`);
+        clause('Cláusula 15ª — Da Encarregada pelo Tratamento de Dados (DPO)');
+        par(`Em atendimento ao art. 41 da LGPD, fica designada como Encarregada pelo Tratamento de Dados Pessoais a própria CONTRATADA, podendo ser contatada pelos canais:`);
+        bullet(`WhatsApp: ${psicWhatsapp}`);
         bullet('E-mail profissional: gsgpsicologia@gmail.com');
-        par('Solicitações relacionadas ao exercício de direitos serão respondidas em até 15 (quinze) dias, salvo quando houver impossibilidade técnica ou legal devidamente justificada.', { gap: 2 });
+        par('Solicitações relacionadas ao exercício de direitos serão respondidas em até 15 (quinze) dias.', { gap: 2 });
 
-        // === Direitos do Titular ===
-        section('VII — Dos direitos do titular dos dados');
-        par('O(A) paciente, na qualidade de titular dos dados pessoais, tem assegurados os direitos previstos no art. 18 da LGPD, podendo, mediante requerimento à Encarregada acima identificada:');
+        clause('Cláusula 16ª — Dos direitos do titular dos dados');
+        par('O(A) CONTRATANTE, na qualidade de titular dos dados, tem assegurados os direitos previstos no art. 18 da LGPD, podendo:');
         bullet('Confirmar a existência de tratamento de seus dados;');
         bullet('Acessar os dados tratados;');
         bullet('Solicitar correção de dados incompletos, inexatos ou desatualizados;');
-        bullet('Solicitar a anonimização, bloqueio ou eliminação de dados desnecessários, excessivos ou tratados em desconformidade com a LGPD;');
-        bullet('Solicitar a portabilidade dos dados a outro fornecedor de serviço;');
-        bullet('Revogar o consentimento, observado o prazo legal mínimo de guarda do prontuário (5 anos);');
-        bullet('Solicitar informações sobre eventual compartilhamento dos dados;');
+        bullet('Solicitar anonimização, bloqueio ou eliminação de dados desnecessários, excessivos ou tratados em desconformidade com a LGPD;');
+        bullet('Solicitar a portabilidade dos dados a outro fornecedor;');
+        bullet('Revogar o consentimento, observado o prazo legal mínimo de guarda do prontuário;');
         bullet('Peticionar à Autoridade Nacional de Proteção de Dados (ANPD).');
 
-        // === Plano de Incidente — NOVO ===
-        section('VIII — Da comunicação em caso de incidente');
-        par('Em caso de eventual incidente de segurança que possa acarretar risco ou dano relevante aos titulares de dados, a psicóloga compromete-se a:');
-        bullet('Comunicar o(a) paciente ou responsável legal em prazo razoável, preferencialmente em até 72 (setenta e duas) horas após a constatação do incidente;');
-        bullet('Comunicar à Autoridade Nacional de Proteção de Dados (ANPD) na forma do art. 48 da LGPD;');
+        clause('Cláusula 17ª — Da comunicação em caso de incidente');
+        par('Em caso de incidente de segurança que possa acarretar risco ou dano relevante, a CONTRATADA compromete-se a:');
+        bullet('Comunicar o(a) CONTRATANTE em prazo razoável, preferencialmente em até 72 (setenta e duas) horas;');
+        bullet('Comunicar à ANPD, na forma do art. 48 da LGPD;');
         bullet('Adotar medidas imediatas de mitigação dos efeitos do incidente.');
 
-        // === Comunicação ===
-        section('IX — Da comunicação entre as partes');
-        par('Reconheço e autorizo que a comunicação administrativa entre as partes (agendamentos, confirmações, lembretes e cobranças) seja realizada por meio de WhatsApp, e-mail ou telefone, ciente de que tais canais possuem limitações próprias de segurança digital. Conteúdo terapêutico ou clínico de natureza sensível não deverá ser tratado por estes canais, devendo ser reservado às sessões presenciais ou por videochamada em plataforma segura.');
+        clause('Cláusula 18ª — Da comunicação entre as partes');
+        par('As partes autorizam a comunicação administrativa (agendamentos, confirmações, lembretes, cobranças, repasse de materiais e dúvidas pontuais) por WhatsApp, e-mail ou telefone, ciente das limitações próprias destes canais quanto à segurança digital.');
+        par('O canal de WhatsApp NÃO configura espaço de atendimento psicológico, sendo destinado apenas a questões administrativas e pontuais. Demandas de natureza terapêutica deverão ser tratadas exclusivamente em sessões.');
+        par('As mensagens serão respondidas dentro do horário de expediente da CONTRATADA. Mensagens enviadas à noite, em finais de semana ou feriados serão respondidas no próximo dia útil.');
 
-        // === Direitos do Paciente ===
-        section('X — Dos direitos do paciente no atendimento');
-        bullet('Receber atendimento técnico-profissional de qualidade, em respeito à dignidade humana;');
-        bullet('Interromper o tratamento a qualquer momento, sem ônus moral ou financeiro indevido;');
-        bullet('Receber esclarecimentos sobre o método terapêutico utilizado;');
-        bullet('Solicitar encaminhamento a outro(a) profissional, quando entender necessário;');
-        if (isMinor) {
-          bullet('Tratando-se de criança ou adolescente, ter respeitado o princípio do melhor interesse do menor (art. 3º do ECA), sendo as informações compartilhadas com os responsáveis na medida necessária ao acompanhamento, sem prejuízo da privacidade legítima do(a) paciente.');
-        }
-
-        // === Gravações — NOVO ===
-        section('XI — Da autorização para registro audiovisual (opcional)');
-        par('A psicóloga poderá, mediante autorização específica abaixo, registrar trechos das sessões em áudio ou vídeo exclusivamente para fins de supervisão clínica ou aprimoramento técnico, com sigilo equiparado ao das próprias sessões. Esta autorização é facultativa e pode ser revogada a qualquer momento.');
+        clause('Cláusula 19ª — Da autorização para registro audiovisual (opcional)');
+        par('A CONTRATADA poderá, mediante autorização específica abaixo, registrar trechos das sessões em áudio ou vídeo exclusivamente para fins de supervisão clínica ou aprimoramento técnico, com sigilo equiparado ao das próprias sessões. Esta autorização é facultativa e pode ser revogada a qualquer momento.');
         pdf.y += 2;
         par('(   ) AUTORIZO o registro audiovisual nos termos acima.', { bold: true, gap: 1 });
         par('(   ) NÃO AUTORIZO qualquer registro audiovisual.', { bold: true, gap: 2 });
 
-        // === Honorários ===
-        section('XII — Dos honorários');
-        par('Os honorários, frequência das sessões e forma de pagamento serão acordados verbalmente entre as partes em momento próprio, podendo ser formalizados em instrumento separado, se necessário.');
+        // ============================================================
+        // PARTE III — DISPOSIÇÕES FINAIS
+        // ============================================================
+        partTitle('Parte III — Das Disposições Finais');
 
-        // === Vigência ===
-        section('XIII — Da vigência');
-        par('Este termo entra em vigor na data de sua assinatura e permanece válido durante todo o período de atendimento, podendo ser revogado por escrito a qualquer momento por qualquer das partes, ressalvada a obrigação legal de guarda do prontuário pelo prazo mínimo previsto.');
+        clause('Cláusula 20ª — Da vigência');
+        par('O presente contrato entra em vigor na data de sua assinatura e permanece válido por prazo indeterminado, enquanto perdurar o vínculo terapêutico, podendo ser rescindido nos termos da Cláusula 8ª, ressalvada a obrigação legal de guarda do prontuário pelo prazo mínimo previsto.');
 
-        // === Declaração ===
-        section('XIV — Declaração final');
-        par(`Declaro ter lido, compreendido e concordado integralmente com os termos acima expostos, prestando o presente CONSENTIMENTO LIVRE, INFORMADO, ESPECÍFICO E INEQUÍVOCO ${isMinor ? 'em nome do(a) paciente menor de idade sob minha responsabilidade legal' : 'em meu próprio nome'}, para o tratamento de dados pessoais e dados sensíveis nos termos deste instrumento, nos termos do art. 8º da LGPD.`);
+        clause('Cláusula 21ª — Da declaração final');
+        par(`Declaro ter lido, compreendido e concordado integralmente com todas as cláusulas do presente CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE PSICOLOGIA CLÍNICA e do TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO, prestando o presente CONSENTIMENTO LIVRE, INFORMADO, ESPECÍFICO E INEQUÍVOCO ${isMinor ? 'em nome do(a) paciente menor de idade sob minha responsabilidade legal' : 'em meu próprio nome'}, nos termos do art. 8º da LGPD e demais dispositivos legais aplicáveis.`);
 
-        // === Assinaturas ===
-        pdf.ensureSpace(45);
+        clause('Cláusula 22ª — Do foro');
+        par('Fica eleito o foro da Comarca de Maringá, Estado do Paraná, como competente para dirimir quaisquer dúvidas ou questões oriundas do presente contrato, com renúncia expressa a qualquer outro, por mais privilegiado que seja.');
+
+        // === ASSINATURAS ===
+        pdf.ensureSpace(50);
         pdf.y += 8;
 
         pdoc.setFont('times', 'normal');
         pdoc.setFontSize(10);
         pdoc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
 
-        const localDate = `_______________________, _____ de _____________________ de ${now.getFullYear()}.`;
+        const localDate = `Maringá-PR, _____ de _____________________ de ${now.getFullYear()}.`;
         pdoc.text(localDate, marginX, pdf.y);
-        pdf.y += 4;
-        pdoc.setFont('times', 'italic');
-        pdoc.setFontSize(8.5);
-        pdoc.setTextColor(palette.faint[0], palette.faint[1], palette.faint[2]);
-        pdoc.text('(local e data)', marginX, pdf.y);
         pdf.y += 14;
 
         // Linhas de assinatura em duas colunas
@@ -3894,23 +3961,33 @@
 
         pdoc.setFontSize(8);
         pdoc.setTextColor(palette.sub[0], palette.sub[1], palette.sub[2]);
-        const sub1 = isMinor ? 'Responsável legal' : 'Paciente';
+        const sub1 = isMinor ? 'CONTRATANTE (responsável legal)' : 'CONTRATANTE';
         pdoc.text(sub1 + (cpf1 ? ` · CPF: ${cpf1}` : ''), col1X + colW / 2, pdf.y, { align: 'center' });
-        pdoc.text('Psicóloga · CRP-PR 08/38673', col2X + colW / 2, pdf.y, { align: 'center' });
+        pdoc.text('CONTRATADA · Psicóloga · CRP-PR 08/38673', col2X + colW / 2, pdf.y, { align: 'center' });
 
-        // Finaliza (rodapé com numeração — reusa do helper)
         pdf.finalize();
 
-        // Salva
         const safeName = sanitizeFilename(pNome);
-        pdoc.save(`Termo_Consentimento_${safeName}.pdf`);
+        pdoc.save(`Contrato_e_TCLE_${safeName}.pdf`);
 
         renderConsentimentoTab();
-        toast('Termo gerado com sucesso', 'success');
+        toast('Documento gerado com sucesso', 'success');
       } catch (e) {
         console.error(e);
         toast('Erro ao gerar PDF', 'error');
       }
+    }
+
+    // Helper: número por extenso simplificado (apenas reais inteiros)
+    function numberToWords(num) {
+      try {
+        const reais = Math.floor(num);
+        const cents = Math.round((num - reais) * 100);
+        const reaisStr = reais.toLocaleString('pt-BR');
+        let s = `R$ ${reaisStr}`;
+        if (cents > 0) s += `,${String(cents).padStart(2, '0')}`;
+        return s;
+      } catch { return ''; }
     }
     window.generateConsentimentoPdf = generateConsentimentoPdf;
 
