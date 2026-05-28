@@ -3682,53 +3682,61 @@
       const isMinor = (tipoContrato === 'crianca' || tipoContrato === 'adolescente');
 
       // ===== CONFIGURAÇÕES PROFISSIONAIS DA PSICÓLOGA =====
-      const loadOrAsk = (key, label, hint) => {
-        let val = state[key] || localStorage.getItem(key);
-        if (!val) {
-          const r = prompt(label + (hint ? '\n\n' + hint : ''));
-          if (r !== null && r.trim()) {
-            val = r.trim();
-            localStorage.setItem(key, val);
-          } else {
-            val = '';
-          }
+      // SEMPRE pergunta (pré-preenchendo com o último valor usado como sugestão).
+      // O último valor fica guardado só pra facilitar — mas a pergunta sempre aparece.
+      const askWithDefault = (key, label, hint) => {
+        const ultimo = state[key] || localStorage.getItem(key) || '';
+        const r = prompt(label + (hint ? '\n\n' + hint : ''), ultimo);
+        if (r === null) {
+          // Cancelou — usa o último valor (ou vazio)
+          state[key] = ultimo;
+          return ultimo;
         }
+        const val = r.trim();
+        // Guarda como sugestão pra próxima vez (mas vai perguntar de novo)
+        if (val) localStorage.setItem(key, val);
         state[key] = val;
         return val;
       };
 
-      const psicWhatsapp = loadOrAsk('psicologaWhatsapp',
+      const psicWhatsapp = askWithDefault('psicologaWhatsapp',
         'WhatsApp profissional da psicóloga (contato da Encarregada de Dados).',
-        'Exemplo: (44) 99999-9999\nSerá salvo apenas no seu navegador.') || '_____________________';
+        'Exemplo: (44) 99999-9999') || '_____________________';
 
-      const psicCnpj = loadOrAsk('psicologaCnpj',
+      const psicCnpj = askWithDefault('psicologaCnpj',
         'CNPJ profissional (deixe em branco se for pessoa física).',
         'Exemplo: 56.320.762/0001-20');
 
-      const psicRazaoSocial = loadOrAsk('psicologaRazaoSocial',
+      const psicRazaoSocial = askWithDefault('psicologaRazaoSocial',
         'Razão social (apenas se tiver CNPJ).',
         'Exemplo: GSG SERVICO DE PSICOLOGIA LTDA.');
 
-      const psicChavePix = loadOrAsk('psicologaChavePix',
+      const psicChavePix = askWithDefault('psicologaChavePix',
         'Chave PIX para pagamentos.',
         'Pode ser CNPJ, CPF, e-mail ou telefone.');
 
-      const psicBanco = loadOrAsk('psicologaBanco',
+      const psicBanco = askWithDefault('psicologaBanco',
         'Banco/Instituição da chave PIX (opcional).',
         'Exemplo: NU PAGAMENTOS – IP');
 
-      // Tipo de serviço (pergunta sempre)
+      // Tipo de serviço (pergunta sempre, sugere o último usado)
+      const ultimoServico = localStorage.getItem('ultimoTipoServico') || '';
       const tipoServico = prompt(
-        'Qual o serviço prestado neste contrato?\n\nExemplos: Psicoterapia individual, Avaliação psicológica, Orientação parental, Orientação escolar, Acompanhamento terapêutico...\n\nDeixe em branco para usar "psicologia clínica" genérico.'
+        'Qual o serviço prestado neste contrato?\n\nExemplos: Psicoterapia individual, Avaliação psicológica, Orientação parental, Orientação escolar, Acompanhamento terapêutico...\n\nDeixe em branco para usar "psicologia clínica" genérico.',
+        ultimoServico
       );
       const servicoDesc = (tipoServico && tipoServico.trim()) ? tipoServico.trim() : null;
+      if (servicoDesc) localStorage.setItem('ultimoTipoServico', servicoDesc);
 
-      // Valor da sessão (pergunta sempre)
+      // Valor da sessão (pergunta sempre, sugere o último usado)
+      const ultimoValor = localStorage.getItem('ultimoValorSessao') || '';
       const valorStr = prompt(
-        'Valor da sessão (R$) para o contrato.\n\nDigite apenas números, ex: 200,00\nDeixe em branco para não especificar.'
+        'Valor da sessão (R$) para o contrato.\n\nDigite apenas números, ex: 200,00\nDeixe em branco para não especificar.',
+        ultimoValor
       );
       const valorSessao = (valorStr && valorStr.trim()) ? valorStr.replace(',', '.').replace(/[^\d.]/g, '') : null;
       const valorFmt = valorSessao ? Number(valorSessao).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : null;
+      if (valorStr && valorStr.trim()) localStorage.setItem('ultimoValorSessao', valorStr.trim());
 
       // Data do contrato (pergunta sempre) — sugere a data de hoje
       const hojeBR = new Date().toLocaleDateString('pt-BR');
