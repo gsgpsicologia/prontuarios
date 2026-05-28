@@ -3740,6 +3740,20 @@
         dataContratoFmt = dataStr.trim();
       }
 
+      // Situação de guarda (pergunta apenas se for menor de idade)
+      let situacaoGuarda = null;
+      if (isMinor) {
+        const guardaResp = prompt(
+          'Situação de guarda do menor (para a cláusula de responsabilidade parental).\n\nDigite uma das opções:\n1 = Guarda exclusiva / poder familiar pleno do responsável que assina\n2 = Guarda compartilhada entre os pais\n3 = Há disputa judicial ou decisão judicial específica\n4 = Outra situação\n\nDeixe em branco para usar texto genérico padrão.'
+        );
+        const g = (guardaResp || '').trim();
+        if (g === '1') situacaoGuarda = 'exclusiva';
+        else if (g === '2') situacaoGuarda = 'compartilhada';
+        else if (g === '3') situacaoGuarda = 'judicial';
+        else if (g === '4') situacaoGuarda = 'outra';
+        else situacaoGuarda = null;
+      }
+
       const now = new Date();
 
       if (!state.consentimento) {
@@ -3828,7 +3842,7 @@
         const servicoTexto = servicoDesc
           ? `${servicoDesc}`
           : 'serviços de psicologia clínica, compreendendo avaliação psicológica, psicoterapia individual e emissão de documentos pertinentes';
-        par(`A CONTRATADA prestará ao(à) ${isMinor ? 'paciente menor de idade' : 'CONTRATANTE'} os seguintes serviços: ${servicoTexto}, na modalidade presencial ou online (Resolução CFP nº 011/2018). As sessões terão duração aproximada de 50 minutos, com frequência ajustada conforme avaliação técnica da CONTRATADA.`);
+        par(`A CONTRATADA prestará ao(à) ${isMinor ? 'paciente menor de idade' : 'CONTRATANTE'} os seguintes serviços: ${servicoTexto}, na modalidade presencial ou online (conforme regulamentação vigente do Conselho Federal de Psicologia aplicável aos atendimentos psicológicos presenciais e online). As sessões terão duração aproximada de 50 minutos, com frequência ajustada conforme avaliação técnica da CONTRATADA.`);
 
         // CLÁUSULA 3ª — NATUREZA DA OBRIGAÇÃO
         clause('3', 'Da natureza da obrigação');
@@ -3836,23 +3850,23 @@
 
         // CLÁUSULA 4ª — OBRIGAÇÕES DO CONTRATANTE
         clause('4', 'Das obrigações do contratante');
-        par('O(A) CONTRATANTE compromete-se a: (a) prestar informações verídicas e completas, isentando a CONTRATADA por prejuízos decorrentes de informações omitidas ou falsas; (b) comparecer pontualmente; (c) efetuar os pagamentos acordados; (d) colaborar com o processo terapêutico. Tratando-se de menor, o(a) responsável apoiará a continuidade do acompanhamento.');
+        par('O(A) CONTRATANTE compromete-se a: (a) prestar informações verídicas e completas, isentando a CONTRATADA por prejuízos decorrentes de informações omitidas ou falsas; (b) comparecer pontualmente; (c) efetuar os pagamentos acordados; (d) colaborar com o processo terapêutico. Tratando-se de menor, o(a) responsável apoiará a continuidade do acompanhamento. O(A) CONTRATANTE declara estar ciente de que a omissão de informações relevantes relacionadas à saúde física, psiquiátrica, uso de medicamentos, tratamentos paralelos ou histórico clínico poderá comprometer o adequado acompanhamento psicológico, isentando a CONTRATADA de prejuízos decorrentes dessas omissões.');
 
         // CLÁUSULA 5ª — HONORÁRIOS
         clause('5', 'Dos honorários e pagamento');
         if (valorFmt) {
-          par(`Valor da sessão: R$ ${valorFmt}. Pagamento até o dia da sessão ou conforme acordado entre as partes.`);
+          par(`O valor da sessão será de R$ ${valorFmt}, com pagamento mediante PIX, transferência bancária ou outro meio acordado entre as partes, na forma e periodicidade previamente ajustadas. O pagamento deverá ser realizado até o dia da sessão ou conforme combinado.`);
         } else {
-          par('O valor das sessões e a forma de pagamento serão acordados entre as partes em momento próprio.');
+          par('O valor da sessão será acordado entre as partes, com pagamento mediante PIX, transferência bancária ou outro meio, na forma e periodicidade previamente ajustadas.');
         }
         if (psicChavePix) {
-          par(`Forma preferencial: PIX — Chave ${psicChavePix}${psicBanco ? ` (${psicBanco})` : ''}${psicRazaoSocial ? `, Titular: ${psicRazaoSocial}` : ''}, com envio do comprovante por WhatsApp.`);
+          par(`Chave PIX: ${psicChavePix}${psicBanco ? ` (${psicBanco})` : ''}${psicRazaoSocial ? `, Titular: ${psicRazaoSocial}` : ''}, com envio do comprovante por WhatsApp.`);
         }
-        par('Eventual reajuste dos honorários é facultativo e ocorrerá a critério da CONTRATADA, que avaliará a conveniência e comunicará previamente o(a) CONTRATANTE de forma transparente. A inadimplência superior a 15 dias sujeita o(a) CONTRATANTE a juros de 1% ao mês, multa de 2% e correção monetária (art. 52, §1º, CDC), facultando à CONTRATADA suspender os atendimentos até a regularização.');
+        par('Os honorários poderão ser reajustados, a critério da CONTRATADA, anualmente ou sempre que necessário, sendo o reajuste facultativo e, quando houver, comunicado previamente ao(à) CONTRATANTE com antecedência mínima de 30 (trinta) dias, de forma transparente. A inadimplência superior a 15 dias sujeita o(a) CONTRATANTE a juros de 1% ao mês, multa de 2% e correção monetária (art. 52, §1º, CDC), facultando à CONTRATADA suspender os atendimentos até a regularização.');
 
         // CLÁUSULA 6ª — CANCELAMENTOS
         clause('6', 'Dos cancelamentos e faltas');
-        par('Cancelamentos devem ser comunicados com antecedência mínima de 24 horas. Faltas sem aviso ou desmarcações com menos de 24 horas serão cobradas integralmente, salvo caso fortuito ou força maior comprovado (art. 393 do Código Civil). Em caso de atraso, o tempo será descontado da sessão, mantido o valor. Cancelamentos pela CONTRATADA serão reagendados sem ônus.');
+        par('Cancelamentos devem ser comunicados com antecedência mínima de 24 horas. Faltas sem aviso ou desmarcações com menos de 24 horas serão cobradas integralmente, salvo caso fortuito ou força maior comprovado (art. 393 do Código Civil). A cobrança se justifica pela reserva exclusiva do horário na agenda profissional, impossibilitando o agendamento de outro paciente no mesmo período. Em caso de atraso, o tempo será descontado da sessão, mantido o valor. Cancelamentos pela CONTRATADA serão reagendados sem ônus.');
 
         // CLÁUSULA 7ª — RESCISÃO
         clause('7', 'Da rescisão');
@@ -3865,20 +3879,43 @@
           par('Tratando-se de menor, o(a) responsável receberá informações gerais sobre o tratamento, resguardada a privacidade do conteúdo das sessões, em respeito ao princípio do melhor interesse (art. 3º do ECA).');
         }
 
-        // CLÁUSULA 9ª — LGPD
-        clause('9', 'Do tratamento de dados pessoais (LGPD)');
+        // CLÁUSULA 9ª — URGÊNCIA E EMERGÊNCIA
+        clause('9', 'Da ausência de atendimento de urgência');
+        par('Os serviços prestados pela CONTRATADA não se caracterizam como atendimento de urgência ou emergência psicológica/psiquiátrica. Em situações de crise, risco iminente, ideação suicida, surto, emergência médica ou qualquer situação grave, o(a) CONTRATANTE deverá procurar imediatamente os serviços de emergência: SAMU (192), CAPS, hospital ou outro serviço público ou privado adequado.');
+
+        // CLÁUSULA 10ª — RESPONSABILIDADE PARENTAL (só menores)
+        let nClause = 10;
+        if (isMinor) {
+          clause('10', 'Da responsabilidade parental e guarda');
+          let guardaTexto = 'O(A) responsável legal declara possuir legitimidade para autorizar o acompanhamento psicológico do(a) menor, responsabilizando-se pelas informações prestadas quanto à guarda, tutela ou poder familiar. Havendo disputa judicial, guarda compartilhada, limitação de autoridade parental ou divergência entre responsáveis legais, o(a) CONTRATANTE compromete-se a comunicar imediatamente a CONTRATADA, apresentando eventual decisão judicial pertinente.';
+          if (situacaoGuarda === 'compartilhada') {
+            guardaTexto += ' As partes declaram que, no presente caso, a guarda do(a) menor é COMPARTILHADA entre os genitores, comprometendo-se o(a) responsável signatário(a) a manter o(a) outro(a) genitor(a) ciente do acompanhamento, quando cabível.';
+          } else if (situacaoGuarda === 'judicial') {
+            guardaTexto += ' As partes declaram que, no presente caso, EXISTE disputa judicial ou decisão judicial específica relativa à guarda/convivência do(a) menor, comprometendo-se o(a) responsável a apresentar a documentação pertinente à CONTRATADA.';
+          } else if (situacaoGuarda === 'exclusiva') {
+            guardaTexto += ' As partes declaram que, no presente caso, o(a) responsável signatário(a) detém a guarda/poder familiar de forma apta a autorizar isoladamente o acompanhamento.';
+          }
+          par(guardaTexto);
+          nClause = 11;
+        }
+
+        // CLÁUSULA — LGPD
+        clause(String(nClause), 'Do tratamento de dados pessoais (LGPD)');
         par('Em atendimento à Lei nº 13.709/2018 (LGPD), o(a) CONTRATANTE autoriza o tratamento de dados pessoais e sensíveis de saúde (identificação, contato, anamnese, evoluções e documentos clínicos) para a prestação dos serviços e cumprimento de obrigações legais. Os dados são armazenados em ambiente digital criptografado, com acesso restrito e medidas de segurança do art. 46 da LGPD. O prontuário será guardado por no mínimo 5 anos (Resolução CFP nº 001/2009). Não haverá compartilhamento com terceiros, salvo hipóteses legais ou autorização expressa.');
+        nClause++;
 
-        // CLÁUSULA 10ª — DIREITOS DO TITULAR
-        clause('10', 'Dos direitos do titular e Encarregada de Dados');
+        // CLÁUSULA — DIREITOS DO TITULAR
+        clause(String(nClause), 'Dos direitos do titular e Encarregada de Dados');
         par(`A CONTRATADA atua como Encarregada pelo Tratamento de Dados (art. 41 da LGPD), contato pelo WhatsApp ${psicWhatsapp} ou e-mail gsgpsicologia@gmail.com. São assegurados ao titular os direitos do art. 18 da LGPD: acesso, correção, eliminação, portabilidade, revogação do consentimento (observado o prazo de guarda) e petição à ANPD. Em incidente de segurança relevante, a CONTRATADA comunicará o titular e a ANPD na forma da lei.`);
+        nClause++;
 
-        // CLÁUSULA 11ª — COMUNICAÇÃO
-        clause('11', 'Da comunicação entre as partes');
+        // CLÁUSULA — COMUNICAÇÃO
+        clause(String(nClause), 'Da comunicação entre as partes');
         par('Fica autorizada a comunicação por WhatsApp, e-mail ou telefone para fins administrativos (agendamentos, lembretes e cobranças). O WhatsApp NÃO constitui canal terapêutico — questões clínicas serão tratadas exclusivamente em sessões. Mensagens fora do horário de expediente serão respondidas no próximo dia útil.');
+        nClause++;
 
-        // CLÁUSULA 12ª — DISPOSIÇÕES FINAIS
-        clause('12', 'Das disposições finais e foro');
+        // CLÁUSULA — DISPOSIÇÕES FINAIS
+        clause(String(nClause), 'Das disposições finais e foro');
         par(`Este contrato vigora por prazo indeterminado a partir da assinatura, e eventual nulidade de qualquer cláusula não afetará as demais. Alterações exigem acordo escrito. As partes elegem a conciliação ou mediação como meio preferencial de solução de conflitos, antes do ajuizamento de ação judicial. Declaro ter lido, compreendido e concordado integralmente com este CONTRATO E TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO, prestando o consentimento livre, informado e inequívoco ${isMinor ? 'em nome do(a) paciente menor sob minha responsabilidade legal' : 'em meu próprio nome'}, nos termos do art. 8º da LGPD. Fica eleito o foro da Comarca de Maringá-PR para dirimir quaisquer questões.`);
 
         // === ASSINATURAS ===
@@ -3920,12 +3957,12 @@
       }
 
       try {
-        // Tenta escalas decrescentes até caber em 2 páginas
-        const escalas = [1.0, 0.96, 0.92, 0.88, 0.85, 0.82];
+        // Tenta escalas decrescentes até caber em 3 páginas
+        const escalas = [1.0, 0.96, 0.93, 0.90, 0.87, 0.84];
         let resultado = null;
         for (const scale of escalas) {
           resultado = renderContrato(scale);
-          if (resultado.numPages <= 2) break;
+          if (resultado.numPages <= 3) break;
         }
         const { pdf, pdoc } = resultado;
         pdf.finalize();
