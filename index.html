@@ -3894,13 +3894,15 @@
         // ============================================================
         // CLÁUSULA 12ª — DISPOSIÇÕES FINAIS E FORO
         // ============================================================
+        // Garante que a cláusula 12 + data + assinaturas fiquem JUNTAS na mesma página.
+        // Estimativa do bloco completo: texto da cláusula (~40mm) + assinaturas (~58mm) = ~98mm.
+        // Se não couber, joga TODO o conjunto pra próxima página (assinaturas nunca ficam órfãs).
+        pdf.ensureSpace(100);
         clause('12', 'Das disposições finais e foro');
         par(`Este contrato vigora por prazo indeterminado a partir da assinatura, e eventual nulidade de qualquer cláusula não afetará as demais. Alterações exigem acordo escrito entre as partes. As partes elegem a conciliação ou mediação como meio preferencial de solução de eventuais conflitos, antes do ajuizamento de ação judicial. Declaro ter lido, compreendido e concordado integralmente com este CONTRATO E TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO, prestando o consentimento livre, informado e inequívoco ${isMinor ? 'em nome do(a) paciente menor sob minha responsabilidade legal' : 'em meu próprio nome'}, nos termos do art. 8º da LGPD. Fica eleito o foro da Comarca de Maringá-PR para dirimir quaisquer questões oriundas deste contrato.`);
 
         // === ASSINATURAS ===
-        // Garante que TODO o bloco (data + espaçamento + assinaturas) caiba na mesma página.
-        // Se não couber, joga tudo pra próxima página (assinaturas nunca quebram).
-        pdf.ensureSpace(58);
+        // Não precisa de ensureSpace aqui — o bloco já foi reservado junto da cláusula 12 acima.
         pdf.y += 6;
 
         pdoc.setFont('times', 'normal');
