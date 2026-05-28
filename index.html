@@ -3760,164 +3760,140 @@
 
       try { await savePatientConsentimento(patient.id); } catch {}
 
-      try {
+      // ============================================================
+      // Renderiza o contrato com um fator de escala (pra caber em 2 páginas)
+      // scale = 1.0 (normal). Quanto menor, mais comprimido (fonte/espaçamento).
+      // Retorna o nº de páginas geradas.
+      // ============================================================
+      function renderContrato(scale) {
         const pdf = createPdfHelper('elegant');
         const { doc: pdoc } = pdf;
         const palette = pdf.palette;
         const pageW = 210, marginX = 22;
 
+        // Tamanhos escalados
+        const fSize = 10 * scale;          // fonte corpo
+        const fLine = 4.3 * scale;         // altura de linha
+        const fGap = 2.5 * scale;          // espaço entre parágrafos
+        const fClauseSize = 10.5 * scale;  // fonte título cláusula
+        const fClauseGapBefore = 1.5 * scale;
+        const fClauseGapAfter = 4.5 * scale;
+
         pdf.writeMainTitle('Contrato de Prestação de Serviços');
         pdf.writeSubtitle('Psicologia Clínica + Termo de Consentimento (LGPD/CFP)');
-        pdf.y += 4;
+        pdf.y += 4 * scale;
 
-        // Helper: parágrafo
         function par(text, opts) {
           opts = opts || {};
           pdf.writeText(text, {
             font: 'times',
-            size: opts.size || 10,
+            size: opts.size ? opts.size * scale : fSize,
             weight: opts.bold ? 'bold' : 'normal',
             color: palette.ink,
-            lineHeight: 4.3,
-            bottomGap: opts.gap || 2.5,
+            lineHeight: fLine,
+            bottomGap: opts.gap !== undefined ? opts.gap * scale : fGap,
           });
         }
-        // Helper: cláusula com título inline
         function clause(num, title) {
           pdf.ensureSpace(9);
-          pdf.y += 1.5;
+          pdf.y += fClauseGapBefore;
           pdoc.setFont('times', 'bold');
-          pdoc.setFontSize(10.5);
+          pdoc.setFontSize(fClauseSize);
           pdoc.setTextColor(palette.gold[0], palette.gold[1], palette.gold[2]);
           pdoc.text(`Cláusula ${num}ª — ${title}`, marginX, pdf.y);
-          pdf.y += 4.5;
+          pdf.y += fClauseGapAfter;
         }
 
         const pNome = patient.nome || '';
         const pCpf = patient.cpf || '';
         const pNasc = patient.nascimento ? new Date(patient.nascimento).toLocaleDateString('pt-BR') : '';
 
-        // ============================================================
         // CLÁUSULA 1ª — DAS PARTES
-        // ============================================================
         clause('1', 'Das partes');
         const psicQualif = psicCnpj
           ? `CONTRATADA: GABRIELLY GUANDALINO, psicóloga inscrita no CRP-PR 08/38673${psicRazaoSocial ? `, atuando sob ${psicRazaoSocial}` : ''}, CNPJ nº ${psicCnpj}.`
           : 'CONTRATADA: GABRIELLY GUANDALINO, psicóloga inscrita no CRP-PR 08/38673.';
         par(psicQualif);
-
         if (isMinor && patient.responsavel_nome) {
-          const respLine = `CONTRATANTE: ${patient.responsavel_nome.toUpperCase()}${patient.responsavel_cpf ? `, CPF nº ${patient.responsavel_cpf}` : ''}${patient.responsavel_parentesco ? ` (${patient.responsavel_parentesco})` : ''}, na qualidade de responsável legal por ${pNome.toUpperCase()}${pCpf ? `, CPF nº ${pCpf}` : ''}${pNasc ? `, nascido(a) em ${pNasc}` : ''}, conforme art. 4º do ECA.`;
-          par(respLine);
+          par(`CONTRATANTE: ${patient.responsavel_nome.toUpperCase()}${patient.responsavel_cpf ? `, CPF nº ${patient.responsavel_cpf}` : ''}${patient.responsavel_parentesco ? ` (${patient.responsavel_parentesco})` : ''}, na qualidade de responsável legal por ${pNome.toUpperCase()}${pCpf ? `, CPF nº ${pCpf}` : ''}${pNasc ? `, nascido(a) em ${pNasc}` : ''}, conforme art. 4º do ECA.`);
         } else if (isMinor) {
-          // Menor sem responsável cadastrado — placeholder
           par(`PACIENTE (menor de idade): ${pNome.toUpperCase()}${pCpf ? `, CPF nº ${pCpf}` : ''}${pNasc ? `, nascido(a) em ${pNasc}` : ''}.`);
-          par(`CONTRATANTE: _________________________________________ (responsável legal), CPF nº ______________________, na qualidade de _______________________ (parentesco), conforme art. 4º do ECA.`);
+          par(`CONTRATANTE: _________________________________________ (responsável legal), CPF nº ______________________, na qualidade de _______________________, conforme art. 4º do ECA.`);
         } else {
           par(`CONTRATANTE: ${pNome.toUpperCase()}${pCpf ? `, CPF nº ${pCpf}` : ''}${pNasc ? `, nascido(a) em ${pNasc}` : ''}.`);
         }
 
-        // ============================================================
         // CLÁUSULA 2ª — OBJETO
-        // ============================================================
         clause('2', 'Do objeto');
         const servicoTexto = servicoDesc
           ? `${servicoDesc}`
           : 'serviços de psicologia clínica, compreendendo avaliação psicológica, psicoterapia individual e emissão de documentos pertinentes';
-        par(`A CONTRATADA prestará ao(à) ${isMinor ? 'paciente menor de idade' : 'CONTRATANTE'} os seguintes serviços: ${servicoTexto}, na modalidade presencial ou online (Resolução CFP nº 011/2018). As sessões terão duração aproximada de 50 minutos, com frequência ajustada conforme avaliação técnica da CONTRATADA e necessidade clínica.`);
+        par(`A CONTRATADA prestará ao(à) ${isMinor ? 'paciente menor de idade' : 'CONTRATANTE'} os seguintes serviços: ${servicoTexto}, na modalidade presencial ou online (Resolução CFP nº 011/2018). As sessões terão duração aproximada de 50 minutos, com frequência ajustada conforme avaliação técnica da CONTRATADA.`);
 
-        // ============================================================
-        // CLÁUSULA 3ª — NATUREZA DA OBRIGAÇÃO (proteção jurídica)
-        // ============================================================
+        // CLÁUSULA 3ª — NATUREZA DA OBRIGAÇÃO
         clause('3', 'Da natureza da obrigação');
-        par('As partes reconhecem expressamente que a prestação de serviços psicológicos constitui OBRIGAÇÃO DE MEIO, e não de resultado. A CONTRATADA compromete-se a empregar todo o seu conhecimento técnico, diligência e os recursos adequados conforme a boa prática profissional, NÃO se obrigando, contudo, a garantir resultado específico, cura, melhora determinada ou qualquer desfecho pretendido, dado que o processo terapêutico depende de múltiplos fatores, inclusive da participação ativa e da colaboração do(a) próprio(a) paciente. A ausência de resultado esperado não caracteriza, por si só, falha na prestação do serviço.');
+        par('A prestação de serviços psicológicos constitui OBRIGAÇÃO DE MEIO, e não de resultado. A CONTRATADA empregará seu conhecimento técnico, diligência e os recursos adequados conforme a boa prática profissional, não se obrigando a garantir cura, melhora determinada ou desfecho específico, dado que o processo depende de múltiplos fatores, inclusive da colaboração do(a) paciente. A ausência de resultado esperado não caracteriza, por si só, falha na prestação do serviço.');
 
-        // ============================================================
-        // CLÁUSULA 4ª — OBRIGAÇÕES DO CONTRATANTE (proteção jurídica)
-        // ============================================================
+        // CLÁUSULA 4ª — OBRIGAÇÕES DO CONTRATANTE
         clause('4', 'Das obrigações do contratante');
-        par('O(A) CONTRATANTE compromete-se a: (a) prestar informações verídicas, completas e atualizadas, essenciais à condução do trabalho clínico, isentando a CONTRATADA de responsabilidade por prejuízos decorrentes de informações omitidas, falsas ou incorretas; (b) comparecer pontualmente às sessões; (c) efetuar os pagamentos nas condições acordadas; (d) colaborar ativamente com o processo terapêutico. Tratando-se de menor, o(a) responsável compromete-se a apoiar a continuidade do acompanhamento.');
+        par('O(A) CONTRATANTE compromete-se a: (a) prestar informações verídicas e completas, isentando a CONTRATADA por prejuízos decorrentes de informações omitidas ou falsas; (b) comparecer pontualmente; (c) efetuar os pagamentos acordados; (d) colaborar com o processo terapêutico. Tratando-se de menor, o(a) responsável apoiará a continuidade do acompanhamento.');
 
-        // ============================================================
-        // CLÁUSULA 5ª — HONORÁRIOS E PAGAMENTO
-        // ============================================================
+        // CLÁUSULA 5ª — HONORÁRIOS
         clause('5', 'Dos honorários e pagamento');
         if (valorFmt) {
-          par(`Valor da sessão: R$ ${valorFmt}. O pagamento deverá ser realizado até o dia da sessão ou conforme acordado entre as partes.`);
+          par(`Valor da sessão: R$ ${valorFmt}. Pagamento até o dia da sessão ou conforme acordado entre as partes.`);
         } else {
           par('O valor das sessões e a forma de pagamento serão acordados entre as partes em momento próprio.');
         }
         if (psicChavePix) {
           par(`Forma preferencial: PIX — Chave ${psicChavePix}${psicBanco ? ` (${psicBanco})` : ''}${psicRazaoSocial ? `, Titular: ${psicRazaoSocial}` : ''}, com envio do comprovante por WhatsApp.`);
         }
-        par('Eventual reajuste dos honorários é facultativo e ocorrerá a critério da CONTRATADA, que avaliará a conveniência e comunicará previamente o(a) CONTRATANTE ou seu responsável, de forma transparente e com antecedência razoável. A inadimplência por prazo superior a 15 dias sujeita o(a) CONTRATANTE a juros de 1% ao mês, multa de 2% e correção monetária (art. 52, §1º, do CDC), facultando à CONTRATADA suspender os atendimentos até a regularização.');
+        par('Eventual reajuste dos honorários é facultativo e ocorrerá a critério da CONTRATADA, que avaliará a conveniência e comunicará previamente o(a) CONTRATANTE de forma transparente. A inadimplência superior a 15 dias sujeita o(a) CONTRATANTE a juros de 1% ao mês, multa de 2% e correção monetária (art. 52, §1º, CDC), facultando à CONTRATADA suspender os atendimentos até a regularização.');
 
-        // ============================================================
-        // CLÁUSULA 6ª — CANCELAMENTOS E FALTAS
-        // ============================================================
+        // CLÁUSULA 6ª — CANCELAMENTOS
         clause('6', 'Dos cancelamentos e faltas');
-        par('Cancelamentos devem ser comunicados com antecedência mínima de 24 horas. Faltas sem aviso prévio ou desmarcações com menos de 24 horas serão cobradas integralmente, salvo caso fortuito ou força maior devidamente comprovado (art. 393 do Código Civil). Em caso de atraso do(a) CONTRATANTE, o tempo será descontado da duração da sessão, mantido o valor integral. Cancelamentos por parte da CONTRATADA serão reagendados sem qualquer ônus.');
+        par('Cancelamentos devem ser comunicados com antecedência mínima de 24 horas. Faltas sem aviso ou desmarcações com menos de 24 horas serão cobradas integralmente, salvo caso fortuito ou força maior comprovado (art. 393 do Código Civil). Em caso de atraso, o tempo será descontado da sessão, mantido o valor. Cancelamentos pela CONTRATADA serão reagendados sem ônus.');
 
-        // ============================================================
         // CLÁUSULA 7ª — RESCISÃO
-        // ============================================================
         clause('7', 'Da rescisão');
-        par('Qualquer das partes poderá rescindir o presente contrato mediante comunicação prévia, por escrito ou mensagem, com antecedência mínima de 30 (trinta) dias. Sessões pré-pagas e não realizadas serão compensadas em até 60 dias ou reembolsadas em até 30 dias úteis. A CONTRATADA poderá rescindir o contrato por motivo técnico, ético ou profissional devidamente justificado, comprometendo-se a fornecer encaminhamento responsável a outro(a) profissional, nos termos do Código de Ética.');
+        par('Qualquer das partes poderá rescindir o contrato mediante comunicação prévia, por escrito ou mensagem, com antecedência mínima de 30 (trinta) dias. Sessões pré-pagas e não realizadas serão compensadas em até 60 dias ou reembolsadas em até 30 dias úteis. A CONTRATADA poderá rescindir por motivo técnico, ético ou profissional justificado, fornecendo encaminhamento responsável.');
 
-        // ============================================================
-        // CLÁUSULA 8ª — SIGILO PROFISSIONAL
-        // ============================================================
+        // CLÁUSULA 8ª — SIGILO
         clause('8', 'Do sigilo profissional');
-        par('Todas as informações são protegidas pelo sigilo profissional (art. 9º do Código de Ética Profissional do Psicólogo). A quebra de sigilo é admitida apenas nas hipóteses legais: risco iminente à vida do(a) paciente ou de terceiros; suspeita ou confirmação de violência contra criança, adolescente, idoso ou pessoa com deficiência (com comunicação obrigatória aos órgãos competentes); e determinação judicial. A CONTRATADA poderá realizar registros clínicos e discutir o caso, de forma resguardada, em supervisão profissional, mantido o sigilo.');
+        par('As informações são protegidas pelo sigilo profissional (art. 9º do Código de Ética do Psicólogo). A quebra é admitida apenas nas hipóteses legais: risco iminente à vida; suspeita ou confirmação de violência contra criança, adolescente, idoso ou pessoa com deficiência; e determinação judicial. A CONTRATADA poderá discutir o caso, de forma resguardada, em supervisão profissional.');
         if (isMinor) {
-          par('Tratando-se de paciente menor de idade, o(a) responsável legal receberá informações gerais sobre o tratamento, resguardada a privacidade do conteúdo específico das sessões, em respeito ao princípio do melhor interesse (art. 3º do ECA) e ao desenvolvimento da autonomia do(a) paciente.');
+          par('Tratando-se de menor, o(a) responsável receberá informações gerais sobre o tratamento, resguardada a privacidade do conteúdo das sessões, em respeito ao princípio do melhor interesse (art. 3º do ECA).');
         }
 
-        // ============================================================
-        // CLÁUSULA 9ª — DADOS PESSOAIS (LGPD)
-        // ============================================================
+        // CLÁUSULA 9ª — LGPD
         clause('9', 'Do tratamento de dados pessoais (LGPD)');
-        par('Em atendimento à Lei nº 13.709/2018 (LGPD), o(a) CONTRATANTE autoriza o tratamento de dados pessoais e sensíveis de saúde (identificação, contato, anamnese, evoluções e documentos clínicos) para fins de prestação dos serviços e cumprimento de obrigações legais. Os dados são armazenados em ambiente digital criptografado, com controle de acesso restrito e autenticação reforçada, adotadas as medidas de segurança previstas no art. 46 da LGPD. O prontuário será guardado pelo prazo mínimo de 5 anos (Resolução CFP nº 001/2009). Os dados não serão compartilhados com terceiros, salvo nas hipóteses legais ou mediante autorização expressa.');
+        par('Em atendimento à Lei nº 13.709/2018 (LGPD), o(a) CONTRATANTE autoriza o tratamento de dados pessoais e sensíveis de saúde (identificação, contato, anamnese, evoluções e documentos clínicos) para a prestação dos serviços e cumprimento de obrigações legais. Os dados são armazenados em ambiente digital criptografado, com acesso restrito e medidas de segurança do art. 46 da LGPD. O prontuário será guardado por no mínimo 5 anos (Resolução CFP nº 001/2009). Não haverá compartilhamento com terceiros, salvo hipóteses legais ou autorização expressa.');
 
-        // ============================================================
-        // CLÁUSULA 10ª — DIREITOS DO TITULAR + DPO
-        // ============================================================
+        // CLÁUSULA 10ª — DIREITOS DO TITULAR
         clause('10', 'Dos direitos do titular e Encarregada de Dados');
-        par(`A CONTRATADA atua como Encarregada pelo Tratamento de Dados (art. 41 da LGPD), podendo ser contatada pelo WhatsApp ${psicWhatsapp} ou e-mail gsgpsicologia@gmail.com. São assegurados ao titular os direitos do art. 18 da LGPD: confirmação, acesso, correção, eliminação, portabilidade, revogação do consentimento (observado o prazo legal de guarda) e petição à ANPD. Em caso de incidente de segurança relevante, a CONTRATADA comunicará o titular e a ANPD na forma da lei.`);
+        par(`A CONTRATADA atua como Encarregada pelo Tratamento de Dados (art. 41 da LGPD), contato pelo WhatsApp ${psicWhatsapp} ou e-mail gsgpsicologia@gmail.com. São assegurados ao titular os direitos do art. 18 da LGPD: acesso, correção, eliminação, portabilidade, revogação do consentimento (observado o prazo de guarda) e petição à ANPD. Em incidente de segurança relevante, a CONTRATADA comunicará o titular e a ANPD na forma da lei.`);
 
-        // ============================================================
         // CLÁUSULA 11ª — COMUNICAÇÃO
-        // ============================================================
         clause('11', 'Da comunicação entre as partes');
-        par('Fica autorizada a comunicação por WhatsApp, e-mail ou telefone para fins administrativos (agendamentos, lembretes e cobranças). O WhatsApp NÃO constitui canal de atendimento terapêutico — questões clínicas serão tratadas exclusivamente em sessões. Mensagens enviadas fora do horário de expediente serão respondidas no próximo dia útil.');
+        par('Fica autorizada a comunicação por WhatsApp, e-mail ou telefone para fins administrativos (agendamentos, lembretes e cobranças). O WhatsApp NÃO constitui canal terapêutico — questões clínicas serão tratadas exclusivamente em sessões. Mensagens fora do horário de expediente serão respondidas no próximo dia útil.');
 
-        // ============================================================
-        // CLÁUSULA 12ª — DISPOSIÇÕES FINAIS E FORO
-        // ============================================================
-        // Garante que a cláusula 12 + data + assinaturas fiquem JUNTAS na mesma página.
-        // Estimativa do bloco completo: texto da cláusula (~40mm) + assinaturas (~58mm) = ~98mm.
-        // Se não couber, joga TODO o conjunto pra próxima página (assinaturas nunca ficam órfãs).
-        pdf.ensureSpace(100);
+        // CLÁUSULA 12ª — DISPOSIÇÕES FINAIS
         clause('12', 'Das disposições finais e foro');
-        par(`Este contrato vigora por prazo indeterminado a partir da assinatura, e eventual nulidade de qualquer cláusula não afetará as demais. Alterações exigem acordo escrito entre as partes. As partes elegem a conciliação ou mediação como meio preferencial de solução de eventuais conflitos, antes do ajuizamento de ação judicial. Declaro ter lido, compreendido e concordado integralmente com este CONTRATO E TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO, prestando o consentimento livre, informado e inequívoco ${isMinor ? 'em nome do(a) paciente menor sob minha responsabilidade legal' : 'em meu próprio nome'}, nos termos do art. 8º da LGPD. Fica eleito o foro da Comarca de Maringá-PR para dirimir quaisquer questões oriundas deste contrato.`);
+        par(`Este contrato vigora por prazo indeterminado a partir da assinatura, e eventual nulidade de qualquer cláusula não afetará as demais. Alterações exigem acordo escrito. As partes elegem a conciliação ou mediação como meio preferencial de solução de conflitos, antes do ajuizamento de ação judicial. Declaro ter lido, compreendido e concordado integralmente com este CONTRATO E TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO, prestando o consentimento livre, informado e inequívoco ${isMinor ? 'em nome do(a) paciente menor sob minha responsabilidade legal' : 'em meu próprio nome'}, nos termos do art. 8º da LGPD. Fica eleito o foro da Comarca de Maringá-PR para dirimir quaisquer questões.`);
 
         // === ASSINATURAS ===
-        // Não precisa de ensureSpace aqui — o bloco já foi reservado junto da cláusula 12 acima.
-        pdf.y += 6;
-
+        pdf.y += 6 * scale;
         pdoc.setFont('times', 'normal');
-        pdoc.setFontSize(10);
+        pdoc.setFontSize(fSize);
         pdoc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
-
         const localDate = `Maringá-PR, ${dataContratoFmt}.`;
         pdoc.text(localDate, marginX, pdf.y);
-        pdf.y += 22; // espaçamento maior entre a data e as assinaturas
+        pdf.y += 20 * scale; // espaçamento entre data e assinaturas
 
         const contentW = pageW - marginX * 2;
         const colW = (contentW - 10) / 2;
         const col1X = marginX;
         const col2X = marginX + colW + 10;
-
         pdoc.setDrawColor(palette.ink[0], palette.ink[1], palette.ink[2]);
         pdoc.setLineWidth(0.3);
         pdoc.line(col1X, pdf.y, col1X + colW, pdf.y);
@@ -3925,7 +3901,7 @@
         pdf.y += 4;
 
         pdoc.setFont('times', 'normal');
-        pdoc.setFontSize(9.5);
+        pdoc.setFontSize(9.5 * scale);
         pdoc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
         const assinante1 = isMinor ? (patient.responsavel_nome || 'Responsável legal') : pNome;
         const cpf1 = isMinor ? (patient.responsavel_cpf || '') : pCpf;
@@ -3933,15 +3909,28 @@
         pdoc.text('Gabrielly Guandalino', col2X + colW / 2, pdf.y, { align: 'center' });
         pdf.y += 4;
 
-        pdoc.setFontSize(8);
+        pdoc.setFontSize(8 * scale);
         pdoc.setTextColor(palette.sub[0], palette.sub[1], palette.sub[2]);
         const sub1 = isMinor ? 'CONTRATANTE (responsável legal)' : 'CONTRATANTE';
         pdoc.text(sub1 + (cpf1 ? ` · CPF: ${cpf1}` : ''), col1X + colW / 2, pdf.y, { align: 'center' });
         pdoc.text('CONTRATADA · CRP-PR 08/38673', col2X + colW / 2, pdf.y, { align: 'center' });
 
+        const numPages = pdoc.internal.getNumberOfPages();
+        return { pdf, pdoc, numPages };
+      }
+
+      try {
+        // Tenta escalas decrescentes até caber em 2 páginas
+        const escalas = [1.0, 0.96, 0.92, 0.88, 0.85, 0.82];
+        let resultado = null;
+        for (const scale of escalas) {
+          resultado = renderContrato(scale);
+          if (resultado.numPages <= 2) break;
+        }
+        const { pdf, pdoc } = resultado;
         pdf.finalize();
 
-        const safeName = sanitizeFilename(pNome);
+        const safeName = sanitizeFilename(patient.nome || 'paciente');
         pdoc.save(`Contrato_${safeName}.pdf`);
 
         renderConsentimentoTab();
@@ -3965,9 +3954,6 @@
 
     window.generateContratoPdf = generateContratoPdf;
 
-    // ============================================================
-    // UPLOAD DE TERMO ASSINADO
-    // ============================================================
     // ============================================================
     // MODAL DE ESCOLHA DO TIPO DE CONTRATO
     // ============================================================
