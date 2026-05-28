@@ -2221,6 +2221,45 @@
     </div>
   </div>
 
+  <!-- MODAL ESCOLHA DO TIPO DE CONTRATO -->
+  <div class="modal-backdrop" id="contratoTypeModal">
+    <div class="modal" style="max-width: 540px;">
+      <div class="modal-header">
+        <h2>Gerar <em>contrato</em></h2>
+        <p>qual versão se encaixa melhor para esse paciente?</p>
+      </div>
+      <div class="modal-body">
+        <div class="consent-info-box" id="contratoTypeSuggestion" style="margin-bottom: 1rem;"></div>
+        <div style="display:flex; flex-direction:column; gap:0.7rem;">
+          <button type="button" class="anamnese-type-card" onclick="selectContratoType('crianca')">
+            <span class="emoji">🧒</span>
+            <div class="info">
+              <div class="title">Criança</div>
+              <div class="subtitle">até 11 anos · responsável legal assina</div>
+            </div>
+          </button>
+          <button type="button" class="anamnese-type-card" onclick="selectContratoType('adolescente')">
+            <span class="emoji">🧑‍🎓</span>
+            <div class="info">
+              <div class="title">Adolescente</div>
+              <div class="subtitle">12 a 17 anos · responsável legal assina</div>
+            </div>
+          </button>
+          <button type="button" class="anamnese-type-card" onclick="selectContratoType('adulto')">
+            <span class="emoji">👤</span>
+            <div class="info">
+              <div class="title">Adulto</div>
+              <div class="subtitle">18+ anos · próprio paciente assina</div>
+            </div>
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeContratoTypeModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL ESCOLHA DO TIPO DE ANAMNESE -->
   <div class="modal-backdrop" id="anamneseTypeModal">
     <div class="modal" style="max-width: 540px;">
@@ -2745,6 +2784,8 @@
       consentimentoLoading: false,
       consentUploadFile: null,     // arquivo selecionado pra upload
       consentimentosFolderId: null,
+      editingContratoTipo: null,   // tipo escolhido para o contrato (crianca/adolescente/adulto)
+      editingPatientId: null,      // 'new' ou id do paciente em edição (pra rascunho)
 
       // Anamnese
       editingAnamneseTipo: null,   // tipo escolhido para nova anamnese
@@ -3342,6 +3383,11 @@
       // reset scroll do modal
       const modal = document.querySelector('#anamneseModal .modal');
       if (modal) modal.scrollTop = 0;
+      // Auto-save: oferece recuperar rascunho + ativa auto-save
+      setTimeout(() => {
+        offerDraftRecovery('anamneseModal', getAnamneseDraftKey());
+        attachAutoSave('anamneseModal', getAnamneseDraftKey);
+      }, 100);
     }
     window.openAnamneseModal = openAnamneseModal;
 
@@ -3445,6 +3491,7 @@
       $('btnSaveAnamnese').innerHTML = '<span class="spinner"></span><span>Salvando...</span>';
       try {
         await savePatientAnamnese(state.selectedPatientId);
+        clearDraft(getAnamneseDraftKey()); // limpa rascunho após salvar
         closeAnamneseModal();
         renderAnamneseTab();
         toast(isNew ? 'Anamnese registrada' : 'Anamnese atualizada', 'success');
@@ -3558,7 +3605,7 @@
           <div class="consent-empty">
             <h4>Nenhum documento gerado <em>ainda</em></h4>
             <p>O contrato + termo deve ser apresentado e assinado pelo ${isMinor ? 'responsável legal' : 'paciente'} antes do início do processo terapêutico, formalizando a relação contratual e atendendo às exigências da LGPD para dados sensíveis.</p>
-            <button class="btn btn-gold" onclick="generateConsentimentoPdf()">
+            <button class="btn btn-gold" onclick="openContratoTypeModal()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               Gerar contrato + termo em PDF
             </button>
@@ -3598,7 +3645,7 @@
             ` : ''}
 
             <div class="consent-card-actions">
-              <button class="btn btn-secondary btn-sm" onclick="generateConsentimentoPdf()">
+              <button class="btn btn-secondary btn-sm" onclick="reopenContratoTypeModal()">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 ${c.arquivo_assinado ? 'Gerar novo PDF' : 'Baixar PDF'}
               </button>
@@ -3623,12 +3670,18 @@
     // ============================================================
     // GERAR TERMO EM PDF
     // ============================================================
-    async function generateConsentimentoPdf() {
+    async function generateContratoPdf() {
       const patient = state.patients.find(p => p.id === state.selectedPatientId);
       if (!patient) return;
 
+      // Tipo de contrato (vindo do modal de escolha)
+      const tipoContrato = state.editingContratoTipo
+        || (state.consentimento && state.consentimento.tipo_perfil)
+        || 'adulto';
+      // Criança e Adolescente: responsável assina; Adulto: paciente assina
+      const isMinor = (tipoContrato === 'crianca' || tipoContrato === 'adolescente');
+
       // ===== CONFIGURAÇÕES PROFISSIONAIS DA PSICÓLOGA =====
-      // (salvas no localStorage, perguntadas na 1ª vez)
       const loadOrAsk = (key, label, hint) => {
         let val = state[key] || localStorage.getItem(key);
         if (!val) {
@@ -3649,11 +3702,11 @@
         'Exemplo: (44) 99999-9999\nSerá salvo apenas no seu navegador.') || '_____________________';
 
       const psicCnpj = loadOrAsk('psicologaCnpj',
-        'CNPJ profissional (deixe em branco se atender como pessoa física).',
+        'CNPJ profissional (deixe em branco se for pessoa física).',
         'Exemplo: 56.320.762/0001-20');
 
       const psicRazaoSocial = loadOrAsk('psicologaRazaoSocial',
-        'Razão social (apenas se tiver CNPJ; deixe em branco se for pessoa física).',
+        'Razão social (apenas se tiver CNPJ).',
         'Exemplo: GSG SERVICO DE PSICOLOGIA LTDA.');
 
       const psicChavePix = loadOrAsk('psicologaChavePix',
@@ -3664,22 +3717,21 @@
         'Banco/Instituição da chave PIX (opcional).',
         'Exemplo: NU PAGAMENTOS – IP');
 
-      // Pergunta valor da sessão (sempre, pois pode mudar)
+      // Valor da sessão (pergunta sempre)
       const valorStr = prompt(
-        'Valor da sessão (R$) para incluir no contrato.\n\nDigite apenas números, ex: 200,00\nDeixe em branco para não especificar valor.'
+        'Valor da sessão (R$) para o contrato.\n\nDigite apenas números, ex: 200,00\nDeixe em branco para não especificar.'
       );
       const valorSessao = (valorStr && valorStr.trim()) ? valorStr.replace(',', '.').replace(/[^\d.]/g, '') : null;
       const valorFmt = valorSessao ? Number(valorSessao).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : null;
 
-      const isMinor = isPatientMinor(patient);
       const now = new Date();
 
-      // Garante que existe registro
       if (!state.consentimento) {
         state.consentimento = {
           id: uid('cs'),
           paciente_id: patient.id,
           tipo: isMinor ? 'responsavel' : 'paciente',
+          tipo_perfil: tipoContrato,
           gerado_em: now.toISOString(),
           assinado_em: null,
           arquivo_assinado: null,
@@ -3687,67 +3739,42 @@
       } else {
         state.consentimento.gerado_em = now.toISOString();
         state.consentimento.tipo = isMinor ? 'responsavel' : 'paciente';
+        state.consentimento.tipo_perfil = tipoContrato;
       }
 
-      try {
-        await savePatientConsentimento(patient.id);
-      } catch {}
+      try { await savePatientConsentimento(patient.id); } catch {}
 
       try {
-        // Usa o mesmo helper dos outros documentos elaborados (estilo elegante)
         const pdf = createPdfHelper('elegant');
         const { doc: pdoc } = pdf;
         const palette = pdf.palette;
         const pageW = 210, marginX = 22;
 
-        // Título
         pdf.writeMainTitle('Contrato de Prestação de Serviços');
-        pdf.writeSubtitle('e Termo de Consentimento Livre e Esclarecido — LGPD & CFP');
-        pdf.y += 6;
+        pdf.writeSubtitle('Psicologia Clínica + Termo de Consentimento (LGPD/CFP)');
+        pdf.y += 4;
 
-        // Helpers
+        // Helper: parágrafo
         function par(text, opts) {
           opts = opts || {};
           pdf.writeText(text, {
             font: 'times',
-            size: opts.size || 10.5,
+            size: opts.size || 10,
             weight: opts.bold ? 'bold' : 'normal',
             color: palette.ink,
-            lineHeight: 4.6,
-            bottomGap: opts.gap || 3,
+            lineHeight: 4.3,
+            bottomGap: opts.gap || 2.5,
           });
         }
-        function bullet(text) {
-          pdf.writeText('  •  ' + text, {
-            font: 'times', size: 10.5, weight: 'normal',
-            color: palette.ink, lineHeight: 4.6, bottomGap: 1.5,
-          });
-        }
-        function clause(text) {
-          pdf.ensureSpace(12);
-          pdf.y += 3;
-          pdoc.setFont('times', 'italic');
-          pdoc.setFontSize(11.5);
-          pdoc.setTextColor(palette.gold[0], palette.gold[1], palette.gold[2]);
-          pdoc.text(text, marginX, pdf.y);
-          pdf.y += 5;
-          pdoc.setDrawColor(palette.gold[0], palette.gold[1], palette.gold[2]);
-          pdoc.setLineWidth(0.3);
-          pdoc.line(marginX, pdf.y, marginX + 25, pdf.y);
-          pdf.y += 4;
-        }
-        function partTitle(text) {
-          pdf.ensureSpace(15);
-          pdf.y += 5;
+        // Helper: cláusula com título inline
+        function clause(num, title) {
+          pdf.ensureSpace(9);
+          pdf.y += 1.5;
           pdoc.setFont('times', 'bold');
-          pdoc.setFontSize(12.5);
-          pdoc.setTextColor(palette.ink[0], palette.ink[1], palette.ink[2]);
-          pdoc.text(text.toUpperCase(), pageW / 2, pdf.y, { align: 'center' });
-          pdf.y += 5;
-          pdoc.setDrawColor(palette.gold[0], palette.gold[1], palette.gold[2]);
-          pdoc.setLineWidth(0.5);
-          pdoc.line(marginX + 40, pdf.y, pageW - marginX - 40, pdf.y);
-          pdf.y += 6;
+          pdoc.setFontSize(10.5);
+          pdoc.setTextColor(palette.gold[0], palette.gold[1], palette.gold[2]);
+          pdoc.text(`Cláusula ${num}ª — ${title}`, marginX, pdf.y);
+          pdf.y += 4.5;
         }
 
         const pNome = patient.nome || '';
@@ -3755,180 +3782,93 @@
         const pNasc = patient.nascimento ? new Date(patient.nascimento).toLocaleDateString('pt-BR') : '';
 
         // ============================================================
-        // PARTE I — CONTRATO DE PRESTAÇÃO DE SERVIÇOS
+        // CLÁUSULA 1ª — DAS PARTES
         // ============================================================
-        partTitle('Parte I — Do Contrato de Prestação de Serviços');
-
-        clause('Cláusula 1ª — Da qualificação das partes');
+        clause('1', 'Das partes');
         const psicQualif = psicCnpj
-          ? `GABRIELLY GUANDALINO, psicóloga inscrita no Conselho Regional de Psicologia sob o nº CRP-PR 08/38673${psicRazaoSocial ? `, atuando sob a pessoa jurídica ${psicRazaoSocial}` : ''}, inscrita no CNPJ sob o nº ${psicCnpj}, doravante denominada simplesmente CONTRATADA;`
-          : 'GABRIELLY GUANDALINO, psicóloga inscrita no Conselho Regional de Psicologia sob o nº CRP-PR 08/38673, doravante denominada simplesmente CONTRATADA;';
+          ? `CONTRATADA: GABRIELLY GUANDALINO, psicóloga inscrita no CRP-PR 08/38673${psicRazaoSocial ? `, atuando sob ${psicRazaoSocial}` : ''}, CNPJ nº ${psicCnpj}.`
+          : 'CONTRATADA: GABRIELLY GUANDALINO, psicóloga inscrita no CRP-PR 08/38673.';
         par(psicQualif);
+
         if (isMinor && patient.responsavel_nome) {
-          par(`${patient.responsavel_nome.toUpperCase()}${patient.responsavel_cpf ? `, inscrito(a) no CPF nº ${patient.responsavel_cpf}` : ''}, na qualidade de responsável legal por ${pNome.toUpperCase()}${pCpf ? ` (CPF nº ${pCpf})` : ''}${pNasc ? `, nascido(a) em ${pNasc}` : ''}, conforme art. 4º do Estatuto da Criança e do Adolescente (Lei 8.069/1990), doravante denominado(a) simplesmente CONTRATANTE.`);
+          const respLine = `CONTRATANTE: ${patient.responsavel_nome.toUpperCase()}${patient.responsavel_cpf ? `, CPF nº ${patient.responsavel_cpf}` : ''}${patient.responsavel_parentesco ? ` (${patient.responsavel_parentesco})` : ''}, na qualidade de responsável legal por ${pNome.toUpperCase()}${pCpf ? `, CPF nº ${pCpf}` : ''}${pNasc ? `, nascido(a) em ${pNasc}` : ''}, conforme art. 4º do ECA.`;
+          par(respLine);
+        } else if (isMinor) {
+          // Menor sem responsável cadastrado — placeholder
+          par(`PACIENTE (menor de idade): ${pNome.toUpperCase()}${pCpf ? `, CPF nº ${pCpf}` : ''}${pNasc ? `, nascido(a) em ${pNasc}` : ''}.`);
+          par(`CONTRATANTE: _________________________________________ (responsável legal), CPF nº ______________________, na qualidade de _______________________ (parentesco), conforme art. 4º do ECA.`);
         } else {
-          par(`${pNome.toUpperCase()}${pCpf ? `, inscrito(a) no CPF nº ${pCpf}` : ''}${pNasc ? `, nascido(a) em ${pNasc}` : ''}, doravante denominado(a) simplesmente CONTRATANTE.`);
+          par(`CONTRATANTE: ${pNome.toUpperCase()}${pCpf ? `, CPF nº ${pCpf}` : ''}${pNasc ? `, nascido(a) em ${pNasc}` : ''}.`);
         }
-        par('Têm entre si justo e contratado o presente Contrato de Prestação de Serviços de Psicologia Clínica, regido pelas cláusulas e condições a seguir, em conformidade com o Código Civil Brasileiro (Lei nº 10.406/2002), a Lei nº 4.119/1962 (regulamentação da profissão de psicólogo), o Código de Defesa do Consumidor (Lei nº 8.078/1990) e o Código de Ética Profissional do Psicólogo (Resolução CFP nº 010/2005).');
 
-        clause('Cláusula 2ª — Do objeto e do escopo dos serviços');
-        par('O presente contrato tem por objeto a prestação, pela CONTRATADA, de serviços de psicologia clínica ao(à) CONTRATANTE, compreendendo:');
-        bullet('Avaliação psicológica inicial mediante anamnese clínica;');
-        bullet('Acompanhamento psicoterapêutico individual, conforme abordagem técnica adotada pela CONTRATADA;');
-        bullet('Elaboração de documentos psicológicos pertinentes (atestados, declarações, relatórios e pareceres), nos termos da Resolução CFP nº 006/2019;');
-        bullet('Suporte pontual via WhatsApp para questões administrativas (agendamento, confirmações e dúvidas técnicas), respeitados os limites estabelecidos na Cláusula 18ª.');
-        par('Os serviços poderão ser prestados na modalidade presencial ou online (telepsicologia), conforme acordo entre as partes, observada a Resolução CFP nº 011/2018, que regulamenta a prestação de serviços psicológicos por meio de tecnologias da informação e da comunicação.');
+        // ============================================================
+        // CLÁUSULA 2ª — OBJETO
+        // ============================================================
+        clause('2', 'Do objeto');
+        par('A CONTRATADA prestará serviços de psicologia clínica ao(à) ' + (isMinor ? 'paciente menor de idade' : 'CONTRATANTE') + ', compreendendo avaliação psicológica, psicoterapia individual e emissão de documentos pertinentes, na modalidade presencial ou online (Resolução CFP nº 011/2018). As sessões terão duração de 50 minutos, com frequência ajustada conforme avaliação técnica.');
 
-        clause('Cláusula 3ª — Da metodologia e duração das sessões');
-        par('Cada sessão de psicoterapia terá duração padrão de 50 (cinquenta) minutos, com frequência a ser estabelecida em comum acordo entre as partes, conforme avaliação técnica da CONTRATADA e necessidade clínica do(a) CONTRATANTE.');
-        par('Para atendimentos online, o(a) CONTRATANTE deverá dispor de equipamento adequado (computador, tablet ou celular) com acesso à internet de qualidade, em ambiente que assegure privacidade, conforto e ausência de interferências externas. Recomenda-se o uso de fones de ouvido.');
-        par('Em caso de atraso por parte do(a) CONTRATANTE, o tempo de atraso será descontado da duração da sessão, sem prorrogação compensatória, salvo se houver disponibilidade da CONTRATADA. O valor integral será devido.');
-
-        clause('Cláusula 4ª — Dos honorários e forma de pagamento');
+        // ============================================================
+        // CLÁUSULA 3ª — HONORÁRIOS E PAGAMENTO
+        // ============================================================
+        clause('3', 'Dos honorários e pagamento');
         if (valorFmt) {
-          par(`O valor de cada sessão é fixado em R$ ${valorFmt} (${numberToWords(parseFloat(valorSessao))}), devendo ser pago pelo(a) CONTRATANTE preferencialmente até o dia da sessão ou em data acordada entre as partes.`);
+          par(`Valor da sessão: R$ ${valorFmt}. Pagamento até o dia da sessão ou conforme acordado entre as partes.`);
         } else {
-          par('O valor de cada sessão será acordado entre as partes em momento próprio, devendo ser pago pelo(a) CONTRATANTE preferencialmente até o dia da sessão ou em data acordada entre as partes.');
+          par('O valor das sessões e a forma de pagamento serão acordados entre as partes em momento próprio.');
         }
         if (psicChavePix) {
-          par('Forma de pagamento preferencial:', { bold: true, gap: 1 });
-          bullet(`PIX — Chave: ${psicChavePix}${psicBanco ? ` (${psicBanco})` : ''}`);
-          if (psicRazaoSocial) bullet(`Titular: ${psicRazaoSocial}`);
-          par('O comprovante deverá ser enviado à CONTRATADA via WhatsApp para confirmação. Outras formas de pagamento (dinheiro, cartão, transferência) podem ser aceitas mediante prévio acordo.', { gap: 2 });
-        } else {
-          par('Forma de pagamento será acordada entre as partes (PIX, dinheiro, cartão ou transferência).');
+          par(`Forma preferencial: PIX — Chave ${psicChavePix}${psicBanco ? ` (${psicBanco})` : ''}${psicRazaoSocial ? `, Titular: ${psicRazaoSocial}` : ''}. Comprovante enviado por WhatsApp.`);
         }
-        par('Os materiais e recursos terapêuticos eventualmente disponibilizados durante o processo estão incluídos no valor da sessão, salvo situações específicas previamente comunicadas e acordadas.');
-
-        clause('Cláusula 5ª — Do reajuste de valores');
-        par('Os honorários poderão ser reajustados anualmente, a critério da CONTRATADA, mediante comunicação prévia ao(à) CONTRATANTE com antecedência mínima de 30 (trinta) dias, com base em índice oficial de inflação (IPCA ou outro indicador legalmente válido) ou conforme avaliação profissional da CONTRATADA, observada sempre a transparência e a razoabilidade.');
-        par('Discordando do reajuste, o(a) CONTRATANTE poderá rescindir o contrato sem ônus, observando o disposto na Cláusula 8ª.');
-
-        clause('Cláusula 6ª — Da inadimplência');
-        par('O atraso no pagamento dos honorários por prazo superior a 15 (quinze) dias, contados da data acordada, sujeitará o(a) CONTRATANTE a:');
-        bullet('Atualização monetária pelo IPCA (ou índice equivalente) sobre o valor devido;');
-        bullet('Juros de mora de 1% (um por cento) ao mês;');
-        bullet('Multa contratual de 2% (dois por cento) sobre o valor atualizado, nos termos do art. 52, § 1º, do CDC.');
-        par('A persistência da inadimplência por prazo superior a 30 (trinta) dias autoriza a CONTRATADA a suspender os atendimentos, mediante comunicação prévia, sem prejuízo da cobrança dos valores devidos pelas vias legais cabíveis.');
-
-        clause('Cláusula 7ª — Dos cancelamentos, faltas e remarcações');
-        par('Cancelamentos e remarcações deverão ser comunicados pelo(a) CONTRATANTE com antecedência mínima de 24 (vinte e quatro) horas em relação ao horário agendado.');
-        par('A sessão será cobrada integralmente nas seguintes hipóteses:', { bold: true, gap: 1 });
-        bullet('Falta sem aviso prévio (no-show);');
-        bullet('Cancelamento ou remarcação solicitados com antecedência inferior a 24 horas, salvo caso fortuito ou força maior devidamente comprovados (Cláusula 10ª).');
-        par('Excetuam-se desta regra situações de imprevisto grave ou emergência, que serão avaliadas pela CONTRATADA de forma ética e individual, com base na boa-fé contratual.');
-        par('Em caso de cancelamento ou indisponibilidade pela CONTRATADA, o(a) CONTRATANTE será comunicado(a) com a maior brevidade possível, e a sessão será reagendada em novo horário acordado entre as partes, sem qualquer ônus ao(à) CONTRATANTE.');
-
-        clause('Cláusula 8ª — Da rescisão e encerramento do processo terapêutico');
-        par('Qualquer das partes poderá rescindir o presente contrato a qualquer tempo, mediante comunicação prévia, por escrito ou por mensagem em aplicativo, com antecedência mínima de 7 (sete) dias.');
-        par('Sessões já pagas e não realizadas, em caso de rescisão por iniciativa do(a) CONTRATANTE, serão:');
-        bullet('Compensadas em sessões futuras dentro do prazo de 60 (sessenta) dias; ou');
-        bullet('Reembolsadas integralmente em até 30 (trinta) dias úteis, mediante solicitação expressa do(a) CONTRATANTE.');
-        par('Em caso de rescisão pela CONTRATADA por motivo técnico-profissional, esta se compromete a fornecer encaminhamento responsável a outro(a) profissional, conforme art. 1º, alínea "g", do Código de Ética Profissional do Psicólogo.');
-
-        clause('Cláusula 9ª — Da prescrição');
-        par('A pretensão de cobrança dos honorários profissionais prescreverá em 5 (cinco) anos, conforme art. 206, § 5º, II, do Código Civil. A pretensão do(a) CONTRATANTE quanto à reparação por eventuais danos prescreverá conforme prazos previstos na legislação civil aplicável.');
-
-        clause('Cláusula 10ª — Do caso fortuito e da força maior');
-        par('Nenhuma das partes será responsabilizada pelo descumprimento de obrigações decorrente de caso fortuito ou força maior (art. 393 do Código Civil), entendidos como eventos imprevisíveis ou inevitáveis cujos efeitos não puderam ser evitados, tais como: estado de calamidade pública, pandemias, falhas generalizadas de serviços essenciais ou determinações de autoridades competentes.');
-
-        clause('Cláusula 11ª — Das alterações contratuais');
-        par('Qualquer alteração das condições estabelecidas neste contrato somente terá validade se feita por escrito e aceita expressamente por ambas as partes, ressalvado o reajuste anual previsto na Cláusula 5ª, que segue procedimento próprio.');
+        par('Reajuste anual de até a inflação oficial (IPCA), com aviso prévio de 30 dias. Inadimplência superior a 15 dias sujeita a juros de 1% ao mês, multa de 2% e correção monetária (art. 52, §1º, CDC).');
 
         // ============================================================
-        // PARTE II — CONSENTIMENTO LIVRE E ESCLARECIDO (LGPD & CFP)
+        // CLÁUSULA 4ª — CANCELAMENTOS E FALTAS
         // ============================================================
-        partTitle('Parte II — Do Consentimento Livre e Esclarecido (LGPD & CFP)');
+        clause('4', 'Cancelamentos e faltas');
+        par('Cancelamentos devem ser comunicados com no mínimo 24 horas de antecedência. Faltas sem aviso prévio ou desmarcações com menos de 24h serão cobradas integralmente, salvo caso fortuito ou força maior (art. 393 do Código Civil). Cancelamentos pela CONTRATADA serão reagendados sem ônus ao(à) CONTRATANTE.');
 
-        clause('Cláusula 12ª — Do sigilo profissional');
-        par('Em conformidade com o art. 9º do Código de Ética Profissional do Psicólogo, todas as informações compartilhadas durante o atendimento são protegidas por sigilo profissional, sendo a quebra de sigilo admitida apenas nas hipóteses previstas em lei, tais como:');
-        bullet('Risco iminente à vida do(a) CONTRATANTE ou de terceiros;');
-        bullet('Suspeita ou confirmação de violência contra criança, adolescente, idoso ou pessoa com deficiência (com comunicação obrigatória aos órgãos competentes — arts. 13 e 245 do ECA, art. 19 do Estatuto do Idoso, art. 26 da LBI);');
-        bullet('Determinação judicial expressa.');
+        // ============================================================
+        // CLÁUSULA 5ª — RESCISÃO
+        // ============================================================
+        clause('5', 'Rescisão');
+        par('Qualquer das partes pode rescindir o contrato com aviso prévio de 7 dias. Sessões pré-pagas e não realizadas serão compensadas em até 60 dias ou reembolsadas em 30 dias úteis. A CONTRATADA poderá rescindir por motivo técnico-profissional, fornecendo encaminhamento adequado.');
+
+        // ============================================================
+        // CLÁUSULA 6ª — SIGILO PROFISSIONAL
+        // ============================================================
+        clause('6', 'Sigilo profissional');
+        par('Todas as informações são protegidas pelo sigilo profissional (art. 9º do Código de Ética do Psicólogo). A quebra de sigilo é admitida apenas em hipóteses legais: risco iminente à vida; suspeita ou confirmação de violência contra criança, adolescente, idoso ou pessoa com deficiência (com comunicação obrigatória); e determinação judicial.');
         if (isMinor) {
-          par('Tratando-se de paciente menor de idade, o(a) responsável legal será informado(a) sobre os aspectos gerais do tratamento, preservando-se, sempre que possível, a privacidade do conteúdo específico das sessões, em respeito ao princípio do melhor interesse da criança e do adolescente (art. 3º do ECA) e ao desenvolvimento de sua autonomia.');
+          par('Tratando-se de paciente menor de idade, o(a) responsável legal receberá informações gerais sobre o tratamento, resguardada a privacidade do conteúdo das sessões, em respeito ao princípio do melhor interesse (art. 3º do ECA).');
         }
 
-        clause('Cláusula 13ª — Da titularidade e guarda do prontuário');
-        par('O prontuário psicológico, suas anotações, registros e documentos correlatos pertencem à CONTRATADA, conforme dispõe a Resolução CFP nº 001/2009, sendo de sua responsabilidade exclusiva a guarda e custódia.');
-        par('Ao(à) CONTRATANTE é assegurado o direito de acesso ao seu prontuário e a obtenção de cópias dos documentos pertinentes, mediante solicitação por escrito, observados os limites éticos e legais aplicáveis.');
-        par('Os prontuários serão mantidos pelo prazo mínimo de 5 (cinco) anos a contar do último atendimento, conforme determina a Resolução CFP nº 001/2009, podendo ser estendido por exigência legal específica.');
-
-        clause('Cláusula 14ª — Do tratamento de dados pessoais (LGPD)');
-        par('Em atendimento à Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018), serão tratados dados pessoais e dados pessoais sensíveis relativos à saúde, conforme detalhado a seguir:');
-        par('Categorias de dados coletados:', { bold: true, gap: 1 });
-        bullet('Dados de identificação (nome, CPF, RG, data de nascimento);');
-        bullet('Dados de contato (telefone, e-mail, endereço);');
-        bullet('Dados do(s) responsável(is) legal(is), quando aplicável;');
-        bullet('Dados sensíveis de saúde (anamnese, histórico clínico, diagnósticos, evoluções terapêuticas);');
-        bullet('Documentos clínicos (atestados, relatórios, declarações).');
-
-        pdf.y += 1;
-        par('Bases legais (art. 7º e 11º da LGPD):', { bold: true, gap: 1 });
-        bullet('Consentimento específico e destacado do(a) titular ou responsável legal (art. 11, I);');
-        bullet('Cumprimento de obrigação legal pela controladora (art. 7º, II);');
-        bullet('Tutela da saúde por profissional de saúde (art. 11, II, "f").');
-
-        pdf.y += 1;
-        par('Armazenamento e segurança:', { bold: true, gap: 1 });
-        par('Os dados são armazenados em ambiente digital criptografado (Google Drive privativo da CONTRATADA), com controle de acesso por autenticação em duas etapas (2FA), conforme art. 46 da LGPD.');
-
-        par('Transferência internacional de dados:', { bold: true, gap: 1 });
-        par('O uso de plataforma em nuvem (Google) implica transferência internacional de dados aos Estados Unidos, nos termos do art. 33 da LGPD, com nível de proteção compatível com a legislação brasileira (certificações ISO/IEC 27001, 27017, 27018, SOC 2 e SOC 3).');
-
-        par('Compartilhamento:', { bold: true, gap: 1 });
-        par('Os dados não serão compartilhados com terceiros, exceto: (a) por determinação judicial; (b) por solicitação expressa e por escrito do(a) CONTRATANTE; (c) nas hipóteses previstas na Cláusula 12ª.');
-
-        clause('Cláusula 15ª — Da Encarregada pelo Tratamento de Dados (DPO)');
-        par(`Em atendimento ao art. 41 da LGPD, fica designada como Encarregada pelo Tratamento de Dados Pessoais a própria CONTRATADA, podendo ser contatada pelos canais:`);
-        bullet(`WhatsApp: ${psicWhatsapp}`);
-        bullet('E-mail profissional: gsgpsicologia@gmail.com');
-        par('Solicitações relacionadas ao exercício de direitos serão respondidas em até 15 (quinze) dias.', { gap: 2 });
-
-        clause('Cláusula 16ª — Dos direitos do titular dos dados');
-        par('O(A) CONTRATANTE, na qualidade de titular dos dados, tem assegurados os direitos previstos no art. 18 da LGPD, podendo:');
-        bullet('Confirmar a existência de tratamento de seus dados;');
-        bullet('Acessar os dados tratados;');
-        bullet('Solicitar correção de dados incompletos, inexatos ou desatualizados;');
-        bullet('Solicitar anonimização, bloqueio ou eliminação de dados desnecessários, excessivos ou tratados em desconformidade com a LGPD;');
-        bullet('Solicitar a portabilidade dos dados a outro fornecedor;');
-        bullet('Revogar o consentimento, observado o prazo legal mínimo de guarda do prontuário;');
-        bullet('Peticionar à Autoridade Nacional de Proteção de Dados (ANPD).');
-
-        clause('Cláusula 17ª — Da comunicação em caso de incidente');
-        par('Em caso de incidente de segurança que possa acarretar risco ou dano relevante, a CONTRATADA compromete-se a:');
-        bullet('Comunicar o(a) CONTRATANTE em prazo razoável, preferencialmente em até 72 (setenta e duas) horas;');
-        bullet('Comunicar à ANPD, na forma do art. 48 da LGPD;');
-        bullet('Adotar medidas imediatas de mitigação dos efeitos do incidente.');
-
-        clause('Cláusula 18ª — Da comunicação entre as partes');
-        par('As partes autorizam a comunicação administrativa (agendamentos, confirmações, lembretes, cobranças, repasse de materiais e dúvidas pontuais) por WhatsApp, e-mail ou telefone, ciente das limitações próprias destes canais quanto à segurança digital.');
-        par('O canal de WhatsApp NÃO configura espaço de atendimento psicológico, sendo destinado apenas a questões administrativas e pontuais. Demandas de natureza terapêutica deverão ser tratadas exclusivamente em sessões.');
-        par('As mensagens serão respondidas dentro do horário de expediente da CONTRATADA. Mensagens enviadas à noite, em finais de semana ou feriados serão respondidas no próximo dia útil.');
-
-        clause('Cláusula 19ª — Da autorização para registro audiovisual (opcional)');
-        par('A CONTRATADA poderá, mediante autorização específica abaixo, registrar trechos das sessões em áudio ou vídeo exclusivamente para fins de supervisão clínica ou aprimoramento técnico, com sigilo equiparado ao das próprias sessões. Esta autorização é facultativa e pode ser revogada a qualquer momento.');
-        pdf.y += 2;
-        par('(   ) AUTORIZO o registro audiovisual nos termos acima.', { bold: true, gap: 1 });
-        par('(   ) NÃO AUTORIZO qualquer registro audiovisual.', { bold: true, gap: 2 });
+        // ============================================================
+        // CLÁUSULA 7ª — DADOS PESSOAIS (LGPD)
+        // ============================================================
+        clause('7', 'Tratamento de dados pessoais (LGPD)');
+        par('Em atendimento à Lei nº 13.709/2018 (LGPD), o(a) CONTRATANTE autoriza o tratamento de dados pessoais e sensíveis de saúde (identificação, contato, anamnese, evoluções e documentos clínicos) para fins de prestação dos serviços. Os dados são armazenados em ambiente criptografado (Google Drive privativo da psicóloga) com autenticação em dois fatores. Há transferência internacional para servidores nos EUA (art. 33 LGPD), com nível de proteção adequado. Prazo mínimo de guarda do prontuário: 5 anos (Resolução CFP nº 001/2009). Os dados não serão compartilhados com terceiros, exceto nas hipóteses legais previstas.');
 
         // ============================================================
-        // PARTE III — DISPOSIÇÕES FINAIS
+        // CLÁUSULA 8ª — DIREITOS DO TITULAR (LGPD)
         // ============================================================
-        partTitle('Parte III — Das Disposições Finais');
+        clause('8', 'Direitos do titular e Encarregada de Dados');
+        par(`A CONTRATADA atua também como Encarregada pelo Tratamento de Dados (DPO), nos termos do art. 41 da LGPD, podendo ser contatada pelo WhatsApp ${psicWhatsapp} ou e-mail gsgpsicologia@gmail.com. O(A) CONTRATANTE tem assegurados os direitos previstos no art. 18 da LGPD: acesso, correção, eliminação, portabilidade, revogação de consentimento (observado o prazo legal de guarda) e petição à ANPD.`);
 
-        clause('Cláusula 20ª — Da vigência');
-        par('O presente contrato entra em vigor na data de sua assinatura e permanece válido por prazo indeterminado, enquanto perdurar o vínculo terapêutico, podendo ser rescindido nos termos da Cláusula 8ª, ressalvada a obrigação legal de guarda do prontuário pelo prazo mínimo previsto.');
+        // ============================================================
+        // CLÁUSULA 9ª — COMUNICAÇÃO
+        // ============================================================
+        clause('9', 'Comunicação entre as partes');
+        par('Autorizada a comunicação por WhatsApp, e-mail ou telefone para fins administrativos (agendamentos, lembretes e cobranças). O WhatsApp NÃO constitui canal terapêutico — questões clínicas serão tratadas exclusivamente em sessões. Mensagens fora do horário de expediente serão respondidas no próximo dia útil.');
 
-        clause('Cláusula 21ª — Da declaração final');
-        par(`Declaro ter lido, compreendido e concordado integralmente com todas as cláusulas do presente CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE PSICOLOGIA CLÍNICA e do TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO, prestando o presente CONSENTIMENTO LIVRE, INFORMADO, ESPECÍFICO E INEQUÍVOCO ${isMinor ? 'em nome do(a) paciente menor de idade sob minha responsabilidade legal' : 'em meu próprio nome'}, nos termos do art. 8º da LGPD e demais dispositivos legais aplicáveis.`);
-
-        clause('Cláusula 22ª — Do foro');
-        par('Fica eleito o foro da Comarca de Maringá, Estado do Paraná, como competente para dirimir quaisquer dúvidas ou questões oriundas do presente contrato, com renúncia expressa a qualquer outro, por mais privilegiado que seja.');
+        // ============================================================
+        // CLÁUSULA 10ª — DISPOSIÇÕES FINAIS E FORO
+        // ============================================================
+        clause('10', 'Disposições finais e foro');
+        par(`Este contrato vigora por prazo indeterminado a partir da assinatura. Alterações exigem acordo escrito entre as partes. Declaro ter lido, compreendido e concordado integralmente com este CONTRATO E TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO, prestando o consentimento livre, informado e inequívoco ${isMinor ? 'em nome do(a) paciente menor sob minha responsabilidade legal' : 'em meu próprio nome'}, nos termos do art. 8º da LGPD. Fica eleito o foro da Comarca de Maringá-PR para dirimir quaisquer questões.`);
 
         // === ASSINATURAS ===
-        pdf.ensureSpace(50);
-        pdf.y += 8;
+        pdf.ensureSpace(38);
+        pdf.y += 5;
 
         pdoc.setFont('times', 'normal');
         pdoc.setFontSize(10);
@@ -3936,9 +3876,8 @@
 
         const localDate = `Maringá-PR, _____ de _____________________ de ${now.getFullYear()}.`;
         pdoc.text(localDate, marginX, pdf.y);
-        pdf.y += 14;
+        pdf.y += 11;
 
-        // Linhas de assinatura em duas colunas
         const contentW = pageW - marginX * 2;
         const colW = (contentW - 10) / 2;
         const col1X = marginX;
@@ -3963,22 +3902,21 @@
         pdoc.setTextColor(palette.sub[0], palette.sub[1], palette.sub[2]);
         const sub1 = isMinor ? 'CONTRATANTE (responsável legal)' : 'CONTRATANTE';
         pdoc.text(sub1 + (cpf1 ? ` · CPF: ${cpf1}` : ''), col1X + colW / 2, pdf.y, { align: 'center' });
-        pdoc.text('CONTRATADA · Psicóloga · CRP-PR 08/38673', col2X + colW / 2, pdf.y, { align: 'center' });
+        pdoc.text('CONTRATADA · CRP-PR 08/38673', col2X + colW / 2, pdf.y, { align: 'center' });
 
         pdf.finalize();
 
         const safeName = sanitizeFilename(pNome);
-        pdoc.save(`Contrato_e_TCLE_${safeName}.pdf`);
+        pdoc.save(`Contrato_${safeName}.pdf`);
 
         renderConsentimentoTab();
-        toast('Documento gerado com sucesso', 'success');
+        toast('Contrato gerado com sucesso', 'success');
       } catch (e) {
         console.error(e);
         toast('Erro ao gerar PDF', 'error');
       }
     }
 
-    // Helper: número por extenso simplificado (apenas reais inteiros)
     function numberToWords(num) {
       try {
         const reais = Math.floor(num);
@@ -3989,11 +3927,65 @@
         return s;
       } catch { return ''; }
     }
+
     window.generateConsentimentoPdf = generateConsentimentoPdf;
 
     // ============================================================
     // UPLOAD DE TERMO ASSINADO
     // ============================================================
+    // ============================================================
+    // MODAL DE ESCOLHA DO TIPO DE CONTRATO
+    // ============================================================
+    function openContratoTypeModal() {
+      const patient = state.patients.find(p => p.id === state.selectedPatientId);
+      if (!patient) return;
+
+      // Calcula sugestão pela idade
+      const age = calcAge(patient.nascimento);
+      let sugestao = null;
+      if (age !== null) {
+        if (age < 12) sugestao = 'crianca';
+        else if (age < 18) sugestao = 'adolescente';
+        else sugestao = 'adulto';
+      }
+
+      const sugestaoBox = $('contratoTypeSuggestion');
+      if (sugestao && age !== null) {
+        const labels = { crianca: 'Criança 🧒', adolescente: 'Adolescente 🧑‍🎓', adulto: 'Adulto 👤' };
+        sugestaoBox.innerHTML = `<strong>Sugestão automática:</strong> com base na idade do paciente (${age} anos), a versão recomendada é <strong>${labels[sugestao]}</strong>. Você pode escolher outra se preferir.`;
+        sugestaoBox.style.display = '';
+      } else {
+        sugestaoBox.innerHTML = `<strong>Atenção:</strong> a data de nascimento do paciente não está cadastrada. Escolha manualmente a versão mais adequada.`;
+        sugestaoBox.style.display = '';
+      }
+
+      $('contratoTypeModal').classList.add('active');
+    }
+    window.openContratoTypeModal = openContratoTypeModal;
+
+    function closeContratoTypeModal() {
+      $('contratoTypeModal').classList.remove('active');
+    }
+    window.closeContratoTypeModal = closeContratoTypeModal;
+
+    function selectContratoType(tipo) {
+      state.editingContratoTipo = tipo;
+      closeContratoTypeModal();
+      // Aguarda animação fechar antes de gerar
+      setTimeout(() => generateContratoPdf(), 150);
+    }
+    window.selectContratoType = selectContratoType;
+
+    // Reabre modal preservando o tipo já escolhido (pra "Gerar novo PDF")
+    function reopenContratoTypeModal() {
+      // Se já tem um tipo salvo no consentimento, pré-seleciona; senão usa idade
+      if (state.consentimento && state.consentimento.tipo_perfil) {
+        state.editingContratoTipo = state.consentimento.tipo_perfil;
+      }
+      openContratoTypeModal();
+    }
+    window.reopenContratoTypeModal = reopenContratoTypeModal;
+
     function openConsentUploadModal() {
       state.consentUploadFile = null;
       $('consentFileInput').value = '';
@@ -6064,7 +6056,11 @@
       setupRepeatToggle();
 
       $('appointmentModal').classList.add('active');
-      setTimeout(() => $('apptPatientSearch').focus(), 150);
+      setTimeout(() => {
+        $('apptPatientSearch').focus();
+        offerDraftRecovery('appointmentModal', getAppointmentDraftKey());
+        attachAutoSave('appointmentModal', getAppointmentDraftKey);
+      }, 150);
     }
 
     function openEditAppointment(id) {
@@ -6106,6 +6102,10 @@
       $('apptRepeat').checked = false;
 
       $('appointmentModal').classList.add('active');
+      setTimeout(() => {
+        offerDraftRecovery('appointmentModal', getAppointmentDraftKey());
+        attachAutoSave('appointmentModal', getAppointmentDraftKey);
+      }, 100);
     }
 
     function goToPatientFromAppt(patientId) {
@@ -6208,6 +6208,7 @@
           await syncAppointmentToCalendar(novoApt);
         }
         await saveAppointments();
+        clearDraft(getAppointmentDraftKey());
         closeAppointmentModal();
         if (state.currentPage === 'agenda') renderAgendaPage();
         else if (state.currentPage === 'financeiro') renderFinanceiroPage();
@@ -7161,7 +7162,11 @@
       $('docTexto').innerHTML = '';
 
       $('documentoModal').classList.add('active');
-      setTimeout(() => $('docTitulo').focus(), 150);
+      setTimeout(() => {
+        $('docTitulo').focus();
+        offerDraftRecovery('documentoModal', getDocumentoDraftKey());
+        attachAutoSave('documentoModal', getDocumentoDraftKey);
+      }, 150);
     }
     window.openNewDocumento = openNewDocumento;
 
@@ -7190,6 +7195,10 @@
       $('docTexto').innerHTML = doc.texto || '';
 
       $('documentoModal').classList.add('active');
+      setTimeout(() => {
+        offerDraftRecovery('documentoModal', getDocumentoDraftKey());
+        attachAutoSave('documentoModal', getDocumentoDraftKey);
+      }, 100);
     }
     window.openEditDocumento = openEditDocumento;
 
@@ -7240,6 +7249,7 @@
       $('btnSaveDocumento').innerHTML = '<span class="spinner"></span><span>Salvando...</span>';
       try {
         await savePatientDocumentos(state.selectedPatientId);
+        clearDraft(getDocumentoDraftKey());
         closeDocumentoModal();
         renderDocumentosTab();
         toast(isNew ? 'Documento criado' : 'Documento atualizado', 'success');
@@ -7818,23 +7828,33 @@
     // ============================================================
     function openNewPatient() {
       state.editingId = null;
+      state.editingPatientId = 'new';
       $('modalTitle').innerHTML = 'Novo <em>paciente</em>';
       $('modalSubtitle').textContent = 'preencha os dados do paciente. você pode editar tudo depois.';
       $('patientForm').reset();
       $('patientForm').status.value = 'ativo';
       $('patientModal').classList.add('active');
+      setTimeout(() => {
+        offerDraftRecovery('patientModal', getPatientDraftKey());
+        attachAutoSave('patientModal', getPatientDraftKey);
+      }, 100);
     }
 
     function openEditPatient(id) {
       const p = state.patients.find(x => x.id === id);
       if (!p) return;
       state.editingId = id;
+      state.editingPatientId = id;
       $('modalTitle').innerHTML = 'Editar <em>paciente</em>';
       $('modalSubtitle').textContent = 'atualize os dados conforme necessário.';
       const form = $('patientForm');
       form.reset();
       Object.keys(p).forEach(key => { if (form[key] !== undefined) form[key].value = p[key] || ''; });
       $('patientModal').classList.add('active');
+      setTimeout(() => {
+        offerDraftRecovery('patientModal', getPatientDraftKey());
+        attachAutoSave('patientModal', getPatientDraftKey);
+      }, 100);
     }
 
     function closePatientModal() { $('patientModal').classList.remove('active'); }
@@ -7888,6 +7908,7 @@
           state.patients.push({ id: uid('p'), ...data, criado_em: new Date().toISOString(), atualizado_em: new Date().toISOString() });
         }
         await savePatients();
+        clearDraft(getPatientDraftKey());
         closePatientModal();
         renderAll();
         toast(state.editingId ? 'Paciente atualizado' : 'Paciente cadastrado', 'success');
@@ -7949,6 +7970,10 @@
       renderTagChips();
       setupEditors();
       $('evolutionModal').classList.add('active');
+      setTimeout(() => {
+        offerDraftRecovery('evolutionModal', getEvolutionDraftKey());
+        attachAutoSave('evolutionModal', getEvolutionDraftKey);
+      }, 100);
     }
 
     function openEditEvolution(id) {
@@ -7971,6 +7996,10 @@
       setEditorHtml('plano', ev.plano || '');
       renderTagChips();
       $('evolutionModal').classList.add('active');
+      setTimeout(() => {
+        offerDraftRecovery('evolutionModal', getEvolutionDraftKey());
+        attachAutoSave('evolutionModal', getEvolutionDraftKey);
+      }, 100);
     }
 
     function closeEvolutionModal() { $('evolutionModal').classList.remove('active'); }
@@ -8000,6 +8029,7 @@
           state.evolutions.push({ id: uid('ev'), ...data, criado_em: new Date().toISOString(), atualizado_em: new Date().toISOString() });
         }
         await savePatientEvolutions(state.selectedPatientId);
+        clearDraft(getEvolutionDraftKey());
         closeEvolutionModal();
         $('evolutionCount').textContent = state.evolutions.length;
         renderEvolutions();
@@ -8176,7 +8206,8 @@
     $('btnCancelAppt').addEventListener('click', closeAppointmentModal);
     $('btnDeleteAppt').addEventListener('click', deleteAppointment);
     $('appointmentForm').addEventListener('submit', saveAppointment);
-    $('appointmentModal').addEventListener('click', (e) => { if (e.target.id === 'appointmentModal') closeAppointmentModal(); });
+    // appointmentModal: clique fora REMOVIDO para evitar perda de dados
+    // Só fecha pelos botões "Cancelar"/"Salvar" ou ESC com confirmação
 
     // Atualiza hora fim quando muda a hora início (+50min padrão)
     $('apptHoraInicio').addEventListener('change', (e) => {
@@ -8241,7 +8272,8 @@
     $('btnDeleteDocumento').addEventListener('click', deleteDocumento);
     $('btnExportDocumento').addEventListener('click', exportDocumentoFromModal);
     $('documentoForm').addEventListener('submit', saveDocumento);
-    $('documentoModal').addEventListener('click', (e) => { if (e.target.id === 'documentoModal') closeDocumentoModal(); });
+    // documentoModal: clique fora REMOVIDO para evitar perda de dados
+    // Só fecha pelos botões "Cancelar"/"Salvar"
 
     // Tag input — adicionar / remover
     $('tagInput').addEventListener('keydown', (e) => {
@@ -8271,14 +8303,189 @@
     $('origemFilter').addEventListener('change', (e) => { state.origemFilter = e.target.value; renderList(); });
 
     // Fecha modais
-    $('patientModal').addEventListener('click', (e) => { if (e.target.id === 'patientModal') closePatientModal(); });
-    $('evolutionModal').addEventListener('click', (e) => { if (e.target.id === 'evolutionModal') closeEvolutionModal(); });
-    $('anamneseModal').addEventListener('click', (e) => { if (e.target.id === 'anamneseModal') closeAnamneseModal(); });
+    // NOTA: clique fora REMOVIDO dos modais de formulário (paciente, evolução, anamnese,
+    // documento, atendimento) pra evitar perda acidental de dados.
+    // Esses só fecham pelos botões "Cancelar"/"Salvar" ou ESC (com confirmação).
+    // Modais pequenos/auxiliares mantêm o clique-fora (anamneseType, reciboModal, consentUpload).
     $('anamneseTypeModal').addEventListener('click', (e) => { if (e.target.id === 'anamneseTypeModal') closeAnamneseTypeModal(); });
     $('consentUploadModal').addEventListener('click', (e) => { if (e.target.id === 'consentUploadModal') closeConsentUploadModal(); });
 
     // Setup do drag & drop do upload de consentimento
     setupConsentUpload();
+
+    // ============================================================
+    // SISTEMA DE AUTO-SAVE DE RASCUNHOS
+    // ============================================================
+    // Salva no localStorage o que está sendo digitado em modais de formulário.
+    // Se a janela fechar/recarregar sem salvar, recupera ao reabrir.
+    // Chave por: tipo de modal + ID do paciente (ou "new" se novo cadastro)
+
+    function getCurrentPatientIdForDraft() {
+      return state.selectedPatientId || 'global';
+    }
+
+    function getAnamneseDraftKey() {
+      const pid = getCurrentPatientIdForDraft();
+      const tipo = state.editingAnamneseTipo || (state.anamnese && state.anamnese.tipo) || 'crianca';
+      return `draft_anamnese_${pid}_${tipo}`;
+    }
+    function getEvolutionDraftKey() {
+      const pid = getCurrentPatientIdForDraft();
+      const eid = state.editingEvolutionId || 'new';
+      return `draft_evolution_${pid}_${eid}`;
+    }
+    function getPatientDraftKey() {
+      const pid = state.editingPatientId || 'new';
+      return `draft_patient_${pid}`;
+    }
+    function getDocumentoDraftKey() {
+      const pid = getCurrentPatientIdForDraft();
+      const did = state.editingDocumentoId || 'new';
+      return `draft_documento_${pid}_${did}`;
+    }
+    function getAppointmentDraftKey() {
+      const aid = state.editingApptId || 'new';
+      return `draft_appointment_${aid}`;
+    }
+
+    // Coleta os campos de um modal (form inputs, textareas, selects)
+    function collectModalDraft(modalId) {
+      const modal = $(modalId);
+      if (!modal) return null;
+      const data = {};
+      modal.querySelectorAll('input, textarea, select').forEach(el => {
+        if (!el.name && !el.id) return;
+        const key = el.name || el.id;
+        if (el.type === 'checkbox') data[key] = el.checked;
+        else if (el.type === 'radio') { if (el.checked) data[key] = el.value; }
+        else data[key] = el.value;
+      });
+      // Editor rico (contenteditable) — pra documentos
+      modal.querySelectorAll('[contenteditable="true"]').forEach(el => {
+        if (el.id) data['_html_' + el.id] = el.innerHTML;
+      });
+      return data;
+    }
+
+    // Aplica rascunho de volta no modal
+    function applyModalDraft(modalId, draft) {
+      const modal = $(modalId);
+      if (!modal || !draft) return;
+      Object.entries(draft).forEach(([key, val]) => {
+        if (key.startsWith('_html_')) {
+          const el = $(key.substring(6));
+          if (el) el.innerHTML = val;
+          return;
+        }
+        const el = modal.querySelector(`[name="${key}"], #${CSS.escape(key)}`);
+        if (!el) return;
+        if (el.type === 'checkbox') el.checked = !!val;
+        else if (el.type === 'radio') {
+          modal.querySelectorAll(`[name="${key}"]`).forEach(r => { r.checked = r.value === val; });
+        } else {
+          el.value = val;
+        }
+      });
+    }
+
+    // Verifica se rascunho tem alteração relevante (não vazio)
+    function hasDraftChanges(modalId, draftKey) {
+      const data = collectModalDraft(modalId);
+      if (!data) return false;
+      for (const k in data) {
+        const v = data[k];
+        if (typeof v === 'string' && v.trim()) return true;
+        if (typeof v === 'boolean' && v) return true;
+      }
+      return false;
+    }
+
+    // Salva rascunho no localStorage
+    function saveDraft(modalId, draftKey) {
+      const data = collectModalDraft(modalId);
+      if (!data) return;
+      const hasContent = Object.values(data).some(v =>
+        (typeof v === 'string' && v.trim()) || (typeof v === 'boolean' && v));
+      if (!hasContent) {
+        localStorage.removeItem(draftKey);
+        return;
+      }
+      const payload = { data, savedAt: Date.now() };
+      try {
+        localStorage.setItem(draftKey, JSON.stringify(payload));
+        updateDraftIndicator(modalId, payload.savedAt);
+      } catch (e) { console.warn('Não foi possível salvar rascunho:', e); }
+    }
+
+    // Limpa rascunho (após salvar com sucesso)
+    function clearDraft(draftKey) {
+      try { localStorage.removeItem(draftKey); } catch {}
+      hideDraftIndicator();
+    }
+
+    // Indicador visual de rascunho salvo
+    function updateDraftIndicator(modalId, savedAt) {
+      let ind = document.getElementById('draftIndicator');
+      if (!ind) {
+        ind = document.createElement('div');
+        ind.id = 'draftIndicator';
+        ind.style.cssText = 'position:fixed; bottom:1rem; right:1rem; background:rgba(159,176,138,0.95); color:white; padding:0.55rem 0.9rem; border-radius:50px; font-size:0.78rem; font-family:var(--font-display); font-style:italic; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:9999; pointer-events:none; transition:opacity 0.3s;';
+        document.body.appendChild(ind);
+      }
+      const time = new Date(savedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      ind.textContent = `💾 rascunho salvo às ${time}`;
+      ind.style.opacity = '1';
+    }
+    function hideDraftIndicator() {
+      const ind = document.getElementById('draftIndicator');
+      if (ind) ind.style.opacity = '0';
+    }
+
+    // Pergunta se quer recuperar rascunho ao abrir modal
+    function offerDraftRecovery(modalId, draftKey) {
+      try {
+        const raw = localStorage.getItem(draftKey);
+        if (!raw) return false;
+        const payload = JSON.parse(raw);
+        if (!payload || !payload.data) return false;
+        const ageMin = Math.round((Date.now() - payload.savedAt) / 60000);
+        const ageStr = ageMin < 1 ? 'menos de 1 minuto' : ageMin === 1 ? '1 minuto' : `${ageMin} minutos`;
+        const ok = confirm(`💾 Encontramos um rascunho não salvo de ${ageStr} atrás.\n\nDeseja recuperar o que estava preenchendo?`);
+        if (ok) {
+          applyModalDraft(modalId, payload.data);
+          return true;
+        } else {
+          localStorage.removeItem(draftKey);
+          return false;
+        }
+      } catch (e) { return false; }
+    }
+
+    // Setup de auto-save em um modal
+    // Chamar quando o modal abre. Debounce de 1.5s.
+    function attachAutoSave(modalId, getDraftKey) {
+      const modal = $(modalId);
+      if (!modal) return;
+      let timeout = null;
+      const handler = () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => saveDraft(modalId, getDraftKey()), 1500);
+      };
+      // Remove listeners antigos (caso reabra)
+      if (modal._draftHandler) modal.removeEventListener('input', modal._draftHandler);
+      modal.addEventListener('input', handler);
+      modal._draftHandler = handler;
+    }
+
+    // Helper: pede confirmação antes de fechar modal com rascunho
+    function confirmCloseWithDraft(modalId, draftKey, closeFn) {
+      if (hasDraftChanges(modalId, draftKey)) {
+        const ok = confirm('Há alterações não salvas. Tem certeza que deseja fechar?\n\nSeu rascunho será mantido — você pode recuperar quando reabrir.');
+        if (!ok) return;
+      }
+      closeFn();
+    }
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         // Primeiro tenta fechar menu mobile se estiver aberto
@@ -8288,14 +8495,27 @@
           document.body.classList.remove('menu-open');
           return;
         }
-        if ($('consentUploadModal').classList.contains('active')) closeConsentUploadModal();
-        else if ($('anamneseTypeModal').classList.contains('active')) closeAnamneseTypeModal();
-        else if ($('reciboModal').classList.contains('active')) closeReciboModal();
-        else if ($('documentoModal').classList.contains('active')) closeDocumentoModal();
-        else if ($('anamneseModal').classList.contains('active')) closeAnamneseModal();
-        else if ($('evolutionModal').classList.contains('active')) closeEvolutionModal();
-        else if ($('appointmentModal').classList.contains('active')) closeAppointmentModal();
-        else if ($('patientModal').classList.contains('active')) closePatientModal();
+        // Modais sem confirmação (auxiliares)
+        if ($('consentUploadModal').classList.contains('active')) { closeConsentUploadModal(); return; }
+        if ($('anamneseTypeModal').classList.contains('active')) { closeAnamneseTypeModal(); return; }
+        if ($('contratoTypeModal') && $('contratoTypeModal').classList.contains('active')) { closeContratoTypeModal(); return; }
+        if ($('reciboModal').classList.contains('active')) { closeReciboModal(); return; }
+        // Modais de formulário (com confirmação se tiver rascunho)
+        if ($('documentoModal').classList.contains('active')) {
+          confirmCloseWithDraft('documentoModal', getDocumentoDraftKey(), closeDocumentoModal); return;
+        }
+        if ($('anamneseModal').classList.contains('active')) {
+          confirmCloseWithDraft('anamneseModal', getAnamneseDraftKey(), closeAnamneseModal); return;
+        }
+        if ($('evolutionModal').classList.contains('active')) {
+          confirmCloseWithDraft('evolutionModal', getEvolutionDraftKey(), closeEvolutionModal); return;
+        }
+        if ($('appointmentModal').classList.contains('active')) {
+          confirmCloseWithDraft('appointmentModal', getAppointmentDraftKey(), closeAppointmentModal); return;
+        }
+        if ($('patientModal').classList.contains('active')) {
+          confirmCloseWithDraft('patientModal', getPatientDraftKey(), closePatientModal); return;
+        }
       }
     });
 
